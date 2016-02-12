@@ -59,6 +59,7 @@ machine-$(CONFIG_ARCH_ROCKCHIP)		+= rockchip
 machine-$(CONFIG_TEGRA)			+= tegra
 machine-$(CONFIG_ARCH_UNIPHIER)		+= uniphier
 machine-$(CONFIG_ARCH_ZYNQ)		+= zynq
+machine-$(CONFIG_ARCH_S5P6818)		+= s5p6818
 
 machdirs := $(patsubst %,arch/arm/mach-%/,$(machine-y))
 
