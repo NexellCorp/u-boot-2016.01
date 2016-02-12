@@ -7,3 +7,4 @@
 
 obj-y				+= clock.o
 obj-y				+= timer.o
+obj-$(CONFIG_S5P_SERIAL) 	+= serial.o
