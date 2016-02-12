@@ -6,3 +6,4 @@
 #
 
 obj-y				+= clock.o
+obj-y				+= timer.o
