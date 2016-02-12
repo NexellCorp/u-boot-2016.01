@@ -1,0 +1,20 @@
+if ARCH_S5P6818
+
+choice
+	prompt "s5p6818 board select"
+	optional
+
+config TARGET_DRONE
+	bool "s5p6818 drone board"
+	select ARM64
+	help
+      Support for s5p6818 DRONE platform.
+
+endchoice
+
+config SYS_SOC
+	default "s5p6818"
+
+source "board/s5p6818/drone/Kconfig"
+
+endif
