@@ -445,3 +445,41 @@ U_BOOT_CMD(
 );
 
 #endif  /* CONFIG_CMD_LINK_LOCAL */
+
+#if defined(CONFIG_CMD_GEN_ETHADDR)
+int do_gen_eth_addr(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+{
+	unsigned long ethaddr_low, ethaddr_high;
+	char tmp[18];
+
+	if (argc != 1)
+		return -1;
+
+	srand(get_timer(0));
+
+	/*
+	 * setting the 2nd LSB in the most significant byte of
+	 * the address makes it a locally administered ethernet
+	 * address
+	 */
+	ethaddr_high = (rand() & 0xfeff) | 0x0200;
+	ethaddr_low = rand();
+
+	sprintf(tmp, "%02lx:%02lx:%02lx:%02lx:%02lx:%02lx",
+		ethaddr_high >> 8, ethaddr_high & 0xff,
+		ethaddr_low >> 24, (ethaddr_low >> 16) & 0xff,
+		(ethaddr_low >> 8) & 0xff, ethaddr_low & 0xff);
+
+	setenv("ethaddr", tmp);
+
+	printf("%s\n", tmp);
+
+	return 0;
+}
+
+U_BOOT_CMD(
+	gen_eth_addr,	1,	1,	do_gen_eth_addr,
+	"Generate a random ethernet mac address",
+	""
+);
+#endif
