@@ -181,5 +181,12 @@
 
 #define CONFIG_TIMER_SYS_TICK_CH		0
 
-#endif /* __CONFIG_H__ */
+/*-----------------------------------------------------------------------
+ * OF_CONTROL
+ */
 
+#define CONFIG_FIT
+#define CONFIG_FIT_BEST_MATCH
+#define CONFIG_OF_EMBED
+
+#endif /* __CONFIG_H__ */
