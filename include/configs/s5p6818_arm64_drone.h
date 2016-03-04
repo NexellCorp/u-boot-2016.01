@@ -182,6 +182,17 @@
 #define CONFIG_TIMER_SYS_TICK_CH		0
 
 /*-----------------------------------------------------------------------
+ * SD/MMC
+ */
+
+#define CONFIG_GENERIC_MMC
+#define CONFIG_MMC
+#define CONFIG_DWMMC
+#define CONFIG_NEXELL_DWMMC
+#define CONFIG_BOUNCE_BUFFER
+#define CONFIG_CMD_MMC
+
+/*-----------------------------------------------------------------------
  * OF_CONTROL
  */
 
