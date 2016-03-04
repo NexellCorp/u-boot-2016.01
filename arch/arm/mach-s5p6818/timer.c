@@ -9,6 +9,7 @@
 #include <asm/io.h>
 #include <asm/arch/s5p6818.h>
 #include <asm/arch/clk.h>
+#include <asm/arch/reset.h>
 
 #if (CONFIG_TIMER_SYS_TICK_CH > 3)
 #error Not support timer channel. Please use "0~3" channels.
@@ -44,30 +45,6 @@ static long	TIMER_COUNT = 0xFFFFFFFF;
 #define TINT_CSTAT_BIT_CH(ch)		(ch + 5)
 #define	TINT_CSTAT_MASK			(0x1F)
 #define TIMER_TCNT_OFFS			(0xC)
-
-#define NUMBER_OF_RESET_MODULE_PIN	69
-
-enum rstcon {
-	RSTCON_ASSERT	= 0UL,
-	RSTCON_NEGATE	= 1UL
-};
-
-struct	nx_rstcon_registerset {
-	u32	regrst[(NUMBER_OF_RESET_MODULE_PIN+31)>>5];
-};
-
-static struct nx_rstcon_registerset *nx_rstcon;
-
-void nx_rstcon_setrst(u32 rstindex, enum rstcon status)
-{
-	u32 regnum, bitpos, curstat;
-	regnum		= rstindex >> 5;
-	curstat		= (u32)readl(&nx_rstcon->regrst[regnum]);
-	bitpos		= rstindex & 0x1f;
-	curstat		&= ~(1UL << bitpos);
-	curstat		|= (status & 0x01) << bitpos;
-	writel(curstat, &nx_rstcon->regrst[regnum]);
-}
 
 /*
  * Timer HW
@@ -131,7 +108,6 @@ int timer_init(void)
 	int tcnt, tscl = 0, tmux = 0;
 	int mux = 0, scl = 0;
 	void __iomem *base = (void __iomem *)PHY_BASEADDR_TIMER;
-	nx_rstcon = (struct nx_rstcon_registerset *)PHY_BASEADDR_RSTCON;
 
 	if (timerinit)
 		return 0;
