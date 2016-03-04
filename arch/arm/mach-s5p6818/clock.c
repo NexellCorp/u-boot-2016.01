@@ -155,7 +155,8 @@ static struct clk_dev_peri clk_periphs[] = {
 #define	CLK_DEVS_NUM		(CLK_CORE_NUM + CLK_PERI_NUM)
 #define	MAX_DIVIDER		((1<<8) - 1)	/* 256, align 2 */
 
-static struct clk_dev		st_clk_devs[CLK_DEVS_NUM];
+static struct clk_dev		st_clk_devs[CLK_DEVS_NUM]
+				__attribute__((section(".data")));
 #define	clk_dev_get(n)		((struct clk_dev *)&st_clk_devs[n])
 #define	clk_container(p)	(container_of(p, struct clk_dev, clk))
 
@@ -569,7 +570,6 @@ struct clk *clk_get(const char *id)
 			break;
 		}
 	}
-
 	if (CLK_DEVS_NUM > i)
 		clk = &cdev->clk;
 	else
@@ -684,7 +684,6 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 
 	clk_round_rate(clk, rate);
 
-
 	for (i = 0; peri->clk_step > i ; i++)	{
 		int s = (0 == i ? peri->div_src_0 : peri->div_src_1);
 		int d = (0 == i ? peri->div_val_0 : peri->div_val_1);
@@ -794,9 +793,7 @@ void __init nx_clk_init(void)
 	struct clk_dev_peri *peri = clk_periphs;
 	struct clk *clk = NULL;
 	int i = 0;
-
 	memset(cdev, 0, sizeof(st_clk_devs));
-
 	core_rate_init();
 
 	for (i = 0; (CLK_CORE_NUM+CLK_PERI_NUM) > i; i++, cdev++) {
