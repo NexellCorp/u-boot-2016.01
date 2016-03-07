@@ -10,6 +10,7 @@
 #include <asm/io.h>
 
 #include <asm/arch/s5p6818.h>
+#include <asm/arch/nx_gpio.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -23,8 +24,19 @@ int board_early_init_f(void)
 	return 0;
 }
 
+void board_gpio_init(void)
+{
+	nx_gpio_initialize();
+	nx_gpio_set_base_address(0, (void *)PHY_BASEADDR_GPIOA);
+	nx_gpio_set_base_address(1, (void *)PHY_BASEADDR_GPIOB);
+	nx_gpio_set_base_address(2, (void *)PHY_BASEADDR_GPIOC);
+	nx_gpio_set_base_address(3, (void *)PHY_BASEADDR_GPIOD);
+	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
+}
+
 int board_init(void)
 {
+	board_gpio_init();
 	return 0;
 }
 
