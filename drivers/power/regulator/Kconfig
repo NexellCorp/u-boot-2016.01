@@ -25,6 +25,16 @@ config REGULATOR_ACT8846
 	by the PMIC device. This driver is controlled by a device tree node
 	which includes voltage limits.
 
+config DM_REGULATOR_AXP228
+	bool "Enable Driver Model for REGULATOR AXP228"
+	depends on DM_REGULATOR && DM_PMIC_AXP228
+	---help---
+	This config enables implementation of driver-model regulator uclass
+	features for REGULATOR AXP228.
+	The driver implements get/set api for the various BUCKS and LDOS supported
+	by the PMIC device. This driver is controlled by a device tree node
+	which includes voltage limits.
+
 config DM_REGULATOR_PFUZE100
 	bool "Enable Driver Model for REGULATOR PFUZE100"
 	depends on DM_REGULATOR && DM_PMIC_PFUZE100
