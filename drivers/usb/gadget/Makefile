@@ -13,6 +13,7 @@ ifdef CONFIG_USB_GADGET
 obj-$(CONFIG_USB_GADGET_AT91) += at91_udc.o
 obj-$(CONFIG_USB_GADGET_ATMEL_USBA) += atmel_usba_udc.o
 obj-$(CONFIG_USB_GADGET_BCM_UDC_OTG_PHY) += bcm_udc_otg_phy.o
+obj-$(CONFIG_USB_GADGET_NX_UDC_OTG_PHY) += nexell_udc_otg_phy.o
 obj-$(CONFIG_USB_GADGET_DWC2_OTG) += dwc2_udc_otg.o
 obj-$(CONFIG_USB_GADGET_DWC2_OTG_PHY) += dwc2_udc_otg_phy.o
 obj-$(CONFIG_USB_GADGET_FOTG210) += fotg210.o
