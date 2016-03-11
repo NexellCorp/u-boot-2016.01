@@ -1,13 +1,18 @@
 if TARGET_DRONE
 
 config SYS_BOARD
-    default "drone"
+	default "drone"
 
 config SYS_VENDOR
-    default "s5p6818"
+	default "s5p6818"
 
 config SYS_CONFIG_NAME
-    default "s5p6818_arm64_drone"
+	default "s5p6818_arm64_drone"
+
+config S5P6818_FEATURES
+	bool
+	default y
+	select ARM64
 
 endif
 
