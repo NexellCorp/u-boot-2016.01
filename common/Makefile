@@ -190,6 +190,7 @@ obj-$(CONFIG_CMD_FS_UUID) += cmd_fs_uuid.o
 
 obj-$(CONFIG_CMD_USB_MASS_STORAGE) += cmd_usb_mass_storage.o
 obj-$(CONFIG_CMD_THOR_DOWNLOAD) += cmd_thordown.o
+obj-$(CONFIG_NX_USBDOWN)        += cmd_usbdown.o
 obj-$(CONFIG_CMD_XIMG) += cmd_ximg.o
 obj-$(CONFIG_YAFFS2) += cmd_yaffs2.o
 obj-$(CONFIG_CMD_SPL) += cmd_spl.o
