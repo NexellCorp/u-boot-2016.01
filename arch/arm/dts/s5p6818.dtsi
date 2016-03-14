@@ -42,4 +42,28 @@
 		index = <2>;
 		status = "disabled";
 	};
+
+	i2c0:i2c@c00a4000 {
+                compatible = "nexell,s5pxx18-i2c";
+                reg = <0xC00A4000 0x1000>;
+                #address-cells = <1>;
+                #size-cells = <0>;
+		status = "disabled";
+        };
+
+	i2c1:i2c@c00a5000 {
+                compatible = "nexell,s5pxx18-i2c";
+                reg = <0xC00A5000 0x1000>;
+                #address-cells = <1>;
+                #size-cells = <0>;
+		status = "disabled";
+        };
+
+	i2c2:i2c@c00a6000 {
+                compatible = "nexell,s5pxx18-i2c";
+                reg = <0xC00A6000 0x1000>;
+                #address-cells = <1>;
+                #size-cells = <0>;
+		status = "disabled";
+        };
 };
