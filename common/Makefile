@@ -146,6 +146,8 @@ obj-$(CONFIG_CMD_NET) += cmd_net.o
 obj-$(CONFIG_CMD_ONENAND) += cmd_onenand.o
 obj-$(CONFIG_CMD_OTP) += cmd_otp.o
 obj-$(CONFIG_CMD_PART) += cmd_part.o
+obj-$(CONFIG_CMD_FDISK) += cmd_mmc_fdisk.o
+
 ifdef CONFIG_PCI
 obj-$(CONFIG_CMD_PCI) += cmd_pci.o
 endif

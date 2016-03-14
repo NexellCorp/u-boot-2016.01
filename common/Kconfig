@@ -512,6 +512,13 @@ config CMD_SOUND
 	     sound init   - set up sound system
 	     sound play   - play a sound
 
+config CMD_FDISK
+	bool fdisk
+	default n
+	help
+	  support making partitions including extended partitions.
+	  This command can make partition in mmc storage devices.
+
 endmenu
 
 menu "Boot timing"
