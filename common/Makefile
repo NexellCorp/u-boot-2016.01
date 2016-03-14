@@ -148,6 +148,7 @@ obj-$(CONFIG_CMD_OTP) += cmd_otp.o
 obj-$(CONFIG_CMD_PART) += cmd_part.o
 obj-$(CONFIG_CMD_FDISK) += cmd_mmc_fdisk.o
 obj-$(CONFIG_CMD_EXT4_IMG_WRITE) += cmd_ext4_img_write.o
+obj-$(CONFIG_CMD_SD_RECOVERY) += cmd_sd_recovery.o
 
 ifdef CONFIG_PCI
 obj-$(CONFIG_CMD_PCI) += cmd_pci.o
