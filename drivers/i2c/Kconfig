@@ -113,6 +113,15 @@ config SYS_I2C_UNIPHIER_F
 	  Support for UniPhier FIFO-builtin I2C controller driver.
 	  This I2C controller is used on PH1-Pro4 or newer UniPhier SoCs.
 
+config SYS_I2C_NEXELL
+	bool "Nexell I2C driver"
+	depends on DM_I2C
+	help
+	  Add support for the Nexell I2C driver. This is used with various
+	  Nexell parts such as S5Pxx18 series SoCs. All chips
+	  have several I2C ports and all are provided, controled by the
+	  device tree.
+
 source "drivers/i2c/muxes/Kconfig"
 
 endmenu
