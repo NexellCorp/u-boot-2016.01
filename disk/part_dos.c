@@ -288,4 +288,78 @@ int get_partition_info_dos (block_dev_desc_t *dev_desc, int part, disk_partition
 }
 
 
+static int get_part_table_extended(block_dev_desc_t *desc,
+				lbaint_t lba_start, lbaint_t relative,
+				uint64_t (*parts)[2], int *part_num)
+{
+	unsigned char buffer[512] = { 0, };
+	struct dos_partition *pt;
+	lbaint_t lba_s, lba_l;
+	int i = 0;
+
+	debug("--- LBA S= 0x%llx : 0x%llx ---\n",
+	      (uint64_t)lba_start*desc->blksz, (uint64_t)relative*desc->blksz);
+
+	if (0 > desc->block_read(desc->dev, lba_start, 1, (void *)buffer)) {
+		printf("** Error read mmc.%d partition info **\n", desc->dev);
+		return -1;
+	}
+
+	if (buffer[DOS_PART_MAGIC_OFFSET] != 0x55 ||
+	    buffer[DOS_PART_MAGIC_OFFSET + 1] != 0xAA) {
+		printf("** Not find partition magic number **\n");
+		return 0;
+	}
+
+	/* Print all primary/logical partitions */
+	pt = (struct dos_partition *)(buffer + DOS_PART_TBL_OFFSET);
+
+	for (i = 0;  i < 4; i++, pt++) {
+		lba_s = le32_to_int(pt->start4);
+		lba_l = le32_to_int(pt->size4);
+
+		if (is_extended(pt->sys_ind)) {
+			debug("Extd p=\t0x%llx \t~ \t0x%llx (%ld:%ld) <%d>\n",
+			      (uint64_t)lba_s*desc->blksz,
+			      (uint64_t)lba_l*desc->blksz,
+			      lba_s, lba_l, i);
+			continue;
+		}
+
+		if (lba_s && lba_l) {
+			parts[*part_num][0] =
+				(uint64_t)(lba_start + lba_s)*desc->blksz;
+			parts[*part_num][1] = (uint64_t)lba_l*desc->blksz;
+			debug("part.%d=\t0x%llx \t~ \t0x%llx (%ld:%ld) <%d>\n",
+			      *part_num, parts[*part_num][0],
+			      parts[*part_num][1], lba_s, lba_l, i);
+			*part_num += 1;
+		}
+	}
+
+	/* Follows the extended partitions */
+	pt = (struct dos_partition *)(buffer + DOS_PART_TBL_OFFSET);
+	for (i = 0; 4 > i; i++, pt++) {
+		if (is_extended(pt->sys_ind)) {
+			lba_s = le32_to_int(pt->start4) + relative;
+			get_part_table_extended(desc, lba_s,
+						lba_start == 0 ?
+						lba_s : relative,
+						parts, part_num);
+		}
+	}
+	return 0;
+}
+
+int get_part_table(block_dev_desc_t *desc,
+		       uint64_t (*parts)[2], int *part_num)
+{
+	int partcnt = 0;
+	int ret = get_part_table_extended(desc, 0, 0, parts, &partcnt);
+	if (0 > ret)
+		return ret;
+
+	*part_num = partcnt;
+	return 0;
+}
 #endif

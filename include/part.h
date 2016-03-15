@@ -303,5 +303,7 @@ int gpt_verify_partitions(block_dev_desc_t *dev_desc,
 			  disk_partition_t *partitions, int parts,
 			  gpt_header *gpt_head, gpt_entry **gpt_pte);
 #endif
+int get_part_table(block_dev_desc_t *desc,
+		       uint64_t (*parts)[2], int *part_num);
 
 #endif /* _PART_H */
