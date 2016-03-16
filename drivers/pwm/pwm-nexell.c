@@ -13,7 +13,7 @@
 #include <pwm.h>
 #include <asm/io.h>
 #include <asm/arch/clk.h>
-#include "pwm-samsung.h"
+#include "pwm-nexell.h"
 
 #if defined(CONFIG_ARCH_S5P6818)
 #include <asm/arch/s5p6818.h>
