@@ -198,6 +198,15 @@
 #define CONFIG_PWM_NX
 
 /*-----------------------------------------------------------------------
+ * BACKLIGHT
+ */
+#define CONFIG_BACKLIGHT_CH			0
+#define CONFIG_BACKLIGHT_DIV			0
+#define CONFIG_BACKLIGHT_INV			1
+#define CONFIG_BACKLIGHT_DUTY			50
+#define CONFIG_BACKLIGHT_HZ			10000
+
+/*-----------------------------------------------------------------------
  * OF_CONTROL
  */
 
