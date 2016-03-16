@@ -45,6 +45,19 @@ enum {
 	nx_gpio_padfunc_3 = 3ul
 };
 
+enum {
+	nx_gpio_drvstrength_0 = 0ul,
+	nx_gpio_drvstrength_1 = 1ul,
+	nx_gpio_drvstrength_2 = 2ul,
+	nx_gpio_drvstrength_3 = 3ul
+};
+
+enum {
+	nx_gpio_pull_down = 0ul,
+	nx_gpio_pull_up = 1ul,
+	nx_gpio_pull_off = 2ul
+};
+
 int nx_gpio_initialize(void);
 u32 nx_gpio_get_number_of_module(void);
 u32 nx_gpio_get_size_of_register_set(void);
@@ -58,5 +71,29 @@ void nx_gpio_set_detect_enable(u32 module_index, u32 bit_number,
 void nx_gpio_set_pad_function(u32 module_index, u32 bit_number, u32 padfunc);
 void nx_gpio_set_pad_function32(u32 module_index, u32 msbvalue, u32 lsbvalue);
 int nx_gpio_get_pad_function(u32 module_index, u32 bit_number);
-
+void nx_gpio_set_output_enable(u32 module_index, u32 bit_number,
+			       int output_enb);
+int nx_gpio_get_detect_enable(u32 module_index, u32 bit_number);
+u32 nx_gpio_get_detect_enable32(u32 module_index);
+void nx_gpio_set_detect_enable(u32 module_index, u32 bit_number,
+			       int detect_enb);
+void nx_gpio_set_detect_enable32(u32 module_index, u32 enable_flag);
+int nx_gpio_get_output_enable(u32 module_index, u32 bit_number);
+void nx_gpio_set_output_enable32(u32 module_index, int output_enb);
+u32 nx_gpio_get_output_enable32(u32 module_index);
+void nx_gpio_set_output_value(u32 module_index, u32 bit_number, int value);
+int nx_gpio_get_output_value(u32 module_index, u32 bit_number);
+void nx_gpio_set_output_value32(u32 module_index, u32 value);
+u32 nx_gpio_get_output_value32(u32 module_index);
+int nx_gpio_get_input_value(u32 module_index, u32 bit_number);
+void nx_gpio_set_pull_select(u32 module_index, u32 bit_number, int enable);
+void nx_gpio_set_pull_select32(u32 module_index, u32 value);
+int nx_gpio_get_pull_select(u32 module_index, u32 bit_number);
+u32 nx_gpio_get_pull_select32(u32 module_index);
+void nx_gpio_set_pull_mode(u32 module_index, u32 bit_number, u32 mode);
+void nx_gpio_set_drive_strength_disable_default(u32 module_index,
+						u32 bit_number, int enable);
+void nx_gpio_set_drive_strength_disable_default(u32 module_index,
+						u32 bit_number, int enable);
+u32 nx_gpio_get_drive_strength(u32 module_index, u32 bit_number);
 #endif
