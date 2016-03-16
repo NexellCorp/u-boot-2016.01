@@ -12,6 +12,7 @@ dtb-$(CONFIG_EXYNOS4) += exynos4210-origen.dtb \
 	exynos4412-odroid.dtb
 
 dtb-$(CONFIG_ARCH_S5P6818) += s5p6818-drone.dtb \
+	s5p6818-artik710-raptor.dtb
 
 dtb-$(CONFIG_EXYNOS5) += exynos5250-arndale.dtb \
 	exynos5250-snow.dtb \
