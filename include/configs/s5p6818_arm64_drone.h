@@ -34,6 +34,8 @@
 /* Download OFFSET */
 #define CONFIG_MEM_LOAD_ADDR			0x48000000
 
+#define CONFIG_SYS_BOOTM_LEN    (64 << 20)      /* Increase max gunzip size */
+
 /* AARCH64 */
 #define COUNTER_FREQUENCY			200000000
 #define CPU_RELEASE_ADDR			CONFIG_SYS_INIT_SP_ADDR
@@ -215,8 +217,7 @@
  * OF_CONTROL
  */
 
-#define CONFIG_FIT
 #define CONFIG_FIT_BEST_MATCH
-#define CONFIG_OF_EMBED
+#define CONFIG_OF_LIBFDT
 
 #endif /* __CONFIG_H__ */
