@@ -171,6 +171,7 @@ enum fdt_compat_id {
 	COMPAT_INTEL_BAYTRAIL_FSP,	/* Intel Bay Trail FSP */
 	COMPAT_INTEL_BAYTRAIL_FSP_MDP,	/* Intel FSP memory-down params */
 	COMPAT_NEXELL_DWMMC,		/* Nexell DWMMC controllet */
+	COMPAT_NEXELL_DISPLAY,		/* Nexell Display controllet */
 
 	COMPAT_COUNT,
 };

@@ -75,6 +75,7 @@ static const char * const compat_names[COMPAT_COUNT] = {
 	COMPAT(COMPAT_INTEL_BAYTRAIL_FSP, "intel,baytrail-fsp"),
 	COMPAT(COMPAT_INTEL_BAYTRAIL_FSP_MDP, "intel,baytrail-fsp-mdp"),
 	COMPAT(NEXELL_DWMMC, "nexell,nexell-dwmmc"),
+	COMPAT(NEXELL_DISPLAY, "nexell,nexell-display"),
 };
 
 const char *fdtdec_get_compatible(enum fdt_compat_id id)

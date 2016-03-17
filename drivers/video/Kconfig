@@ -255,6 +255,16 @@ config VIDEO_TEGRA124
 	   enables this support which can be used on devices which
 	   have an eDP display connected.
 
+config VIDEO_NX
+	bool "Enable video support on Nexell SoC"
+	depends on ARCH_S5P6818
+	help
+	   Nexell SoC supports many video output options including eDP and
+	   HDMI. This option enables this support which can be used on devices
+	   which have an eDP display connected.
+
+source "drivers/video/nexell/Kconfig"
+
 source "drivers/video/bridge/Kconfig"
 
 endmenu
