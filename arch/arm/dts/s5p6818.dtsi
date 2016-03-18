@@ -66,4 +66,22 @@
                 #size-cells = <0>;
 		status = "disabled";
         };
+
+	dp0:dp@c0102800 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-display";
+		reg = <0xc0102800 0x100>;
+		index = <0>;
+		status = "disabled";
+	};
+
+	dp1:dp@c0102c00 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-display";
+		reg = <0xc0102c00 0x100>;
+		index = <1>;
+		status = "disabled";
+	};
 };
