@@ -79,8 +79,8 @@ Required subnode 'dp-device' is as follows:
 
 	subnode 'mipi' is as follows (mipi lcd panel):
 	optional properties:
-	- pllpms: mipi clock pms 150mhz=0x2192, 150mhz=0x3323 150mhz=0x3283
-	- bandctl: mipi band control if pllpms 150mhz=0x2, 150mhz=0x1 150mhz=0x0
+	- hs_bitrate: mipi high speed bitrate (1000, ... Mhz) to mipi data
+	- lp_bitrate: mipi low power bitrate (150, 100, 80 Mhz) to setup data
 
 	subnode 'hdmi' is as follows (hdmi output):
 	optional properties:

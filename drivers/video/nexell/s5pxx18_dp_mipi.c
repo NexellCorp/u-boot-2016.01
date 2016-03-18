@@ -18,14 +18,42 @@
 #include "soc/s5pxx18_soc_disptop.h"
 #include "soc/s5pxx18_soc_disptop_clk.h"
 
-#if defined(CONFIG_MACH_S5P6818)
-#define	PLLPMS_150MHZ		(0x2192)
-#define	BANDCTL_150MHZ		(0x2)
-#define	PLLPMS_100MHZ		(0x3323)
-#define	BANDCTL_100MHZ		(0x1)
-#define	PLLPMS_80MHZ		(0x3283)
-#define	BANDCTL_80MHZ		(0x0)
-#endif
+#define	PLLPMS_1000MHZ		0x33E8
+#define	BANDCTL_1000MHZ		0xF
+#define	PLLPMS_900MHZ		0x2258
+#define	BANDCTL_900MHZ		0xE
+#define	PLLPMS_840MHZ		0x2230
+#define	BANDCTL_840MHZ		0xD
+#define	PLLPMS_750MHZ		0x43E8
+#define	BANDCTL_750MHZ		0xC
+#define	PLLPMS_660MHZ		0x21B8
+#define	BANDCTL_660MHZ		0xB
+#define	PLLPMS_600MHZ		0x2190
+#define	BANDCTL_600MHZ		0xA
+#define	PLLPMS_540MHZ		0x2168
+#define	BANDCTL_540MHZ		0x9
+#define	PLLPMS_512MHZ		0x03200
+#define	BANDCTL_512MHZ		0x9
+#define	PLLPMS_480MHZ		0x2281
+#define	BANDCTL_480MHZ		0x8
+#define	PLLPMS_420MHZ		0x2231
+#define	BANDCTL_420MHZ		0x7
+#define	PLLPMS_402MHZ		0x2219
+#define	BANDCTL_402MHZ		0x7
+#define	PLLPMS_330MHZ		0x21B9
+#define	BANDCTL_330MHZ		0x6
+#define	PLLPMS_300MHZ		0x2191
+#define	BANDCTL_300MHZ		0x5
+#define	PLLPMS_210MHZ		0x2232
+#define	BANDCTL_210MHZ		0x4
+#define	PLLPMS_180MHZ		0x21E2
+#define	BANDCTL_180MHZ		0x3
+#define	PLLPMS_150MHZ		0x2192
+#define	BANDCTL_150MHZ		0x2
+#define	PLLPMS_100MHZ		0x3323
+#define	BANDCTL_100MHZ		0x1
+#define	PLLPMS_80MHZ		0x3283
+#define	BANDCTL_80MHZ		0x0
 
 #define	__io_address(a)	(void *)(uintptr_t)(a)
 
@@ -81,6 +109,94 @@ static void mipi_enable(int enable)
 	nx_mipi_dsi_set_enable(0, on);
 }
 
+static int mipi_phy_pll(int bitrate, unsigned int *pllpms,
+			unsigned int *bandctl)
+{
+	unsigned int pms, ctl;
+
+	switch (bitrate) {
+	case 1000:
+		pms = PLLPMS_1000MHZ;
+		ctl = BANDCTL_1000MHZ;
+		break;
+	case 900:
+		pms = PLLPMS_900MHZ;
+		ctl = BANDCTL_900MHZ;
+		break;
+	case 840:
+		pms = PLLPMS_840MHZ;
+		ctl = BANDCTL_840MHZ;
+		break;
+	case 750:
+		pms = PLLPMS_750MHZ;
+		ctl = BANDCTL_750MHZ;
+		break;
+	case 660:
+		pms = PLLPMS_660MHZ;
+		ctl = BANDCTL_660MHZ;
+		break;
+	case 600:
+		pms = PLLPMS_600MHZ;
+		ctl = BANDCTL_600MHZ;
+		break;
+	case 540:
+		pms = PLLPMS_540MHZ;
+		ctl = BANDCTL_540MHZ;
+		break;
+	case 512:
+		pms = PLLPMS_512MHZ;
+		ctl = BANDCTL_512MHZ;
+		break;
+	case 480:
+		pms = PLLPMS_480MHZ;
+		ctl = BANDCTL_480MHZ;
+		break;
+	case 420:
+		pms = PLLPMS_420MHZ;
+		ctl = BANDCTL_420MHZ;
+		break;
+	case 402:
+		pms = PLLPMS_402MHZ;
+		ctl = BANDCTL_402MHZ;
+		break;
+	case 330:
+		pms = PLLPMS_330MHZ;
+		ctl = BANDCTL_330MHZ;
+		break;
+	case 300:
+		pms = PLLPMS_300MHZ;
+		ctl = BANDCTL_300MHZ;
+		break;
+	case 210:
+		pms = PLLPMS_210MHZ;
+		ctl = BANDCTL_210MHZ;
+		break;
+	case 180:
+		pms = PLLPMS_180MHZ;
+		ctl = BANDCTL_180MHZ;
+		break;
+	case 150:
+		pms = PLLPMS_150MHZ;
+		ctl = BANDCTL_150MHZ;
+		break;
+	case 100:
+		pms = PLLPMS_100MHZ;
+		ctl = BANDCTL_100MHZ;
+		break;
+	case 80:
+		pms = PLLPMS_80MHZ;
+		ctl = BANDCTL_80MHZ;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	*pllpms = pms;
+	*bandctl = ctl;
+
+	return 0;
+}
+
 static int mipi_setup(int module, int input,
 		      struct dp_sync_info *sync, struct dp_ctrl_info *ctrl,
 		      struct dp_mipi_dev *dev)
@@ -98,16 +214,21 @@ static int mipi_setup(int module, int input,
 	int VBP = sync->v_back_porch;
 	int VS = sync->v_sync_width;
 
-	unsigned int pllpms = dev->pllpms;
-	unsigned int bandctl = dev->bandctl;
-	unsigned int pllctl = dev->pllctl;
-	unsigned int phyctl = dev->phyctl;
+	unsigned int hs_pllpms, hs_bandctl;
+	unsigned int lp_pllpms, lp_bandctl;
 
-#if defined(CONFIG_MACH_S5P6818)
+	unsigned int pllctl = 0;
+	unsigned int phyctl = 0;
+
 	u32 esc_pre_value = 1;
-#else
-	u32 esc_pre_value = 10;
-#endif
+
+	ret = mipi_phy_pll(dev->hs_bitrate, &hs_pllpms, &hs_bandctl);
+	if (0 > ret)
+		return ret;
+
+	ret = mipi_phy_pll(dev->lp_bitrate, &lp_pllpms, &lp_bandctl);
+	if (0 > ret)
+		return ret;
 
 	switch (input) {
 	case DP_DEVICE_DP0:
@@ -123,34 +244,40 @@ static int mipi_setup(int module, int input,
 		return -EINVAL;
 	}
 
-#if defined(CONFIG_MACH_S5P6818)
-	nx_mipi_dsi_set_pll(index, 1, 0xFFFFFFFF,
-			    PLLPMS_100MHZ, BANDCTL_100MHZ, 0, 0);
-#else
-	nx_mipi_dsi_set_pll(index, 1, 0xFFFFFFFF,
-			    pllpms, bandctl, pllctl, phyctl);
-#endif
-	mdelay(20);
+	debug("%s: mipi lp:%dmhz:0x%x:0x%x, hs:%dmhz:0x%x:0x%x\n",
+	      __func__, dev->lp_bitrate, lp_pllpms, lp_bandctl,
+	      dev->hs_bitrate, hs_pllpms, hs_bandctl);
 
 	if (dev->dev_init) {
+		nx_mipi_dsi_set_pll(index, 1, 0xFFFFFFFF,
+				    lp_pllpms, lp_bandctl, 0, 0);
+		mdelay(20);
+
 		nx_mipi_dsi_software_reset(index);
 		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 0, 0, 0, 1,
 				      esc_pre_value);
 		nx_mipi_dsi_set_phy(index, 0, 1, 1, 0, 0, 0, 0, 0);
 
+		nx_mipi_dsi_set_escape_lp(index, nx_mipi_dsi_lpmode_lp,
+					  nx_mipi_dsi_lpmode_lp);
+		mdelay(10);
+
 		/* run callback */
 		ret = dev->dev_init(width, height, dev->private_data);
+
+		nx_mipi_dsi_set_escape_lp(index, nx_mipi_dsi_lpmode_hs,
+					  nx_mipi_dsi_lpmode_hs);
+
 		if (0 > ret)
 			return ret;
 	}
-#if defined(CONFIG_MACH_S5P6818)
+
 	nx_mipi_dsi_set_pll(index, 1, 0xFFFFFFFF,
-			    pllpms, bandctl, pllctl, phyctl);
+			    hs_pllpms, hs_bandctl, pllctl, phyctl);
 	mdelay(1);
 
 	nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 0, 0, 0, 1, 10);
 	mdelay(1);
-#endif
 
 	nx_mipi_dsi_software_reset(index);
 	nx_mipi_dsi_set_clock(index, 1, 0, 1, 1, 1, 1, 1, 1, 1, esc_pre_value);
@@ -169,6 +296,16 @@ static int mipi_setup(int module, int input,
 					     ctrl->clk_div_lv1 *
 					     ctrl->clk_div_lv0);
 	return 0;
+}
+
+void nx_mipi_write_header(u32 data)
+{
+	nx_mipi_dsi_write_pkheader(0, data);
+}
+
+void nx_mipi_write_payload(u32 data)
+{
+	nx_mipi_dsi_write_payload(0, data);
 }
 
 /*

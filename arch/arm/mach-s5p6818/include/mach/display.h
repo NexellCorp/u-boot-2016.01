@@ -181,10 +181,8 @@ struct dp_lvds_dev {
 };
 
 struct dp_mipi_dev {
-	unsigned int pllpms;
-	unsigned int bandctl;
-	unsigned int pllctl;
-	unsigned int phyctl;
+	int lp_bitrate;	/* to lcd setup, low power bitrate (150, 100, 80 Mhz) */
+	int hs_bitrate; /* to lcd data, high speed bitrate (1000, ... Mhz) */
 	int (*dev_init)(int width, int height, void *private_data);
 	void (*dev_exit)(int width, int height, void *private_data);
 	void *private_data;
@@ -232,6 +230,9 @@ void nx_mipi_display(int module,
 			 struct dp_plane_top *top,
 			 struct dp_plane_info *planes,
 			 struct dp_mipi_dev *dev);
+
+void nx_mipi_write_header(u32 data);
+void nx_mipi_write_payload(u32 data);
 
 /* disaply api */
 void dp_control_init(int module);

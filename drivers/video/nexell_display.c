@@ -269,16 +269,13 @@ static int nx_display_parse_dp_mipi(const void *blob, int node,
 	}
 	dp->device = dev;
 
-	dev->pllpms = fdtdec_get_int(blob, node, "pllpms", 0);
-	dev->bandctl = fdtdec_get_int(blob, node, "bandctl", 0);
-	dev->pllctl = fdtdec_get_int(blob, node, "pllctl", 0);
-	dev->phyctl = fdtdec_get_int(blob, node, "phyctl", 0);
+	dev->lp_bitrate = fdtdec_get_int(blob, node, "lp_bitrate", 0);
+	dev->hs_bitrate = fdtdec_get_int(blob, node, "hs_bitrate", 0);
 	dev->dev_init = __dp_mipi_init;
 	dev->dev_exit = __dp_mipi_exit;
 
 	debug("DP: MIPI ->\n");
-	debug("pms:0x%x, band:0x%x, ctrl pll:0x%x, phy:0x%x\n",
-	      dev->pllpms, dev->bandctl, dev->pllctl, dev->phyctl);
+	debug("lp:%dmhz, hs:%dmhz\n", dev->lp_bitrate, dev->hs_bitrate);
 
 	return 0;
 }

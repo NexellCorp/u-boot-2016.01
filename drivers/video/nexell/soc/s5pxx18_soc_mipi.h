@@ -342,6 +342,9 @@ void nx_mipi_dsi_set_escape_mode(u32 module_index, u32 stop_state_count,
 				int force_stop_state, int force_bta,
 				enum nx_mipi_dsi_lpmode cmdin_lp,
 				enum nx_mipi_dsi_lpmode txinlp);
+void nx_mipi_dsi_set_escape_lp(u32 module_index,
+				enum nx_mipi_dsi_lpmode cmdin_lp,
+				enum nx_mipi_dsi_lpmode txinlp);
 
 void nx_mipi_dsi_remote_reset_trigger(u32 module_index);
 void nx_mipi_dsi_set_ulps(u32 module_index, int ulpsclocklane,
@@ -357,8 +360,10 @@ void nx_mipi_dsi_set_phy(u32 module_index, u32 number_of_data_lanes,
 void nx_mipi_dsi_set_pll(u32 module_index, int enable,
 				u32 pllstabletimer, u32 m_pllpms, u32 m_bandctl,
 				u32 m_dphyctl, u32 b_dphyctl);
-void nx_mipi_dsi_write_packet(u32 module_index, u32 data_count32,
-				const u32 *pdata32);
+
+void nx_mipi_dsi_write_pkheader(u32 module_index, u32 data);
+void nx_mipi_dsi_write_payload(u32 module_index, u32 data);
+
 int nx_mipi_smoke_test(u32 module_index);
 int nx_mipi_initialize(void);
 u32 nx_mipi_get_number_of_module(void);

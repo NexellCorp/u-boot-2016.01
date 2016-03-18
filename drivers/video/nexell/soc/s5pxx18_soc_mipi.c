@@ -860,6 +860,20 @@ void nx_mipi_dsi_set_escape_mode(u32 module_index, u32 stop_state_count,
 	writereg(dsim_escmode, 0xFFFFFFC0, newvalue);
 }
 
+void nx_mipi_dsi_set_escape_lp(u32 module_index,
+				enum nx_mipi_dsi_lpmode cmdin_lp,
+				enum nx_mipi_dsi_lpmode txinlp)
+{
+	register struct nx_mipi_register_set *pregister;
+	register u32 regvalue;
+	u32 newvalue;
+
+	pregister = __g_pregister[module_index];
+	newvalue |= (cmdin_lp << 7);
+	newvalue |= (txinlp << 6);
+	writereg(dsim_escmode, 0xC0, newvalue);
+}
+
 void nx_mipi_dsi_remote_reset_trigger(u32 module_index)
 {
 	register struct nx_mipi_register_set *pregister;
@@ -995,16 +1009,17 @@ void nx_mipi_dsi_set_pll(u32 module_index, int enable, u32 pllstabletimer,
 	}
 }
 
-void nx_mipi_dsi_write_packet(u32 module_index, u32 data_count32,
-			      const u32 *pdata32)
+void nx_mipi_dsi_write_pkheader(u32 module_index, u32 data)
 {
 	register struct nx_mipi_register_set *pregister;
-	int i;
 
 	pregister = __g_pregister[module_index];
+	writel(data, &pregister->dsim_pkthdr);
+}
 
-	for (i = 0; i < data_count32; i++)
-		writel(*pdata32++, &pregister->dsim_payload);
+void nx_mipi_dsi_write_payload(u32 module_index, u32 data)
+{
+	register struct nx_mipi_register_set *pregister;
 
-	writel(0x29 | (data_count32 << (2 + 8)), &pregister->dsim_pkthdr);
+	writel(data, &pregister->dsim_payload);
 }
