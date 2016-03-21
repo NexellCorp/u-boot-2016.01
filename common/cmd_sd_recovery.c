@@ -85,10 +85,10 @@ static int sdcard_mmc_check_part_table(block_dev_desc_t *desc,
 	int i = 0, num = 0;
 	int ret = 1;
 
-	if (0 > get_part_table(desc, parts, &num))
+	if (get_part_table(desc, parts, &num) < 0)
 		return -1;
 
-	for (i = 0; num > i; i++) {
+	for (i = 0; i < num; i++) {
 		if (parts[i][0] == fpart->start &&
 		    parts[i][1] == fpart->length)
 			return 0;
@@ -133,14 +133,14 @@ static inline int update_sdcard_parse_string(const char *s,
 	int l, a = 0;
 
 	do {
-		while (0x20 == *s || 0x09 == *s || 0x0a == *s)
+		while (' ' == *s || '\t' == *s || '\n' == *s)
 			s++;
 	} while (0);
 
-	if (0x20 == *(e-1) || 0x09 == *(e-1))
+	if (' ' == *(e-1) || '\t' == *(e-1))
 		do {
 			e--;
-			while (0x20 == *e || 0x09 == *e)
+			while (' ' == *e || '\t' == *e)
 				e--;
 			a = 1;
 		} while (0);
@@ -162,7 +162,7 @@ static inline void update_sdcard_sort_string(char *p, int len)
 {
 	int i, j;
 	for (i = 0, j = 0; len > i; i++) {
-		if (0x20 != p[i] && 0x09 != p[i] && 0x0A != p[i])
+		if (' ' != p[i] && '\t' != p[i] && '\n' != p[i])
 			p[j++] = p[i];
 	}
 	p[j] = 0;
@@ -350,28 +350,198 @@ int update_sd_do_load(cmd_tbl_t *cmdtp, int flag, int argc,
 	return len_read;
 }
 
+static int make_mmc_partition(struct update_sdcard_part *fp)
+{
+	struct update_sdcard_part *fp_1 = fp;
+	int j, cnt = 0;
+	uint64_t part_start[DEV_PART_MAX];
+	uint64_t part_length[DEV_PART_MAX];
+	char args[1024];
+	int i = 0, l = 0, p = 0;
+	char *partition_name = fp->partition_name;
+	int dev = fp->dev_no;
+
+	printf("Warn : [%s]", partition_name);
+	printf("make new partitions ....\n");
+
+	for (j = i; j < DEV_PART_MAX; j++,
+	     fp_1++) {
+		if (!strcmp(fp_1->device, ""))
+			break;
+		part_start[cnt] = fp_1->start;
+		part_length[cnt] = fp_1->length;
+		cnt++;
+	}
+
+	l = sprintf(args, "fdisk %d %d:", dev, cnt);
+	p = l;
+
+	for (j = 0; j < cnt; j++) {
+		l = sprintf(&args[p], " 0x%llx:0x%llx", part_start[j],
+			    part_length[j]);
+		p += l;
+	}
+
+	if (p >= sizeof(args)) {
+		printf("cmd stack overflow : ");
+		printf("stack %ld, cmd %d **\n",
+		       sizeof(args), p);
+		while (1)
+			;
+	}
+
+	args[p] = 0;
+	printf("%s\n", args);
+
+	if (0 > run_command(args, 0)) {
+		printf("Make partion fail\n");
+		return -1;
+	}
+	return 0;
+}
+
+static int update_sd_img_wirte(struct update_sdcard_part *fp,
+			       unsigned long addr, loff_t len)
+{
+	block_dev_desc_t *desc;
+	char cmd[128];
+	int l = 0, p = 0;
+	int ret = 0;
+	char *device = fp->device;
+	char *partition_name = fp->partition_name;
+	char *file_name = fp->file_name;
+	uint64_t start = fp->start;
+	uint64_t length = fp->length;
+	int dev = fp->dev_no;
+	unsigned int fs_type = fp->fs_type;
+	int part_num = fp->part_num;
+
+	length = len;
+
+	memset(cmd, 0x0, sizeof(cmd));
+
+	if (!strcmp(device, "mmc")) {
+		sprintf(cmd, "mmc dev %d", dev);
+		printf("** mmc.%d partition %s (%s)**\n",
+		       dev, partition_name,
+		       fs_type&UPDATE_SDCARD_FS_EXT4 ? "FS" : "Image");
+
+		/* set mmc devicee */
+		if (0 > get_device("mmc", simple_itoa(dev), &desc)) {
+			if (0 > run_command(cmd, 0)) {
+				printf("MMC get device err\n");
+				return -1;
+			}
+
+			if (0 > run_command("mmc rescan", 0)) {
+				printf("MMC get device err\n");
+				return -1;
+			}
+		}
+
+		if (0 > run_command(cmd, 0)) {
+			printf("MMC set device err\n");
+			return -1;
+		}
+
+		if (0 > get_device("mmc", simple_itoa(dev), &desc)) {
+			printf("MMC get device err\n");
+			return -1;
+		}
+
+		memset(cmd, 0x0, sizeof(cmd));
+
+		if (fs_type == UPDATE_SDCARD_FS_2NDBOOT ||
+		    fs_type == UPDATE_SDCARD_FS_BOOT) {
+			p = sprintf(cmd, "mmc write ");
+			l = sprintf(&cmd[p], "0x%x 0x%llx 0x%llx",
+				    (unsigned int)addr,
+				    start / 512,
+				    length / 512);
+			p += l;
+			cmd[p] = 0;
+		} else if (fs_type & UPDATE_SDCARD_FS_MASK) {
+			if (sdcard_mmc_check_part_table(desc, fp) > 0) {
+				if (make_mmc_partition(fp))
+					return -1;
+			}
+			p = sprintf(cmd, "ext4_img_write %d %x %d %x",
+				    dev, (unsigned int)addr, part_num,
+				    (unsigned int)length);
+		}
+
+		ret = run_command(cmd, 0);
+		if (ret < 0)
+			printf("Flash : %s - %s\n", file_name, "FAIL");
+		else
+			printf("Flash : %s - %s\n", file_name, "DONE");
+	}
+	return ret;
+}
+
+static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr)
+{
+	unsigned long time;
+	int i = 0;
+	int len_read = 0;
+	loff_t len;
+	int ret = 0;
+
+	for (i = 0; i < DEV_PART_MAX; i++, fp++) {
+		if (!strcmp(fp->device, ""))
+			break;
+
+		if (!strcmp(fp->file_name, "dummy"))
+			continue;
+
+		if (fs_set_blk_dev("mmc", "0:1",
+				   FS_TYPE_FAT)) {
+			printf("Block device set err!\n");
+			return -1;
+		}
+
+		time = get_timer(0);
+		len_read = fs_read(fp->file_name, addr, 0, 0, &len);
+		time = get_timer(time);
+
+		printf("%lld bytes read in %lu ms", len, time);
+		if (time > 0) {
+			puts(" (");
+			print_size(len / time * 1000, "/s");
+			puts(")");
+		}
+		puts("\n");
+
+		debug("%s.%d : %s : %s : 0x%llx, 0x%llx : %s\n", fp->device,
+		      fp->dev_no, fp->partition_name,
+		      UPDATE_SDCARD_FS_MASK&fp->fs_type ? "fs" : "img",
+		      fp->start, fp->length, fp->file_name);
+
+		if (len <= 0 || len_read < 0)
+			continue;
+
+		ret = update_sd_img_wirte(fp, addr, len);
+	}
+	return ret;
+}
+
 static int do_update_sdcard(cmd_tbl_t *cmdtp, int flag, int argc,
 			    char * const argv[])
 {
 	char *p;
 	unsigned long addr;
-	unsigned long time;
-	int i = 0;
-	int res = 0;
+	int ret = 0;
 	int len_read = 0;
 	int err = 0;
-	loff_t len;
 
 	if (argc != 5) {
 		printf("fail parse Args! ");
-		goto ret_error;
+		return -1;
 	}
 
 	memset(f_sdcard_part, 0x0, sizeof(f_sdcard_part));
 
 	len_read = update_sd_do_load(cmdtp, flag, argc, argv, FS_TYPE_FAT, 16);
-	printf(" len : %d ", len_read);
-
 	if (len_read <= 0) {
 		printf(" read Partmap file error!\n");
 		return -1;
@@ -393,168 +563,21 @@ static int do_update_sdcard(cmd_tbl_t *cmdtp, int flag, int argc,
 	update_sdcard_part_lists_print();
 	printf("\n");
 
-	for (i = 0; i < DEV_PART_MAX; i++, fp++) {
-		if (!strcmp(fp->device, ""))
-			break;
+	ret = sdcard_update(fp, addr);
 
-		if (!strcmp(fp->file_name, "dummy"))
-			continue;
+	if (ret < 0)
+		printf("Recovery fail\n");
+	else
+		printf("sd recovery end\n\n");
 
-		if (fs_set_blk_dev(argv[1], (argc >= 3) ? argv[2] : NULL,
-				   FS_TYPE_FAT)) {
-			printf("Block device set err!\n");
-			goto ret_error;
-		}
-
-		time = get_timer(0);
-		len_read = fs_read(fp->file_name, addr, 0, 0, &len);
-		time = get_timer(time);
-
-		printf("%lld bytes read in %lu ms", len, time);
-		if (time > 0) {
-			puts(" (");
-			print_size(len / time * 1000, "/s");
-			puts(")");
-		}
-		puts("\n");
-
-		debug("%s.%d : %s : %s : 0x%llx, 0x%llx : %s\n", fp->device,
-		      fp->dev_no, fp->partition_name,
-		      UPDATE_SDCARD_FS_MASK&fp->fs_type ? "fs" : "img",
-		      fp->start, fp->length, fp->file_name);
-
-		if (len <= 0)
-			continue;
-
-		block_dev_desc_t *desc;
-		char cmd[128];
-		int i = 0, l = 0, p = 0;
-		char *device = fp->device;
-		char *partition_name = fp->partition_name;
-		char *file_name = fp->file_name;
-		uint64_t start = fp->start;
-		uint64_t length = fp->length;
-		int dev = fp->dev_no;
-		unsigned int fs_type = fp->fs_type;
-		int part_num = fp->part_num;
-
-		length = len;
-
-		memset(cmd, 0x0, sizeof(cmd));
-
-		if (!strcmp(device, "mmc")) {
-			sprintf(cmd, "mmc dev %d", dev);
-			printf("** mmc.%d partition %s (%s)**\n",
-			       dev, partition_name,
-			       fs_type&UPDATE_SDCARD_FS_EXT4 ? "FS" : "Image");
-
-			/* set mmc devicee */
-			if (0 > get_device("mmc", simple_itoa(dev), &desc)) {
-				if (0 > run_command(cmd, 0)) {
-					printf("MMC get device err\n");
-					goto ret_error;
-				}
-
-				if (0 > run_command("mmc rescan", 0)) {
-					printf("MMC get device err\n");
-					goto ret_error;
-				}
-			}
-
-			if (0 > run_command(cmd, 0)) {
-				printf("MMC set device err\n");
-				goto ret_error;
-			}
-
-			if (0 > get_device("mmc", simple_itoa(dev), &desc)) {
-				printf("MMC get device err\n");
-				goto ret_error;
-			}
-
-			memset(cmd, 0x0, sizeof(cmd));
-
-			if (fs_type == UPDATE_SDCARD_FS_2NDBOOT ||
-			    fs_type == UPDATE_SDCARD_FS_BOOT) {
-				p = sprintf(cmd, "mmc write ");
-				l = sprintf(&cmd[p], "0x%x 0x%llx 0x%llx",
-					    (unsigned int)addr,
-					    start / 512 ,
-					    length / 512);
-				p += l;
-				cmd[p] = 0;
-
-			} else if (fs_type & UPDATE_SDCARD_FS_MASK) {
-				if (sdcard_mmc_check_part_table(desc, fp) > 0) {
-					struct update_sdcard_part *fp_1 = fp;
-					int j, cnt = 0;
-					uint64_t part_start[DEV_PART_MAX];
-					uint64_t part_length[DEV_PART_MAX];
-					char args[1024];
-
-					printf("Warn : [%s]", partition_name);
-					printf("make new partitions ....\n");
-
-					for (j = i; j < DEV_PART_MAX; j++,
-					     fp_1++) {
-						if (!strcmp(fp_1->device, ""))
-							break;
-						part_start[cnt] = fp_1->start;
-						part_length[cnt] = fp_1->length;
-						cnt++;
-					}
-
-					l = sprintf(args, "fdisk %d %d:",
-								dev, cnt);
-					p = l;
-
-					for (j = 0; j < cnt; j++) {
-						l = sprintf(&args[p],
-							    " 0x%llx:0x%llx",
-							    part_start[j],
-							    part_length[j]);
-						p += l;
-					}
-
-					if (p >= sizeof(args)) {
-						printf("cmd stack overflow : ");
-						printf("stack %ld, cmd %d **\n",
-						       sizeof(args), p);
-						while (1)
-							;
-					}
-
-					args[p] = 0;
-					printf("%s\n", args);
-
-					if (0 > run_command(args, 0))
-						printf("fdisk : %s\n", "FAIL");
-					else
-						printf("fdisk : %s\n", "DONE");
-				}
-
-				p = sprintf(cmd, "ext4_img_write %d %x %d %x",
-					    dev, (unsigned int)addr, part_num,
-					    (unsigned int)length);
-			}
-
-			if (0 > run_command(cmd, 0))
-				printf("Flash : %s - %s\n", file_name, "FAIL");
-			else
-				printf("Flash : %s - %s\n", file_name, "DONE");
-		}
-	}
-	printf("sd recovery end\n\n");
-	return res;
-
-ret_error:
-	return -1;
+	return ret;
 }
 
 U_BOOT_CMD(
 	sd_recovery,	5,	1,	do_update_sdcard,
-	"sd_recovery - Image Update from SDCard\n",
-	"sd_recovery <interface> [<dev[:part]>] <addr> <filename>\n"
-	"  ex> update_sdcard mmc 0:1 48000000 partmap.txt\n"
+	"Image Update from SD Card\n",
+	"<interface> [<dev[:part]>] <addr> <filename>\n"
+	"  ex> sd_recovery mmc 0:1 48000000 partmap.txt\n"
 	"    - interface : mmc\n"
 	"    - dev       : mmc channel\n"
 	"    - part      : partition number\n"
