@@ -34,6 +34,11 @@
 		index = <2>;
 		status = "okay";
 	};
+
+	gmac:ethernet@c0060000 {
+		mac-address = [000000000000]; /* Filled in by U-Boot */
+		status = "okay";
+	};
 };
 
 &i2c2 {
