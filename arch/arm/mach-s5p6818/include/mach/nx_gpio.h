@@ -95,5 +95,9 @@ void nx_gpio_set_drive_strength_disable_default(u32 module_index,
 						u32 bit_number, int enable);
 void nx_gpio_set_drive_strength_disable_default(u32 module_index,
 						u32 bit_number, int enable);
+void nx_gpio_set_drive_strength(u32 module_index, u32 bit_number,
+				u32 drvstrength);
+void nx_gpio_set_drive_strength_disable_default(u32 module_index,
+						u32 bit_number, int enable);
 u32 nx_gpio_get_drive_strength(u32 module_index, u32 bit_number);
 #endif
