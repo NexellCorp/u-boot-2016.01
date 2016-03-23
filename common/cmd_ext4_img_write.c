@@ -211,7 +211,7 @@ int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
 
 	flush_dcache_all();
 
-	uint64_t parts[4][2] = { {0, 0}, };
+	uint64_t parts[8][2] = { {0, 0}, };
 	uint64_t part_len = 0;
 	int partno = (int)dst_addr;
 	int num = 0;
@@ -228,9 +228,7 @@ int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
 	dst_addr = parts[partno-1][0];
 	part_len = parts[partno-1][1];
 	blk = (dst_addr/MMC_BLOCK_SIZE);
-
 	if (0 == check_compress_ext4((char *)p, part_len)) {
-		printf("writee mmc.%d compressed ext4 =", dev);
 		printf("0x%llx(%d) ~ 0x%llx(%d):\n", dst_addr,
 		       (unsigned int)blk, mem_len,
 		       (unsigned int)cnt);
