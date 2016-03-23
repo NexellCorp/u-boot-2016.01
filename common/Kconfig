@@ -148,6 +148,12 @@ config CMD_BOOTM
 	help
 	  Boot an application image from the memory.
 
+config CMD_BOOTI
+	bool "booti"
+	default y if ARM64
+	help
+	  Boot an arm64 linux kernel image from the memory.
+
 config CMD_ELF
 	bool "bootelf, bootvx"
 	default y
