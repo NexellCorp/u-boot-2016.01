@@ -23,6 +23,50 @@ DECLARE_GLOBAL_DATA_PTR;
  * intialize nexell soc and board status.
  */
 
+static void nx_phy_init(void)
+{
+	/* Set interrupt config */
+	nx_gpio_set_pad_function(0, 9, 0);
+	nx_gpio_set_output_enable(0, 9, 1);
+	nx_gpio_set_pad_function(0, 10, 0);	/* GPIO */
+
+	/* PHY reset */
+	nx_gpio_set_output_value(0, 10, 1);
+	nx_gpio_set_output_enable(0, 10, 1);
+
+	/* ALT FUNCTION - GMAC */
+	nx_gpio_set_pad_function(4, 7, 1);
+	nx_gpio_set_pad_function(4, 8, 1);
+	nx_gpio_set_pad_function(4, 9, 1);
+	nx_gpio_set_pad_function(4, 10, 1);
+	nx_gpio_set_pad_function(4, 11, 1);
+	nx_gpio_set_pad_function(4, 14, 1);
+	nx_gpio_set_pad_function(4, 15, 1);
+	nx_gpio_set_pad_function(4, 16, 1);
+	nx_gpio_set_pad_function(4, 17, 1);
+	nx_gpio_set_pad_function(4, 18, 1);
+	nx_gpio_set_pad_function(4, 19, 1);
+	nx_gpio_set_pad_function(4, 20, 1);
+	nx_gpio_set_pad_function(4, 21, 1);
+	nx_gpio_set_pad_function(4, 24, 1);
+
+	/* PAD STRENGTH */
+	nx_gpio_set_drive_strength(4, 7, 3);
+	nx_gpio_set_drive_strength(4, 8, 3);
+	nx_gpio_set_drive_strength(4, 9, 3);
+	nx_gpio_set_drive_strength(4, 10, 3);
+	nx_gpio_set_drive_strength(4, 11, 3);
+	nx_gpio_set_drive_strength(4, 14, 3);
+	nx_gpio_set_drive_strength(4, 15, 3);
+	nx_gpio_set_drive_strength(4, 16, 3);
+	nx_gpio_set_drive_strength(4, 17, 3);
+	nx_gpio_set_drive_strength(4, 18, 0);	/* RX clk */
+	nx_gpio_set_drive_strength(4, 19, 3);
+	nx_gpio_set_drive_strength(4, 20, 3);
+	nx_gpio_set_drive_strength(4, 21, 3);
+	nx_gpio_set_drive_strength(4, 24, 3);	/* TX clk */
+}
+
 /* call from u-boot */
 int board_early_init_f(void)
 {
@@ -42,6 +86,9 @@ void board_gpio_init(void)
 int board_init(void)
 {
 	board_gpio_init();
+
+	nx_phy_init();
+
 	return 0;
 }
 

@@ -18,6 +18,14 @@
 #include <linux/compiler.h>
 #include <linux/err.h>
 #include <asm/io.h>
+#if defined(CONFIG_ARCH_S5P6818)
+#include <asm/arch/s5p6818.h>
+#include <asm/arch/clk.h>
+#include <asm/arch/nx_gpio.h>
+#include <asm/arch/reset.h>
+#include <fdtdec.h>
+#include <libfdt.h>
+#endif /* CONFIG_ARCH_S5P6818 */
 #include "designware.h"
 
 #define ptr_to_int32(x)		((uint32_t)((uintptr_t)(x) & 0xFFFFFFFF))
@@ -517,6 +525,31 @@ int designware_initialize(ulong base_addr, u32 interface)
 #endif
 
 #ifdef CONFIG_DM_ETH
+#if defined(CONFIG_ARCH_S5P6818)
+static int nexell_gmac_initialize(void)
+{
+	struct clk *clk;
+	unsigned int rate;
+
+	/* Clock control */
+	clk = clk_get("nx-gmac.0");
+	if (!clk)
+		return 0;
+
+	clk_disable(clk);
+	rate = clk_set_rate(clk, 125000000);
+	clk_enable(clk);
+
+	debug("rate: %u\n", rate);
+
+	/* Reset control */
+	nx_rstcon_setrst(RESET_ID_DWC_GMAC, 0);
+	nx_rstcon_setrst(RESET_ID_DWC_GMAC, 1);
+
+	return 0;
+}
+#endif /* CONFIG_ARCH_S5P6818 */
+
 static int designware_eth_start(struct udevice *dev)
 {
 	struct eth_pdata *pdata = dev_get_platdata(dev);
@@ -583,6 +616,13 @@ static int designware_eth_probe(struct udevice *dev)
 	struct dw_eth_dev *priv = dev_get_priv(dev);
 	u32 iobase = pdata->iobase;
 	int ret;
+
+#if defined(CONFIG_ARCH_S5P6818)
+	if (fdt_node_check_compatible(gd->fdt_blob, dev->of_offset,
+			"nexell,nexell-gmac") == 0)
+		nexell_gmac_initialize();
+#endif /* CONFIG_ARCH_S5P6818 */
+
 
 #ifdef CONFIG_DM_PCI
 	/*
@@ -656,6 +696,7 @@ static int designware_eth_ofdata_to_platdata(struct udevice *dev)
 static const struct udevice_id designware_eth_ids[] = {
 	{ .compatible = "allwinner,sun7i-a20-gmac" },
 	{ .compatible = "altr,socfpga-stmmac" },
+	{ .compatible = "nexell,nexell-gmac" },
 	{ }
 };
 
