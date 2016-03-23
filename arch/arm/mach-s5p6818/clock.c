@@ -23,6 +23,8 @@
 #define	I_EXT1_BIT		(4)
 #define	I_EXT2_BIT		(5)
 #define	I_CLKn_BIT		(7)
+#define	I_EXT1_BIT_FORCE	(8)
+#define	I_EXT2_BIT_FORCE	(9)
 
 #define	I_CLOCK_NUM		6 /* PLL0, PLL1, PLL2, PLL3, EXT1, EXT2 */
 
@@ -35,6 +37,8 @@
 #define	I_PLL3			(1 << I_PLL3_BIT)
 #define	I_EXTCLK1		(1 << I_EXT1_BIT)
 #define	I_EXTCLK2		(1 << I_EXT2_BIT)
+#define	I_EXTCLK1_FORCE		(1 << I_EXT1_BIT_FORCE)
+#define	I_EXTCLK2_FORCE		(1 << I_EXT2_BIT_FORCE)
 
 #define	I_PLL_0_1		(I_PLL0    | I_PLL1)
 #define	I_PLL_0_2		(I_PLL_0_1 | I_PLL2)
@@ -127,6 +131,9 @@ static struct clk_dev_peri clk_periphs[] = {
 		    PHY_BASEADDR_CLKGEN7 , (I_GATE_PCLK)),
 	CLK_PERI_1S(DEV_NAME_I2C,	2,	CLK_ID_I2C_2,
 		    PHY_BASEADDR_CLKGEN8 , (I_GATE_PCLK)),
+	CLK_PERI_2S(DEV_NAME_GMAC,	0,	CLK_ID_GMAC,
+		    PHY_BASEADDR_CLKGEN10, (I_PLL_0_3|I_EXTCLK1|I_EXTCLK1_FORCE)
+		    , (I_CLKnOUT)),
 	CLK_PERI_2S(DEV_NAME_I2S,	0,	CLK_ID_I2S_0,
 		    PHY_BASEADDR_CLKGEN15, (I_PLL_0_3|I_EXTCLK1),
 		    (I_CLKnOUT)),
@@ -586,6 +593,7 @@ long clk_round_rate(struct clk *clk, unsigned long rate)
 	unsigned int mask;
 	int step, div[2] = { 0, };
 	int i, n, clk2 = 0;
+	int start_src = 0, max_src = I_CLOCK_NUM;
 	short s1 = 0, s2 = 0, d1 = 0, d2 = 0;
 
 	if (NULL == peri)
@@ -606,7 +614,10 @@ long clk_round_rate(struct clk *clk, unsigned long rate)
 	}
 
 next:
-	for (n = 0; I_CLOCK_NUM > n; n++) {
+	if (peri->in_mask &  I_EXTCLK1_FORCE) {
+		start_src = 4; max_src = 5;
+	}
+	for (n = start_src ; max_src > n; n++) {
 		if (!(((mask & I_CLOCK_MASK) >> n) & 0x1))
 			continue;
 
@@ -649,6 +660,12 @@ next:
 		mask = peri->in_mask1;
 		step = 1;
 		goto next;
+	}
+	if (peri->in_mask &  I_EXTCLK1_FORCE) {
+		if (s1 == 0) {
+			s1 = 4; s2 = 7;
+			d1 = 1; d2 = 1;
+		}
 	}
 
 	peri->div_src_0 = s1, peri->div_val_0 = d1;
@@ -740,6 +757,7 @@ int clk_enable(struct clk *clk)
 	for (i = 0; peri->clk_step > i ; i++)	{
 		int s = (0 == i ? peri->div_src_0 : peri->div_src_1);
 		int d = (0 == i ? peri->div_val_0 : peri->div_val_1);
+
 		if (-1 == s)
 			continue;
 		clk_dev_rate(peri->base, i, s, d);
@@ -824,9 +842,6 @@ void __init nx_clk_init(void)
 			if (!strcmp(peri->dev_name, DEV_NAME_PWM))
 				continue;
 			#endif
-			clk_dev_enb(peri->base, 0);
-			clk_dev_bclk(peri->base, 0);
-			clk_dev_pclk(peri->base, 0);
 		}
 		#endif
 	}
