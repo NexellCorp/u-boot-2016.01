@@ -159,19 +159,6 @@
 #define	CONFIG_SYS_NO_FLASH
 
 /*-----------------------------------------------------------------------
- * Default environment organization
- */
-#if !defined(CONFIG_ENV_IS_IN_MMC) && !defined(CONFIG_ENV_IS_IN_NAND) && \
-	!defined(CONFIG_ENV_IS_IN_FLASH) && !defined(CONFIG_ENV_IS_IN_EEPROM)
-	/* default: CONFIG_ENV_IS_NOWHERE */
-	#define CONFIG_ENV_IS_NOWHERE
-	#define	CONFIG_ENV_OFFSET		1024
-	#define CONFIG_ENV_SIZE			4*1024		/* env size */
-	/* imls - list all images found in flash, default enable so disable */
-	#undef	CONFIG_CMD_IMLS
-#endif
-
-/*-----------------------------------------------------------------------
  * PLL
  */
 
@@ -193,6 +180,44 @@
 #define CONFIG_NEXELL_DWMMC
 #define CONFIG_BOUNCE_BUFFER
 #define CONFIG_CMD_MMC
+
+#if defined(CONFIG_MMC)
+#define CONFIG_2NDBOOT_OFFSET		512
+#define CONFIG_2NDBOOT_SIZE		(64*1024)
+#define CONFIG_FIP_OFFSET		(CONFIG_2NDBOOT_OFFSET +\
+					 CONFIG_2NDBOOT_SIZE)
+#define CONFIG_FIP_SIZE			(3*1024*1024)
+#define CONFIG_ENV_IS_IN_MMC
+#define CONFIG_SYS_MMC_ENV_DEV		1
+#define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
+					 CONFIG_FIP_SIZE)
+#define CONFIG_ENV_SIZE			(4*1024)	/* env size */
+#endif
+
+#if defined(CONFIG_MMC)
+#define CONFIG_DOS_PARTITION
+#define CONFIG_CMD_FAT
+#define CONFIG_FS_FAT
+#define CONFIG_FAT_WRITE
+
+#define CONFIG_CMD_EXT4
+#define CONFIG_CMD_EXT4_WRITE
+#define CONFIG_FS_EXT4
+#define CONFIG_EXT4_WRITE
+#endif
+
+/*-----------------------------------------------------------------------
+ * Default environment organization
+ */
+#if !defined(CONFIG_ENV_IS_IN_MMC) && !defined(CONFIG_ENV_IS_IN_NAND) && \
+	!defined(CONFIG_ENV_IS_IN_FLASH) && !defined(CONFIG_ENV_IS_IN_EEPROM)
+	/* default: CONFIG_ENV_IS_NOWHERE */
+	#define CONFIG_ENV_IS_NOWHERE
+	#define	CONFIG_ENV_OFFSET		1024
+	#define CONFIG_ENV_SIZE			4*1024		/* env size */
+	/* imls - list all images found in flash, default enable so disable */
+	#undef	CONFIG_CMD_IMLS
+#endif
 
 /*-----------------------------------------------------------------------
  * Nexell USB Downloader
