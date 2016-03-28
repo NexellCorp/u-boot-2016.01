@@ -67,6 +67,16 @@ static void nx_phy_init(void)
 	nx_gpio_set_drive_strength(4, 24, 3);	/* TX clk */
 }
 
+#ifdef CONFIG_USB_EHCI_EXYNOS
+void board_ehci_power_en(void)
+{
+	/* ehci host power */
+	nx_gpio_set_pad_function(0, 16, 0);     /* GPIO */
+	nx_gpio_set_output_value(0, 16, 1);
+	nx_gpio_set_output_enable(0, 16, 1);
+}
+#endif
+
 /* call from u-boot */
 int board_early_init_f(void)
 {
@@ -88,7 +98,9 @@ int board_init(void)
 	board_gpio_init();
 
 	nx_phy_init();
-
+#ifdef CONFIG_USB_EHCI_EXYNOS
+	board_ehci_power_en();
+#endif
 	return 0;
 }
 
