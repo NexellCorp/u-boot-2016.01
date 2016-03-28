@@ -81,6 +81,13 @@ config USB_EHCI_UNIPHIER
 	---help---
 	  Enables support for the on-chip EHCI controller on UniPhier SoCs.
 
+config USB_EHCI_EXYNOS
+	bool "Support for exynos on-chip EHCI USB controller"
+	depends on ARCH_EXYNOS || ARCH_S5P6818
+	default y
+	---help---
+	  Enables support for the on-chip EHCI controller on exynos SoCs.
+
 config USB_EHCI_GENERIC
 	bool "Support for generic EHCI USB controller"
 	depends on OF_CONTROL
