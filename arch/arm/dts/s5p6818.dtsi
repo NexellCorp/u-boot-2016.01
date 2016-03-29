@@ -14,13 +14,13 @@
 		gmac = "/ethernet@c0060000";
 	};
 
-	mmc0:mmc@c0062000 {
+	mmc2:mmc@c0069000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		compatible = "nexell,nexell-dwmmc";
-		reg = <0xc0062000 0x1000>;
-		nexell,bus-width = <4>;
-		index = <0>;
+		reg = <0xc0069000 0x1000>;
+		nexell,bus-width = <8>;
+		index = <2>;
 		status = "disabled";
 	};
 
@@ -34,13 +34,13 @@
 		status = "disabled";
 	};
 
-	mmc2:mmc@c0069000 {
+	mmc0:mmc@c0062000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		compatible = "nexell,nexell-dwmmc";
-		reg = <0xc0069000 0x1000>;
-		nexell,bus-width = <8>;
-		index = <2>;
+		reg = <0xc0062000 0x1000>;
+		nexell,bus-width = <4>;
+		index = <0>;
 		status = "disabled";
 	};
 
@@ -52,28 +52,28 @@
 	};
 
 	i2c0:i2c@c00a4000 {
-                compatible = "nexell,s5pxx18-i2c";
-                reg = <0xC00A4000 0x1000>;
-                #address-cells = <1>;
-                #size-cells = <0>;
+		compatible = "nexell,s5pxx18-i2c";
+		reg = <0xC00A4000 0x1000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 		status = "disabled";
-        };
+	};
 
 	i2c1:i2c@c00a5000 {
-                compatible = "nexell,s5pxx18-i2c";
-                reg = <0xC00A5000 0x1000>;
-                #address-cells = <1>;
-                #size-cells = <0>;
+		compatible = "nexell,s5pxx18-i2c";
+		reg = <0xC00A5000 0x1000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 		status = "disabled";
-        };
+	};
 
 	i2c2:i2c@c00a6000 {
-                compatible = "nexell,s5pxx18-i2c";
-                reg = <0xC00A6000 0x1000>;
-                #address-cells = <1>;
-                #size-cells = <0>;
+		compatible = "nexell,s5pxx18-i2c";
+		reg = <0xC00A6000 0x1000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 		status = "disabled";
-        };
+	};
 
 	dp0:dp@c0102800 {
 		#address-cells = <1>;
