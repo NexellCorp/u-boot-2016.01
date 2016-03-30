@@ -866,7 +866,7 @@ void nx_mipi_dsi_set_escape_lp(u32 module_index,
 {
 	register struct nx_mipi_register_set *pregister;
 	register u32 regvalue;
-	u32 newvalue;
+	u32 newvalue = 0;
 
 	pregister = __g_pregister[module_index];
 	newvalue |= (cmdin_lp << 7);
@@ -1021,5 +1021,6 @@ void nx_mipi_dsi_write_payload(u32 module_index, u32 data)
 {
 	register struct nx_mipi_register_set *pregister;
 
+	pregister = __g_pregister[module_index];
 	writel(data, &pregister->dsim_payload);
 }
