@@ -479,7 +479,8 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 	return ret;
 }
 
-static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr)
+static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
+			 char *dev)
 {
 	unsigned long time;
 	int i = 0;
@@ -494,7 +495,7 @@ static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr)
 		if (!strcmp(fp->file_name, "dummy"))
 			continue;
 
-		if (fs_set_blk_dev("mmc", "0:1",
+		if (fs_set_blk_dev("mmc", dev,
 				   FS_TYPE_FAT)) {
 			printf("Block device set err!\n");
 			return -1;
@@ -563,7 +564,7 @@ static int do_update_sdcard(cmd_tbl_t *cmdtp, int flag, int argc,
 	update_sdcard_part_lists_print();
 	printf("\n");
 
-	ret = sdcard_update(fp, addr);
+	ret = sdcard_update(fp, addr, argv[2]);
 
 	if (ret < 0)
 		printf("Recovery fail\n");
