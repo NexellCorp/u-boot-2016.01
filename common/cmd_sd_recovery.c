@@ -36,6 +36,7 @@
 #define	UPDATE_SDCARD_FS_UBI		(1<<6)	/*  name "ubi" */
 #define	UPDATE_SDCARD_FS_UBIFS		(1<<7)	/*  name "ubifs" */
 #define	UPDATE_SDCARD_FS_RAW_PART	(1<<8)	/*  name "emmc" */
+#define UPDATE_SDCARD_FS_ENV		(1<<9)	/*  nmae "env" */
 
 #define	UPDATE_SDCARD_FS_MASK		(UPDATE_SDCARD_FS_RAW |\
 					 UPDATE_SDCARD_FS_FAT |\
@@ -54,13 +55,14 @@ struct update_sdcard_fs_type {
 /* support fs type */
 static struct update_sdcard_fs_type f_part_fs[] = {
 	{ "2nd"		, UPDATE_SDCARD_FS_2NDBOOT	},
-	{ "boot"	, UPDATE_SDCARD_FS_BOOT	},
+	{ "boot"	, UPDATE_SDCARD_FS_BOOT		},
 	{ "raw"		, UPDATE_SDCARD_FS_RAW		},
 	{ "fat"		, UPDATE_SDCARD_FS_FAT		},
 	{ "ext4"	, UPDATE_SDCARD_FS_EXT4		},
 	{ "emmc"	, UPDATE_SDCARD_FS_RAW_PART	},
 	{ "ubi"		, UPDATE_SDCARD_FS_UBI		},
-	{ "ubifs"	, UPDATE_SDCARD_FS_UBIFS		},
+	{ "ubifs"	, UPDATE_SDCARD_FS_UBIFS	},
+	{ "env"		, UPDATE_SDCARD_FS_ENV		},
 };
 
 struct update_sdcard_part {
@@ -452,7 +454,8 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 		memset(cmd, 0x0, sizeof(cmd));
 
 		if (fs_type == UPDATE_SDCARD_FS_2NDBOOT ||
-		    fs_type == UPDATE_SDCARD_FS_BOOT) {
+		    fs_type == UPDATE_SDCARD_FS_BOOT ||
+		    fs_type == UPDATE_SDCARD_FS_ENV) {
 			p = sprintf(cmd, "mmc write ");
 			l = sprintf(&cmd[p], "0x%x 0x%llx 0x%llx",
 				    (unsigned int)addr,
