@@ -483,7 +483,7 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 }
 
 static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
-			 char *dev)
+			 char *dev, int fs_type)
 {
 	unsigned long time;
 	int i = 0;
@@ -498,8 +498,7 @@ static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
 		if (!strcmp(fp->file_name, "dummy"))
 			continue;
 
-		if (fs_set_blk_dev("mmc", dev,
-				   FS_TYPE_FAT)) {
+		if (fs_set_blk_dev("mmc", dev, fs_type)) {
 			printf("Block device set err!\n");
 			return -1;
 		}
@@ -537,6 +536,7 @@ static int do_update_sdcard(cmd_tbl_t *cmdtp, int flag, int argc,
 	int ret = 0;
 	int len_read = 0;
 	int err = 0;
+	int fs_type = FS_TYPE_FAT;
 
 	if (argc != 5) {
 		printf("fail parse Args! ");
@@ -547,8 +547,13 @@ static int do_update_sdcard(cmd_tbl_t *cmdtp, int flag, int argc,
 
 	len_read = update_sd_do_load(cmdtp, flag, argc, argv, FS_TYPE_FAT, 16);
 	if (len_read <= 0) {
-		printf(" read Partmap file error!\n");
-		return -1;
+		fs_type = FS_TYPE_EXT;
+		len_read = update_sd_do_load(cmdtp, flag,
+					     argc, argv, FS_TYPE_EXT, 16);
+		if (len_read <= 0) {
+			printf(" read Partmap file error!\n");
+			return -1;
+		}
 	}
 
 	/* partition map parse */
@@ -567,7 +572,7 @@ static int do_update_sdcard(cmd_tbl_t *cmdtp, int flag, int argc,
 	update_sdcard_part_lists_print();
 	printf("\n");
 
-	ret = sdcard_update(fp, addr, argv[2]);
+	ret = sdcard_update(fp, addr, argv[2], fs_type);
 
 	if (ret < 0)
 		printf("Recovery fail\n");
