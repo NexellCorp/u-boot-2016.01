@@ -51,7 +51,7 @@
 
 /* board_init_f */
 #define	CONFIG_SYS_SDRAM_BASE			0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x20000000
+#define	CONFIG_SYS_SDRAM_SIZE			0x78000000
 
 /* dram 1 bank num */
 #define CONFIG_NR_DRAM_BANKS			1
@@ -248,5 +248,7 @@
 #define CONFIG_PHY_GIGE
 #define CONFIG_MII
 #define CONFIG_CMD_MII
+#define CONFIG_EXTRA_ENV_SETTINGS	\
+			"fdt_high=0xffffffffffffffff"
 
 #endif /* __CONFIG_H__ */
