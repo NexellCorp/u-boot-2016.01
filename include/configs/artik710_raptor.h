@@ -178,7 +178,7 @@
 #define CONFIG_SYS_MMC_ENV_DEV		0
 #define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
 					 CONFIG_FIP_SIZE)
-#define CONFIG_ENV_SIZE			(4*1024)	/* env size */
+#define CONFIG_ENV_SIZE			(16*1024)	/* env size */
 #endif
 
 #if defined(CONFIG_MMC)
