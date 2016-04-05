@@ -8,6 +8,8 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+#include <linux/sizes.h>
+
 /*-----------------------------------------------------------------------
  *  u-boot-2016.01
  */
@@ -217,6 +219,35 @@
  */
 
 #define CONFIG_TIMER_SYS_TICK_CH		0
+
+/*-----------------------------------------------------------------------
+ * GPT
+ */
+#define CONFIG_CMD_GPT
+#define CONFIG_EFI_PARTITION
+#define CONFIG_PARTITION_UUIDS
+#define CONFIG_RANDOM_UUID
+
+/*-----------------------------------------------------------------------
+ * Fastboot and USB OTG
+ */
+
+#define CONFIG_USB_FUNCTION_FASTBOOT
+#define CONFIG_CMD_FASTBOOT
+#define CONFIG_FASTBOOT_FLASH
+#define CONFIG_FASTBOOT_FLASH_MMC_DEV   0
+#define CONFIG_FASTBOOT_BUF_SIZE        (CONFIG_SYS_SDRAM_SIZE - SZ_1M)
+#define CONFIG_FASTBOOT_BUF_ADDR        CONFIG_SYS_SDRAM_BASE
+#define CONFIG_USB_GADGET
+#define CONFIG_USB_GADGET_DUALSPEED
+#define CONFIG_USB_GADGET_VBUS_DRAW     0
+#define CONFIG_USB_GADGET_DWC2_OTG
+#define CONFIG_USB_GADGET_NX_UDC_OTG_PHY
+#define CONFIG_USB_GADGET_DOWNLOAD
+#define CONFIG_SYS_CACHELINE_SIZE       64
+#define CONFIG_G_DNL_VENDOR_NUM         0x18d1  /* google */
+#define CONFIG_G_DNL_PRODUCT_NUM        0x0002  /* nexus one */
+#define CONFIG_G_DNL_MANUFACTURER       "Nexell Corporation"
 
 /*-----------------------------------------------------------------------
  * Nexell USB Downloader
