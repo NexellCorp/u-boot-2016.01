@@ -20,6 +20,8 @@
 
 #define	PLLPMS_1000MHZ		0x33E8
 #define	BANDCTL_1000MHZ		0xF
+#define PLLPMS_960MHZ       0x2280
+#define BANDCTL_960MHZ      0xF
 #define	PLLPMS_900MHZ		0x2258
 #define	BANDCTL_900MHZ		0xE
 #define	PLLPMS_840MHZ		0x2230
@@ -118,6 +120,10 @@ static int mipi_phy_pll(int bitrate, unsigned int *pllpms,
 	case 1000:
 		pms = PLLPMS_1000MHZ;
 		ctl = BANDCTL_1000MHZ;
+		break;
+	case 960:
+		pms = PLLPMS_960MHZ;
+		ctl = BANDCTL_960MHZ;
 		break;
 	case 900:
 		pms = PLLPMS_900MHZ;
