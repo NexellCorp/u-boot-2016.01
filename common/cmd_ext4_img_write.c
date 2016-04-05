@@ -47,6 +47,9 @@ struct ext4_chunk_header {
 #define EXT4_CHUNK_TYPE_FILL		0xCAC2
 #define EXT4_CHUNK_TYPE_NONE		0xCAC3
 
+#define ALIGN_BASE CONFIG_SYS_SDRAM_BASE + CONFIG_SYS_SDRAM_SIZE - 0x6000000
+#define WRITE_SECTOR 65536					/* 32 MB */
+
 typedef int (*WRITE_RAW_CHUNK_CB)(char *data, unsigned int sector,
 				  unsigned int sector_size);
 
@@ -115,6 +118,40 @@ int check_compress_ext4(char *img_base, unsigned long long parti_size)
 int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 {
 	char run_cmd[64];
+	unsigned char *tmp_align;
+
+	if (((unsigned  int)data%8) != 0) {
+		tmp_align = (char *)ALIGN_BASE;
+		int offset = 0;
+
+		do {
+			if (sector_size > WRITE_SECTOR) {
+				memcpy((unsigned char *)tmp_align,
+				       (unsigned char *)data+offset,
+				       WRITE_SECTOR*512);
+
+				sprintf(run_cmd, "mmc write 0x%x 0x%x 0x%x",
+					(int)((ulong)tmp_align),
+					sector, WRITE_SECTOR);
+
+				sector_size -= WRITE_SECTOR;
+				sector += WRITE_SECTOR;
+			} else {
+				memcpy((unsigned char *)tmp_align,
+				       (unsigned char *)data+offset,
+				       sector_size * 512);
+				sprintf(run_cmd, "mmc write 0x%x 0x%x 0x%x",
+					(int)((ulong)tmp_align),
+					sector, sector_size);
+
+				sector_size -= sector_size;
+			}
+			run_command(run_cmd, 0);
+
+		} while (sector_size > 0);
+
+		return 0;
+	}
 	debug("write raw data in %d size %d\n", sector, sector_size);
 	sprintf(run_cmd, "mmc write 0x%x 0x%x 0x%x", (int)((ulong)data),
 		sector, sector_size);
