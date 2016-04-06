@@ -51,6 +51,7 @@
 #define	FASTBOOT_FS_2NDBOOT		(1<<0)	/*  name "boot" <- bootable */
 #define	FASTBOOT_FS_BOOT		(1<<1)	/*  name "boot" <- bootable */
 #define	FASTBOOT_FS_RAW			(1<<2)	/*  name "raw" */
+#define	FASTBOOT_FS_ENV			(1<<3)	/*  name "env" */
 #define	FASTBOOT_FS_FAT			(1<<4)	/*  name "fat" */
 #define	FASTBOOT_FS_EXT4		(1<<5)	/*  name "ext4" */
 #define	FASTBOOT_FS_UBI			(1<<6)	/*  name "ubi" */
@@ -121,6 +122,7 @@ struct fastboot_fs_type {
 static struct fastboot_fs_type f_part_fs[] = {
 	{ "2nd"			, FASTBOOT_FS_2NDBOOT	},
 	{ "boot"		, FASTBOOT_FS_BOOT	},
+	{ "env"			, FASTBOOT_FS_ENV	},
 	{ "factory"		, FASTBOOT_FS_FACTORY	},
 	{ "raw"			, FASTBOOT_FS_RAW	},
 	{ "fat"			, FASTBOOT_FS_FAT	},
@@ -140,7 +142,7 @@ static struct fastboot_fs_type f_part_fs[] = {
  *	flash= <device>,<devno> : <partition> : <fs type> : <start>,<length> ;
  *	EX> flash= nand,0:bootloader:boot:0x300000,0x400000;
  *
- * env :
+ * setenv :
  *	<command name> = " command arguments ";
  *	EX> bootcmd = "tftp 42000000 uImage";
  *
@@ -153,7 +155,7 @@ static struct fastboot_fs_type f_part_fs[] = {
 static const char * const f_reserve_part[] = {
 	[0] = "partmap",		/* fastboot partition */
 	[1] = "mem",			/* download only */
-	[2] = "env",			/* u-boot environment setting */
+	[2] = "setenv",			/* u-boot environment setting */
 	[3] = "cmd",			/* command run */
 };
 
@@ -252,7 +254,8 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 		return -1;
 
 	if (fpart->fs_type == FASTBOOT_FS_2NDBOOT ||
-	    fpart->fs_type == FASTBOOT_FS_BOOT) {
+	    fpart->fs_type == FASTBOOT_FS_BOOT ||
+	    fpart->fs_type == FASTBOOT_FS_ENV) {
 		p = sprintf(cmd, "mmc write ");
 		l = sprintf(&cmd[p], "0x%p 0x%llx 0x%llx", buf,
 			    fpart->start / 512, length / 512);
@@ -343,8 +346,9 @@ static struct fastboot_device f_devices[] = {
 		.dev_type	= FASTBOOT_DEV_MMC,
 		.part_type	= PART_TYPE_DOS,
 		.fs_support	= (FASTBOOT_FS_2NDBOOT | FASTBOOT_FS_BOOT |
-				   FASTBOOT_FS_RAW | FASTBOOT_FS_FAT |
-				   FASTBOOT_FS_EXT4 | FASTBOOT_FS_RAW_PART),
+				   FASTBOOT_FS_RAW | FASTBOOT_FS_ENV |
+				   FASTBOOT_FS_FAT | FASTBOOT_FS_EXT4 |
+				   FASTBOOT_FS_RAW_PART),
 	#ifdef CONFIG_CMD_MMC
 		.write_part	= mmc_part_write,
 		.capacity = mmc_part_capacity,
@@ -1733,7 +1737,7 @@ static void cb_flash(struct usb_ep *ep, struct usb_request *req)
 		}
 
 	/* set environments */
-	} else if (!strcmp("env", cmd)) {
+	} else if (!strcmp("setenv", cmd)) {
 		char *p = (void *)CONFIG_FASTBOOT_BUF_ADDR;
 		if (0 > fb_setenv(p, download_bytes)) {
 			sprintf(response, "FAIL environment parse");
