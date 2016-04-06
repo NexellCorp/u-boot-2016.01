@@ -10,6 +10,7 @@
 #include <asm/system.h>
 #include <asm/cache.h>
 #include <asm/sections.h>
+#include <asm/io.h>
 #include <asm/arch/s5p6818.h>
 #include <asm/arch/clk.h>
 
@@ -37,6 +38,22 @@ int print_cpuinfo(void)
 
 void reset_cpu(ulong ignored)
 {
+	void *clkpwr_reg = (void *)PHY_BASEADDR_CLKPWR;
+	const u32 sw_rst_enb_bitpos = 3;
+	const u32 sw_rst_enb_mask = 1 << sw_rst_enb_bitpos;
+	const u32 sw_rst_bitpos = 12;
+	const u32 sw_rst_mask = 1 << sw_rst_bitpos;
+	int pwrcont = 0x224;
+	int pwrmode = 0x228;
+	u32 read_value;
+
+	read_value = readl((void *)(clkpwr_reg + pwrcont));
+
+	read_value &= ~sw_rst_enb_mask;
+	read_value |= 1 << sw_rst_enb_bitpos;
+
+	writel(read_value, (void *)(clkpwr_reg + pwrcont));
+	writel(sw_rst_mask, (void *)(clkpwr_reg + pwrmode));
 }
 
 #if defined(CONFIG_ARCH_MISC_INIT)
