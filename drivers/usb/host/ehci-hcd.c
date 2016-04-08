@@ -812,6 +812,10 @@ static int ehci_submit_root(struct usb_device *dev, unsigned long pipe,
 			if (HCS_PPC(ehci_readl(&ctrl->hccr->cr_hcsparams))) {
 				reg |= EHCI_PS_PP;
 				ehci_writel(status_reg, reg);
+#if defined(CONFIG_USB_EHCI_EXYNOS) && defined(CONFIG_ARCH_S5P6818)
+				if (port == 1)
+					ehci_writel(0xC00300B0, 1 << port);
+#endif
 			}
 			break;
 		case USB_PORT_FEAT_RESET:
@@ -887,8 +891,13 @@ static int ehci_submit_root(struct usb_device *dev, unsigned long pipe,
 			reg |= EHCI_PS_PE;
 			break;
 		case USB_PORT_FEAT_POWER:
-			if (HCS_PPC(ehci_readl(&ctrl->hccr->cr_hcsparams)))
+			if (HCS_PPC(ehci_readl(&ctrl->hccr->cr_hcsparams))) {
 				reg &= ~EHCI_PS_PP;
+#if defined(CONFIG_USB_EHCI_EXYNOS) && defined(CONFIG_ARCH_S5P6818)
+				if (port == 1)
+					ehci_writel(0xC00300B0, 0 << port);
+#endif
+			}
 			break;
 		case USB_PORT_FEAT_C_CONNECTION:
 			reg |= EHCI_PS_CSC;

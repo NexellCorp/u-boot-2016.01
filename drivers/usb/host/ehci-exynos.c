@@ -95,7 +95,7 @@ static int ehci_usb_ofdata_to_platdata(struct udevice *dev)
 static void nx_setup_usb_phy(struct nx_usb_phy *usb)
 {
 	u32 reg;
-	u32 reg1, reg2;
+	u32 reg1, reg2, reg3;
 	u32 fladj_val, bit_num, bit_pos = NX_HOST_CON2_SS_FLADJ_VAL_0_OFFSET;
 
 	fladj_val = NX_HOST_CON2_SS_FLADJ_VAL_0_SEL;
@@ -112,6 +112,20 @@ static void nx_setup_usb_phy(struct nx_usb_phy *usb)
 	nx_rstcon_setrst(RESET_ID_USB20HOST, RSTCON_ASSERT);
 	nx_rstcon_setrst(RESET_ID_USB20HOST, RSTCON_NEGATE);
 
+	writel(readl((void *)(&usb->usbhost_con[0])) &
+	       ~NX_HOST_CON0_HSIC_CLK_MASK,
+	       (void *)(&usb->usbhost_con[0]));
+	writel(readl((void *)(&usb->usbhost_con[0])) |
+	       NX_HOST_CON0_HSIC_480M_FROM_OTG_PHY,
+	       (void *)(&usb->usbhost_con[0]));
+
+	writel(readl((void *)(&usb->usbhost_con[0])) &
+	       ~NX_HOST_CON0_HSIC_EN_MASK,
+	       (void *)(&usb->usbhost_con[0]));
+	writel(readl((void *)(&usb->usbhost_con[0])) |
+	       NX_HOST_CON0_HSIC_EN_PORT1,
+	       (void *)(&usb->usbhost_con[0]));
+
 	reg = readl((void *)(&usb->usbhost_con[2])) &
 		~NX_HOST_CON2_SS_DMA_BURST_MASK;
 	writel(reg | NX_HOST_CON2_EHCI_SS_ENABLE_DMA_BURST,
@@ -121,9 +135,12 @@ static void nx_setup_usb_phy(struct nx_usb_phy *usb)
 		NX_HOST_CON0_SS_WORD_IF_16;
 	reg2 = readl((void *)(&usb->usbhost_con[4])) |
 		NX_HOST_CON4_WORDINTERFACE_16;
+	reg3 = readl((void *)(&usb->usbhost_con[6])) |
+		NX_HOST_CON6_HSIC_WORDINTERFACE_16;
 
 	writel(reg1, (void *)(&usb->usbhost_con[0]));
 	writel(reg2, (void *)(&usb->usbhost_con[4]));
+	writel(reg3, (void *)(&usb->usbhost_con[6]));
 
 	reg   = readl((void *)(&usb->usbhost_con[3]));
 	reg  &= ~NX_HOST_CON3_POR_MASK;
@@ -131,9 +148,21 @@ static void nx_setup_usb_phy(struct nx_usb_phy *usb)
 	writel(reg, (void *)(&usb->usbhost_con[3]));
 	udelay(10);
 
+	writel(readl((void *)(&usb->usbhost_con[0])) |
+	       NX_HOST_CON0_HSIC_CLK_MASK,
+	       (void *)(&usb->usbhost_con[0]));
+
+	writel(readl((void *)(&usb->usbhost_con[5])) &
+	       ~NX_HOST_CON5_HSIC_POR_MASK,
+	       (void *)(&usb->usbhost_con[5]));
+	writel(readl((void *)(&usb->usbhost_con[5])) |
+	       NX_HOST_CON5_HSIC_POR_ENB,
+	       (void *)(&usb->usbhost_con[5]));
+
+	udelay(100);
+
 	reg = readl((void *)(&usb->usbhost_con[0])) |
-		NX_HOST_CON0_N_HOST_UTMI_RESET_SYNC |
-		NX_HOST_CON0_N_HOST_PHY_RESET_SYNC;
+		NX_HOST_CON0_UTMI_RESET_SYNC;
 	writel(reg, (void *)(&usb->usbhost_con[0]));
 
 	writel(readl((void *)(&usb->usbhost_con[0])) |
@@ -256,6 +285,14 @@ static void nx_reset_usb_phy(struct nx_usb_phy *usb)
 	udelay(1);
 	reg   &= ~(NX_HOST_CON3_POR);
 	writel(reg, (void *)(&usb->usbhost_con[3]));
+
+	writel(readl((void *)(&usb->usbhost_con[0])) &
+	       ~NX_HOST_CON0_HSIC_CLK_MASK,
+	       (void *)(&usb->usbhost_con[0]));
+
+	writel(readl((void *)(&usb->usbhost_con[5])) |
+	       NX_HOST_CON5_HSIC_POR_MASK,
+	       (void *)(&usb->usbhost_con[5]));
 
 	udelay(10);
 }
