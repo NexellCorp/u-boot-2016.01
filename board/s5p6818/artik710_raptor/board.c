@@ -19,6 +19,38 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#ifdef CONFIG_REVISION_TAG
+u32 board_rev;
+
+u32 get_board_rev(void)
+{
+	return board_rev;
+}
+
+static void check_hw_revision(void)
+{
+	u32 val = 0;
+
+	val |= nx_gpio_get_input_value(4, 6);
+	val <<= 1;
+
+	val |= nx_gpio_get_input_value(4, 5);
+	val <<= 1;
+
+	val |= nx_gpio_get_input_value(4, 4);
+
+	board_rev = val;
+}
+
+static void set_board_rev(u32 revision)
+{
+	char info[64] = {0, };
+
+	snprintf(info, ARRAY_SIZE(info), "%d", revision);
+	setenv("board_rev", info);
+}
+#endif
+
 /*------------------------------------------------------------------------------
  * intialize nexell soc and board status.
  */
@@ -97,6 +129,12 @@ int board_init(void)
 {
 	board_gpio_init();
 
+#ifdef CONFIG_REVISION_TAG
+	check_hw_revision();
+	printf("HW Revision:\t%d\n", board_rev);
+
+#endif
+
 	nx_phy_init();
 #ifdef CONFIG_USB_EHCI_EXYNOS
 	board_ehci_power_en();
@@ -124,6 +162,9 @@ void dram_init_banksize(void)
 
 int board_late_init(void)
 {
+#ifdef CONFIG_REVISION_TAG
+	set_board_rev(board_rev);
+#endif
 	return 0;
 }
 
