@@ -125,6 +125,22 @@ void board_gpio_init(void)
 	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
 }
 
+int mmc_get_env_dev(void)
+{
+	int port_num;
+	int boot_mode = readl(PHY_BASEADDR_CLKPWR + SYSRSTCONFIG);
+
+	if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_SDMMC) {
+		port_num = BOOTMODE_SDMMC_PORT_VAL(boot_mode);
+		if (port_num == EMMC_PORT_NUM)
+			return 0;
+		else if (port_num == SD_PORT_NUM)
+			return 1;
+	}
+
+	return -1;
+}
+
 int board_init(void)
 {
 	board_gpio_init();
