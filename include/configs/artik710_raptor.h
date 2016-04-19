@@ -280,6 +280,34 @@
 #define CONFIG_MII
 #define CONFIG_CMD_MII
 #define CONFIG_EXTRA_ENV_SETTINGS	\
-			"fdt_high=0xffffffffffffffff"
+	"fdt_high=0xffffffffffffffff\0" \
+	"kerneladdr=0x48000000\0" \
+	"ramdiskaddr=0x49000000\0" \
+	"fdtaddr=0x4a000000\0" \
+	"load_fdt=" \
+		"loop=$board_rev; " \
+		"number=$board_rev: " \
+		"success=0; " \
+		"until test $loop -eq 0 || test $success -ne 0; do " \
+			"if test $loop -lt 10; then " \
+				"number=0$loop; " \
+			"else number=$loop; " \
+			"fi; " \
+			"ext4load mmc 0:1 $fdtaddr s5p6818-artik710-raptor-rev${number}.dtb && setexpr success 1; " \
+			"setexpr loop $loop - 1; " \
+			"done; " \
+		"if test $success -eq 0; then " \
+			"ext4load mmc 0:1 $fdtaddr s5p6818-artik710-raptor-rev00.dtb || ext4load mmc 0:1 $fdtaddr s5p6818-artik710-raptor.dtb; " \
+		"fi; \0"
+
+/*-----------------------------------------------------------------------
+ * BOOTCOMMAND
+ */
+#define CONFIG_REVISION_TAG
+#define CONFIG_BOOTCOMMAND	\
+	"run load_fdt; " \
+	"ext4load mmc 0:1 $kerneladdr uImage; " \
+	"ext4load mmc 0:1 $ramdiskaddr ramdisk.gz; " \
+	"bootm $kerneladdr - $fdtaddr"
 
 #endif /* __CONFIG_H__ */
