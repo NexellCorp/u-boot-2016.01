@@ -312,6 +312,14 @@
 #define	SCR_SIGNAGURE_SET		(SCR_ALIVE_BASE + 0x06C)
 #define	SCR_SIGNAGURE_READ		(SCR_ALIVE_BASE + 0x070)
 
+#define SYSRSTCONFIG			(0x23C)
+#define BOOTMODE_MASK			(0x7)
+#define BOOTMODE_SDMMC			5
+#define BOOTMODE_SDMMC_PORT_VAL(x)	((((x) >> 3) & 1) |	\
+					 (((x) >> 19 & 1) << 1))
+#define EMMC_PORT_NUM			2
+#define SD_PORT_NUM			0
+
 #ifndef __ASSEMBLY__
 
 #define NS_IN_HZ (1000000000UL)
