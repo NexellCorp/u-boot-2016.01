@@ -139,6 +139,7 @@
 #define	CONFIG_CMDLINE_TAG			/* use bootargs commandline */
 #undef	CONFIG_BOOTM_NETBSD
 #undef	CONFIG_BOOTM_RTEMS
+#define CONFIG_INITRD_TAG
 
 /*-----------------------------------------------------------------------
  * serial console configuration
@@ -279,35 +280,69 @@
 #define CONFIG_PHY_GIGE
 #define CONFIG_MII
 #define CONFIG_CMD_MII
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-	"fdt_high=0xffffffffffffffff\0" \
-	"kerneladdr=0x48000000\0" \
-	"ramdiskaddr=0x49000000\0" \
-	"fdtaddr=0x4a000000\0" \
-	"load_fdt=" \
-		"loop=$board_rev; " \
-		"number=$board_rev: " \
-		"success=0; " \
-		"until test $loop -eq 0 || test $success -ne 0; do " \
-			"if test $loop -lt 10; then " \
-				"number=0$loop; " \
-			"else number=$loop; " \
-			"fi; " \
-			"ext4load mmc 0:1 $fdtaddr s5p6818-artik710-raptor-rev${number}.dtb && setexpr success 1; " \
-			"setexpr loop $loop - 1; " \
-			"done; " \
-		"if test $success -eq 0; then " \
-			"ext4load mmc 0:1 $fdtaddr s5p6818-artik710-raptor-rev00.dtb || ext4load mmc 0:1 $fdtaddr s5p6818-artik710-raptor.dtb; " \
-		"fi; \0"
 
 /*-----------------------------------------------------------------------
  * BOOTCOMMAND
  */
 #define CONFIG_REVISION_TAG
-#define CONFIG_BOOTCOMMAND	\
-	"run load_fdt; " \
-	"ext4load mmc 0:1 $kerneladdr uImage; " \
-	"ext4load mmc 0:1 $ramdiskaddr ramdisk.gz; " \
-	"bootm $kerneladdr - $fdtaddr"
+
+#define CONFIG_DEFAULT_CONSOLE		"console=ttySAC3,115200n8\0"
+
+#define CONFIG_ROOT_DEV		0
+#define CONFIG_BOOT_PART	1
+#define CONFIG_MODULE_PART	2
+#define CONFIG_ROOT_PART	3
+
+#define CONFIG_EXTRA_ENV_SETTINGS					\
+	"fdt_high=0xffffffffffffffff\0"					\
+	"initrd_high=0xffffffffffffffff\0"				\
+	"kerneladdr=0x48000000\0"					\
+	"kernel_file=uImage\0"						\
+	"ramdiskaddr=0x49000000\0"					\
+	"ramdisk_file=ramdisk.gz\0"					\
+	"fdtaddr=0x4a000000\0"						\
+	"load_fdt="							\
+		"loop=$board_rev; "					\
+		"number=$board_rev: "					\
+		"success=0; "						\
+		"until test $loop -eq 0 || test $success -ne 0; do "	\
+			"if test $loop -lt 10; then "			\
+				"number=0$loop; "			\
+			"else number=$loop; "				\
+			"fi; "						\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor-rev${number}.dtb && setexpr success 1; " \
+			"setexpr loop $loop - 1; "			\
+			"done; "					\
+		"if test $success -eq 0; then "				\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor00.dtb || "	\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor.dtb; "	\
+		"fi; \0"						\
+	"console=" CONFIG_DEFAULT_CONSOLE				\
+	"consoleon=set console=" CONFIG_DEFAULT_CONSOLE			\
+		"; saveenv; reset\0"					\
+	"consoleoff=set console=ram; saveenv; reset\0"			\
+	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
+	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
+	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
+	"root_rw=rw\0"							\
+	"opts=loglevel=7\0"						\
+	"rootfs_type=ext4\0"						\
+	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
+	"boot_cmd_initrd="						\
+		"run load_fdt;"						\
+		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;" \
+		"ext4load mmc ${rootdev}:${bootpart} $ramdiskaddr $ramdisk_file;" \
+		"bootm $kerneladdr - $fdtaddr\0"		\
+	"ramfsboot=setenv bootargs ${console} "				\
+		"root=/dev/ram0 ${root_rw} initrd=${ramdiskaddr},16M ramdisk=16384 "	\
+		"${opts} ${recoverymode};"		\
+		"run boot_cmd_initrd\0"					\
+	"mmcboot=setenv bootargs ${console} "				\
+		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
+		"${opts};"						\
+		"run boot_cmd_initrd\0"					\
+	"recoveryboot=run sdrecovery; setenv recoverymode recovery;"	\
+		"run ramfsboot\0"					\
+	"bootcmd=run ramfsboot\0"
 
 #endif /* __CONFIG_H__ */
