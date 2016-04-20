@@ -20,10 +20,24 @@ DECLARE_GLOBAL_DATA_PTR;
 #error must be define the macro "CONFIG_ARCH_CPU_INIT"
 #endif
 
+void cpu_base_init(void)
+{
+	/*
+	 * NOTE> ALIVE Power Gate must enable for Alive register access.
+	 *	     must be clear wfi jump address
+	 */
+	writel(1, ALIVEPWRGATEREG);
+	writel(0xFFFFFFFF, SCR_ARM_SECOND_BOOT);
+
+	/* write 0xf0 on alive scratchpad reg for boot success check */
+	writel(readl(SCR_SIGNAGURE_READ) | 0xF0, (SCR_SIGNAGURE_SET));
+}
+
 #if defined(CONFIG_ARCH_CPU_INIT)
 int arch_cpu_init(void)
 {
 	flush_dcache_all();
+	cpu_base_init();
 	nx_clk_init();
 	return 0;
 }
