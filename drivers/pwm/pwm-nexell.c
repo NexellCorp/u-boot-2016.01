@@ -164,11 +164,6 @@ int pwm_init(int pwm_id, int div, int invert)
 	unsigned long ticks_per_period;
 	unsigned int offset, prescaler;
 
-#if defined(CONFIG_ARCH_S5P6818)
-	nx_rstcon_setrst(RESET_ID_PWM, RSTCON_ASSERT);
-	udelay(10);
-	nx_rstcon_setrst(RESET_ID_PWM, RSTCON_NEGATE);
-#endif
 	/*
 	 * Timer Freq(HZ) =
 	 *	PWM_CLK / { (prescaler_value + 1) * (divider_value) }
