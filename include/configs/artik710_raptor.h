@@ -314,7 +314,7 @@
 			"setexpr loop $loop - 1; "			\
 			"done; "					\
 		"if test $success -eq 0; then "				\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor00.dtb || "	\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor-rev00.dtb || "	\
 			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor.dtb; "	\
 		"fi; \0"						\
 	"console=" CONFIG_DEFAULT_CONSOLE				\
