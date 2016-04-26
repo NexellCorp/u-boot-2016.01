@@ -10,7 +10,7 @@
 #include <linux/err.h>
 #include <asm/io.h>
 
-#include <asm/arch/s5p6818.h>
+#include <asm/arch/nexell.h>
 #include <asm/arch/clk.h>
 
 /*

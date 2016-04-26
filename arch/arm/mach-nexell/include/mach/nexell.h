@@ -5,8 +5,8 @@
  * SPDX-License-Identifier:      GPL-2.0+
  */
 
-#ifndef __S5P6818_H__
-#define __S5P6818_H__
+#ifndef __NEXELL_H__
+#define __NEXELL_H__
 
 #define PHY_BASEADDR_DMA0		(0xC0000000)
 #define PHY_BASEADDR_DMA1		(0xC0001000)
@@ -328,4 +328,4 @@
 
 #endif	/* __ASSEMBLY__ */
 
-#endif /* __S5P6818_H__ */
+#endif /* __NEXELL_H__ */

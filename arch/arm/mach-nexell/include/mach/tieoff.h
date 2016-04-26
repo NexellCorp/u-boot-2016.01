@@ -5,8 +5,8 @@
 * SPDX-License-Identifier:      GPL-2.0+
 */
 
-#ifndef _S5P6818_TIEOFF_H
-#define _S5P6818_TIEOFF_H
+#ifndef _NEXELL_TIEOFF_H
+#define _NEXELL_TIEOFF_H
 
 void nx_tieoff_set(u32 tieoff_index, u32 tieoff_value);
 u32 nx_tieoff_get(u32 tieoff_index);
@@ -380,4 +380,4 @@ u32 nx_tieoff_get(u32 tieoff_index);
 #define NX_TIEOFF_Inst_ARMTOP_P1_L2FLUSHDONE		((1<<16) | 3563)
 #define NX_TIEOFF_Inst_ARMTOP_P1_ACINACTM		((1<<16) | 3567)
 
-#endif /* _S5P6818_TIEOFF_H */
+#endif /* _NEXELL_TIEOFF_H */

@@ -11,7 +11,7 @@
 #include <asm/cache.h>
 #include <asm/sections.h>
 #include <asm/io.h>
-#include <asm/arch/s5p6818.h>
+#include <asm/arch/nexell.h>
 #include <asm/arch/clk.h>
 
 DECLARE_GLOBAL_DATA_PTR;

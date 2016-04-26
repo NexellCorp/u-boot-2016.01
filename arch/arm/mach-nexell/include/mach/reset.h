@@ -5,8 +5,8 @@
  * SPDX-License-Identifier:      GPL-2.0+
  */
 
-#ifndef __S5P6818_RESET__
-#define __S5P6818_RESET__
+#ifndef __NEXELL_RESET__
+#define __NEXELL_RESET__
 
 #define NUMBER_OF_RESET_MODULE_PIN      69
 
@@ -17,4 +17,4 @@ enum rstcon {
 
 void nx_rstcon_setrst(u32 rstindex, enum rstcon status);
 
-#endif /* __S5P6818_RESET__ */
+#endif /* __NEXELL_RESET__ */
