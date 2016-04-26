@@ -1,0 +1,11 @@
+choice
+	prompt "Board select"
+
+config TARGET_S5P4418_DRONE
+	bool "S5P4418_DRONE"
+	help
+	  Support for s5p4418 drone platform.
+
+endchoice
+
+source "board/s5p4418/drone/Kconfig"
