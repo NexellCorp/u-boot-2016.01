@@ -17,7 +17,7 @@
 #include <asm/unaligned.h>
 #include <asm/io.h>
 
-#include <asm/arch/s5p6818.h>
+#include <asm/arch/nexell.h>
 #include <asm/arch/reset.h>
 
 #include "nexell_udc_otg_regs.h"
