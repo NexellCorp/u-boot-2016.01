@@ -8,7 +8,7 @@
 #include <common.h>
 #include <malloc.h>
 #include <dwmmc.h>
-#include <asm/arch/s5p6818.h>
+#include <asm/arch/nexell.h>
 #include <asm/arch/clk.h>
 #include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
