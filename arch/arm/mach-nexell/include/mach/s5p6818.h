@@ -328,5 +328,4 @@
 
 #endif	/* __ASSEMBLY__ */
 
-#endif /*	__S5P6818_H__ */
-
+#endif /* __S5P6818_H__ */

@@ -428,10 +428,8 @@ config ARCH_S5PC1XX
 	select DM_SERIAL
 	select DM_GPIO
 
-config ARCH_S5P6818
-	bool "Nexell S5P6818"
-	select ARM64
-	select ARMV8_MULTIENTRY
+config ARCH_NEXELL
+	bool "Nexell SoC"
 
 config ARCH_HIGHBANK
 	bool "Calxeda Highbank"
@@ -734,7 +732,7 @@ source "arch/arm/mach-kirkwood/Kconfig"
 
 source "arch/arm/mach-mvebu/Kconfig"
 
-source "arch/arm/mach-s5p6818/Kconfig"
+source "arch/arm/mach-nexell/Kconfig"
 
 source "arch/arm/cpu/armv7/mx7/Kconfig"
 
