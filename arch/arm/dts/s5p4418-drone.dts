@@ -1,0 +1,16 @@
+/*
+ * (C) Copyright 2016 Nexell
+ * Youngbok, Park <park@nexell.co.kr>
+ *
+ * SPDX-License-Identifier:      GPL-2.0+
+ */
+
+/dts-v1/;
+#include "s5p4418.dtsi"
+
+/ {
+	model = "Nexell drone board based on s5p4418";
+	cpu-model = "S5p4418";
+
+	compatible = "nexell,s5p4418";
+};
