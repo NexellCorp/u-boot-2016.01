@@ -18,10 +18,18 @@ choice
 	prompt "Nexell SoC select"
 	optional
 
+config ARCH_S5P4418
+	bool "Nexell S5P4418 family"
+	select NEXELL_ARMV7_COMMON
+
 config ARCH_S5P6818
 	bool "Nexell S5P6818 family"
 	select NEXELL_ARMV8_COMMON
 endchoice
+
+menu "Board for S5P4418"
+source "board/s5p4418/Kconfig"
+endmenu
 
 menu "Board for S5P6818"
 source "board/s5p6818/Kconfig"

@@ -175,12 +175,16 @@ struct _core_hz_ {
 	unsigned long cpu_fclk, cpu_bclk;			/* cpu */
 	unsigned long mem_fclk, mem_dclk, mem_bclk, mem_pclk;	/* ddr */
 	unsigned long bus_bclk, bus_pclk;			/* bus */
+#if defined(CONFIG_ARCH_S5P6818)
 	unsigned long cci4_bclk, cci4_pclk;			/* cci */
+#endif
 	/* ip */
 	unsigned long g3d_bclk;
 	unsigned long coda_bclk, coda_pclk;
+#if defined(CONFIG_ARCH_S5P6818)
 	unsigned long disp_bclk, disp_pclk;
 	unsigned long hdmi_pclk;
+#endif
 };
 
 static struct _core_hz_ core_hz;	/* core clock */
@@ -309,10 +313,12 @@ static struct nx_clkpwr_registerset * const clkpwr =
 #define	DIV_MEM		2
 #define	DIV_G3D		3
 #define	DIV_CODA	4
+#if defined(CONFIG_ARCH_S5P6818)
 #define	DIV_DISP	5
 #define	DIV_HDMI	6
 #define	DIV_CPUG1	7
 #define	DIV_CCI4	8
+#endif
 
 #define	DVO0		3
 #define	DVO1		9
@@ -395,6 +401,7 @@ static unsigned int pll_div(int dvo)
 			 ((pll_div(DIV_CODA) >> 0)&0x3F)	/ \
 			 ((pll_div(DIV_CODA) >> 8)&0x3F))
 
+#if defined(CONFIG_ARCH_S5P6818)
 #define	DISP_BCLK_RATE() (pll_rate(pll_dvo(DIV_DISP), CONFIG_SYS_PLLFIN) / \
 			 ((pll_div(DIV_DISP) >> 0)&0x3F))
 #define	DISP_PCLK_RATE() (pll_rate(pll_dvo(DIV_DISP), CONFIG_SYS_PLLFIN) / \
@@ -409,6 +416,7 @@ static unsigned int pll_div(int dvo)
 #define	CCI4_PCLK_RATE() (pll_rate(pll_dvo(DIV_CCI4), CONFIG_SYS_PLLFIN) / \
 			 ((pll_div(DIV_CCI4) >> 0)&0x3F)	/ \
 			 ((pll_div(DIV_CCI4) >> 8)&0x3F))
+#endif
 
 static void core_update_rate(int type)
 {
@@ -443,6 +451,7 @@ static void core_update_rate(int type)
 		core_hz.coda_bclk = MPG_BCLK_RATE(); break;
 	case 14:
 		core_hz.coda_pclk = MPG_PCLK_RATE(); break;
+#if defined(CONFIG_ARCH_S5P6818)
 	case 15:
 		core_hz.disp_bclk = DISP_BCLK_RATE(); break;
 	case 16:
@@ -453,6 +462,7 @@ static void core_update_rate(int type)
 		core_hz.cci4_bclk = CCI4_BCLK_RATE(); break;
 	case 19:
 		core_hz.cci4_pclk = CCI4_PCLK_RATE(); break;
+#endif
 	};
 }
 
@@ -491,6 +501,7 @@ static unsigned long core_get_rate(int type)
 		rate = core_hz.coda_bclk;	break;
 	case 14:
 		rate = core_hz.coda_pclk;	break;
+#if defined(CONFIG_ARCH_S5P6818)
 	case 15:
 		rate = core_hz.disp_bclk;	break;
 	case 16:
@@ -501,6 +512,7 @@ static unsigned long core_get_rate(int type)
 		rate = core_hz.cci4_bclk;	break;
 	case 19:
 		rate = core_hz.cci4_pclk;	break;
+#endif
 	default:
 		printf("unknown core clock type %d ...\n", type);
 		break;
