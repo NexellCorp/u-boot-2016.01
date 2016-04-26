@@ -15,8 +15,8 @@
 #include <asm/arch/clk.h>
 #include "pwm-nexell.h"
 
-#if defined(CONFIG_ARCH_S5P6818)
-#include <asm/arch/s5p6818.h>
+#if defined(CONFIG_ARCH_NEXELL)
+#include <asm/arch/nexell.h>
 #include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
 #include <asm/arch/tieoff.h>
@@ -39,7 +39,7 @@ static struct pwm_device pwm_dev[] = {
 int pwm_enable(int pwm_id)
 {
 	const struct s5p_timer *pwm =
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 			(struct s5p_timer *)PHY_BASEADDR_PWM;
 #else
 			(struct s5p_timer *)samsung_get_base_timer();
@@ -57,7 +57,7 @@ int pwm_enable(int pwm_id)
 void pwm_disable(int pwm_id)
 {
 	const struct s5p_timer *pwm =
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 			(struct s5p_timer *)PHY_BASEADDR_PWM;
 #else
 			(struct s5p_timer *)samsung_get_base_timer();
@@ -75,7 +75,7 @@ static unsigned long pwm_calc_tin(int pwm_id, unsigned long freq)
 	unsigned long tin_parent_rate;
 	unsigned int div;
 
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 	struct clk *clk = clk_get(CORECLK_NAME_PCLK);
 	tin_parent_rate = clk_get_rate(clk);
 #else
@@ -95,7 +95,7 @@ static unsigned long pwm_calc_tin(int pwm_id, unsigned long freq)
 int pwm_config(int pwm_id, int duty_ns, int period_ns)
 {
 	const struct s5p_timer *pwm =
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 			(struct s5p_timer *)PHY_BASEADDR_PWM;
 #else
 			(struct s5p_timer *)samsung_get_base_timer();
@@ -156,7 +156,7 @@ int pwm_init(int pwm_id, int div, int invert)
 {
 	u32 val;
 	const struct s5p_timer *pwm =
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 			(struct s5p_timer *)PHY_BASEADDR_PWM;
 #else
 			(struct s5p_timer *)samsung_get_base_timer();
@@ -193,7 +193,7 @@ int pwm_init(int pwm_id, int div, int invert)
 		ticks_per_period = -1UL;
 	} else {
 		const unsigned long pwm_hz = 1000;
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 		struct clk *clk = clk_get(CORECLK_NAME_PCLK);
 		unsigned long timer_rate_hz = clk_get_rate(clk) /
 #else
