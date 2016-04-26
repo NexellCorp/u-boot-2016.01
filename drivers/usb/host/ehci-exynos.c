@@ -14,14 +14,14 @@
 #include <malloc.h>
 #include <usb.h>
 #include <asm/arch/ehci.h>
-#if !defined(CONFIG_ARCH_S5P6818)
+#if !defined(CONFIG_ARCH_NEXELL)
 #include <asm/arch/cpu.h>
 #include <asm/arch/system.h>
 #include <asm/arch/power.h>
 #include <asm/gpio.h>
 #else
 #include <asm/arch/reset.h>
-#include <asm/arch/s5p6818.h>
+#include <asm/arch/nexell.h>
 #include <asm/io.h>
 #endif
 #include <asm-generic/errno.h>
@@ -35,7 +35,7 @@ struct exynos_ehci_platdata {
 	struct usb_platdata usb_plat;
 	fdt_addr_t hcd_base;
 	fdt_addr_t phy_base;
-#if !defined(CONFIG_ARCH_S5P6818)
+#if !defined(CONFIG_ARCH_NEXELL)
 	struct gpio_desc vbus_gpio;
 #endif
 };
@@ -82,7 +82,7 @@ static int ehci_usb_ofdata_to_platdata(struct udevice *dev)
 		debug("Can't get the usbphy register address\n");
 		return -ENXIO;
 	}
-#if !defined(CONFIG_ARCH_S5P6818)
+#if !defined(CONFIG_ARCH_NEXELL)
 	/* Vbus gpio */
 	gpio_request_by_name(dev, "samsung,vbus-gpio", 0,
 			     &plat->vbus_gpio, GPIOD_IS_OUT);
@@ -91,7 +91,7 @@ static int ehci_usb_ofdata_to_platdata(struct udevice *dev)
 	return 0;
 }
 
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 static void nx_setup_usb_phy(struct nx_usb_phy *usb)
 {
 	u32 reg;
@@ -246,7 +246,7 @@ static void exynos4412_setup_usb_phy(struct exynos4412_usb_phy *usb)
 
 static void setup_usb_phy(struct exynos_usb_phy *usb)
 {
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 	nx_setup_usb_phy((struct nx_usb_phy *)usb);
 #else
 	set_usbhost_mode(USB20_PHY_CFG_HOST_LINK_EN);
@@ -262,7 +262,7 @@ static void setup_usb_phy(struct exynos_usb_phy *usb)
 #endif
 }
 
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 static void nx_reset_usb_phy(struct nx_usb_phy *usb)
 {
 	u32 reg;
@@ -330,7 +330,7 @@ static void exynos4412_reset_usb_phy(struct exynos4412_usb_phy *usb)
 /* Reset the EHCI host controller. */
 static void reset_usb_phy(struct exynos_usb_phy *usb)
 {
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 	nx_reset_usb_phy((struct nx_usb_phy *)usb);
 #else
 	if (cpu_is_exynos5())
@@ -353,7 +353,7 @@ static int ehci_usb_probe(struct udevice *dev)
 	ctx->hcd = (struct ehci_hccr *)plat->hcd_base;
 	ctx->usb = (struct exynos_usb_phy *)plat->phy_base;
 
-#if !defined(CONFIG_ARCH_S5P6818)
+#if !defined(CONFIG_ARCH_NEXELL)
 	/* setup the Vbus gpio here */
 	if (dm_gpio_is_valid(&plat->vbus_gpio))
 		dm_gpio_set_value(&plat->vbus_gpio, 1);
