@@ -279,3 +279,12 @@ unsigned long long get_ticks(void)
 {
 	return get_timer_masked();
 }
+
+#if defined(CONFIG_ARCH_S5P4418)
+ulong get_tbclk(void)
+{
+	ulong  tbclk = TIMER_FREQ;
+	return tbclk;
+}
+#endif
+
