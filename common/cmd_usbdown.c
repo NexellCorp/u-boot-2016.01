@@ -11,10 +11,10 @@
 #include <asm/io.h>
 
 #include <asm/arch/reset.h>
-#include <asm/arch/s5p6818.h>
+#include <asm/arch/nexell.h>
 
 #define VENDORID			0x04e8	/* Samsung Vendor ID */
-#define PRODUCTID			0x1234	/* S5P6818 Product ID */
+#define PRODUCTID			0x1234	/* Nexell Product ID */
 
 #define BASEADDR_BOOTSTATUS \
 	(BASEADDR_SRAM+(INTERNAL_SRAM_SIZE/2))
