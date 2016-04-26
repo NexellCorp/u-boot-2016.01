@@ -1107,6 +1107,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_COLIBRI_T30          4493
 #define MACH_TYPE_APALIS_T30           4513
 #define MACH_TYPE_OMAPL138_LCDK        2495
+#define MACH_TYPE_S5P4418	       4418
 #define MACH_TYPE_S5P6818	       6818
 
 #ifdef CONFIG_ARCH_EBSA110
@@ -14187,6 +14188,18 @@ extern unsigned int __machine_arch_type;
 # define machine_is_apalis_t30()	(machine_arch_type == MACH_TYPE_APALIS_T30)
 #else
 # define machine_is_apalis_t30()	(0)
+#endif
+
+#ifdef CONFIG_MACH_S5P4418
+# ifdef machine_arch_type
+#  undef  machine_arch_type
+#  define machine_arch_type	__machine_arch_type
+# else
+#  define machine_arch_type	MACH_TYPE_S5P4418
+# endif
+# define machine_is_s5p4418()		(machine_arch_type == MACH_TYPE_S5P4418)
+#else
+# define machine_is_s5p4418()		(0)
 #endif
 
 #ifdef CONFIG_MACH_S5P6818
