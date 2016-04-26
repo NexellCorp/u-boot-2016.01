@@ -18,14 +18,14 @@
 #include <linux/compiler.h>
 #include <linux/err.h>
 #include <asm/io.h>
-#if defined(CONFIG_ARCH_S5P6818)
-#include <asm/arch/s5p6818.h>
+#if defined(CONFIG_ARCH_NEXELL)
+#include <asm/arch/nexell.h>
 #include <asm/arch/clk.h>
 #include <asm/arch/nx_gpio.h>
 #include <asm/arch/reset.h>
 #include <fdtdec.h>
 #include <libfdt.h>
-#endif /* CONFIG_ARCH_S5P6818 */
+#endif /* CONFIG_ARCH_NEXELL */
 #include "designware.h"
 
 #define ptr_to_int32(x)		((uint32_t)((uintptr_t)(x) & 0xFFFFFFFF))
@@ -525,7 +525,7 @@ int designware_initialize(ulong base_addr, u32 interface)
 #endif
 
 #ifdef CONFIG_DM_ETH
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 static int nexell_gmac_initialize(void)
 {
 	struct clk *clk;
@@ -548,7 +548,7 @@ static int nexell_gmac_initialize(void)
 
 	return 0;
 }
-#endif /* CONFIG_ARCH_S5P6818 */
+#endif /* CONFIG_ARCH_NEXELL */
 
 static int designware_eth_start(struct udevice *dev)
 {
@@ -617,11 +617,11 @@ static int designware_eth_probe(struct udevice *dev)
 	u32 iobase = pdata->iobase;
 	int ret;
 
-#if defined(CONFIG_ARCH_S5P6818)
+#if defined(CONFIG_ARCH_NEXELL)
 	if (fdt_node_check_compatible(gd->fdt_blob, dev->of_offset,
 			"nexell,nexell-gmac") == 0)
 		nexell_gmac_initialize();
-#endif /* CONFIG_ARCH_S5P6818 */
+#endif /* CONFIG_ARCH_NEXELL */
 
 
 #ifdef CONFIG_DM_PCI
