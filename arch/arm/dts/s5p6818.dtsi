@@ -104,4 +104,58 @@
 			reg = <0 0xC0011000>;
 		};
 	};
+
+	gpio_a:gpio@c001a000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001a000 0x00000010>;
+		altr,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_a";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_b:gpio@c001b000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001b000 0x00000010>;
+		altr,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_b";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_c:gpio@c001c000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001c000 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_c";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_d:gpio@c001d000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001d000 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_d";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_e:gpio@c001e000 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc001e000 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_e";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	gpio_alv:gpio@c0010800 {
+		compatible = "nexell,nexell-gpio";
+		reg = <0xc0010800 0x00000010>;
+		nexell,gpio-bank-width = <32>;
+		gpio-bank-name = "gpio_alv";
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
 };
