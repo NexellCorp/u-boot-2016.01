@@ -197,9 +197,10 @@ static int nexell_mmc_process_node(const void *blob, int node_list[], int count)
 
 		add_dwmci(host, freq, 400000);
 		set_mmc_pad_func(host);
+#if defined (CONFIG_ARCH_S5P6818)
 		if (host->buswidth == 8)
 			nx_tieoff_set(NX_TIEOFF_MMC_8BIT, 1);
-
+#endif
 		dw_mci_reset(host->dev_index);
 		dw_mci_clk_delay(blob, node, host);
 	}
