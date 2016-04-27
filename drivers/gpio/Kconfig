@@ -28,6 +28,15 @@ config DWAPB_GPIO
 	help
 	  Support for the Designware APB GPIO driver.
 
+config NX_GPIO
+	bool "Nexell GPIO driver"
+	depends on DM_GPIO
+	help
+	  Support GPIO access on Nexell SoCs. The GPIOs are arranged into
+	  a number of banks (different for each SoC type) each with 32 GPIOs.
+	  The GPIOs for a device are defined in the device tree with one node
+	  for each bank.
+
 config ATMEL_PIO4
 	bool "ATMEL PIO4 driver"
 	depends on DM
