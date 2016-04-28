@@ -32,4 +32,8 @@
 		nexell,ddr = <1>;
 		status ="okay";
 	};
+
+	ehci:usbhost@c0030000 {
+		status = "okay";
+	};
 };
