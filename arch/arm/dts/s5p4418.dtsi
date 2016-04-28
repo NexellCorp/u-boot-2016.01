@@ -43,4 +43,15 @@
 		status = "disabled";
 	};
 
+	ehci:usbhost@c0030000 {
+		compatible = "nexell,nexell-ehci";
+		reg = <0xC0030000 0x10000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		status = "disabled";
+		phy {
+			compatible = "samsung,exynos-usb-phy";
+			reg = <0 0xC0011000>;
+		};
+	};
 };
