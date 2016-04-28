@@ -8,6 +8,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+#include <linux/sizes.h>
 #include <asm/arch/nexell.h>
 /*-----------------------------------------------------------------------
  *  u-boot-2016.01
@@ -27,7 +28,7 @@
 /* malloc() pool */
 #define	CONFIG_MEM_MALLOC_START			0x44000000
 /* more than 2M for ubifs: MAX 16M */
-#define CONFIG_MEM_MALLOC_LENGTH		32*1024*1024
+#define CONFIG_MEM_MALLOC_LENGTH		(32*1024*1024)
 
 /* when CONFIG_LCD */
 #define CONFIG_FB_ADDR				0x46000000
@@ -88,7 +89,7 @@
 #define	CONFIG_SYS_DCACHE_OFF
 /* board_init_r, call arch_misc_init */
 #define	CONFIG_ARCH_MISC_INIT
-#define	CONFIG_SYS_ICACHE_OFF
+/*#define	CONFIG_SYS_ICACHE_OFF*/
 
 /*-----------------------------------------------------------------------
  *	U-Boot default cmd
@@ -187,7 +188,7 @@
 					 CONFIG_2NDBOOT_SIZE)
 #define CONFIG_FIP_SIZE			(3*1024*1024)
 #define CONFIG_ENV_IS_IN_MMC
-#define CONFIG_SYS_MMC_ENV_DEV		1
+#define CONFIG_SYS_MMC_ENV_DEV		0
 #define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
 					 CONFIG_FIP_SIZE)
 #define CONFIG_ENV_SIZE			(4*1024)	/* env size */
@@ -205,7 +206,6 @@
 #define CONFIG_EXT4_WRITE
 #endif
 
-
 /*-----------------------------------------------------------------------
  * Default environment organization
  */
@@ -214,10 +214,39 @@
 	/* default: CONFIG_ENV_IS_NOWHERE */
 	#define CONFIG_ENV_IS_NOWHERE
 	#define	CONFIG_ENV_OFFSET		1024
-	#define CONFIG_ENV_SIZE			4*1024		/* env size */
+	#define CONFIG_ENV_SIZE			(4*1024)	/* env size */
 	/* imls - list all images found in flash, default enable so disable */
 	#undef	CONFIG_CMD_IMLS
 #endif
+
+/*-----------------------------------------------------------------------
+ * GPT
+ */
+#define CONFIG_CMD_GPT
+#define CONFIG_EFI_PARTITION
+#define CONFIG_PARTITION_UUIDS
+#define CONFIG_RANDOM_UUID
+
+/*-----------------------------------------------------------------------
+ * Fastboot and USB OTG
+ */
+
+#define CONFIG_USB_FUNCTION_FASTBOOT
+#define CONFIG_CMD_FASTBOOT
+#define CONFIG_FASTBOOT_FLASH
+#define CONFIG_FASTBOOT_FLASH_MMC_DEV   0
+#define CONFIG_FASTBOOT_BUF_SIZE        (CONFIG_SYS_SDRAM_SIZE - SZ_1M)
+#define CONFIG_FASTBOOT_BUF_ADDR        CONFIG_SYS_SDRAM_BASE
+#define CONFIG_USB_GADGET
+#define CONFIG_USB_GADGET_DUALSPEED
+#define CONFIG_USB_GADGET_VBUS_DRAW     0
+#define CONFIG_USB_GADGET_DWC2_OTG
+#define CONFIG_USB_GADGET_NX_UDC_OTG_PHY
+#define CONFIG_USB_GADGET_DOWNLOAD
+#define CONFIG_SYS_CACHELINE_SIZE       64
+#define CONFIG_G_DNL_VENDOR_NUM         0x18d1  /* google */
+#define CONFIG_G_DNL_PRODUCT_NUM        0x0002  /* nexus one */
+#define CONFIG_G_DNL_MANUFACTURER       "Nexell Corporation"
 
 /*-----------------------------------------------------------------------
  * Nexell USB Downloader
