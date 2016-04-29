@@ -352,11 +352,11 @@
 		"bootm $kerneladdr - $fdtaddr\0"		\
 	"ramfsboot=setenv bootargs ${console} "				\
 		"root=/dev/ram0 ${root_rw} initrd=${ramdiskaddr},16M ramdisk=16384 "	\
-		"${opts} ${recoverymode};"		\
+		"${opts} ${recoverymode} bd_addr=${bd_addr};"		\
 		"run boot_cmd_initrd\0"					\
 	"mmcboot=setenv bootargs ${console} "				\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
-		"${opts};"						\
+		"${opts} bd_addr=${bd_addr};"				\
 		"run boot_cmd_initrd\0"					\
 	"recoveryboot=run sdrecovery; setenv recoverymode recovery;"	\
 		"run ramfsboot\0"					\
