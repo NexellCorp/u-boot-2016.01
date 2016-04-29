@@ -281,6 +281,11 @@
 #define CONFIG_MII
 #define CONFIG_CMD_MII
 
+/* FACTORY_INFO */
+#define CONFIG_CMD_FACTORY_INFO
+#define CONFIG_FACTORY_INFO_BUF_ADDR		0x70000000
+#define CONFIG_FACTORY_INFO_START		0x1c00
+#define CONFIG_FACTORY_INFO_SIZE		0x100
 /*-----------------------------------------------------------------------
  * BOOTCOMMAND
  */
@@ -328,6 +333,12 @@
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
 	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
+	"factory_load=factory_info load mmc 0 "				\
+		__stringify(CONFIG_FACTORY_INFO_START) " "		\
+		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
+	"factory_save=factory_info save mmc 0 "				\
+		__stringify(CONFIG_FACTORY_INFO_START) " "		\
+		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
 	"boot_cmd_initrd="						\
 		"run load_fdt;"						\
 		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;" \
