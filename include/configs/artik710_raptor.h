@@ -325,7 +325,7 @@
 	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
 	"root_rw=rw\0"							\
-	"opts=loglevel=7\0"						\
+	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
 	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
 	"boot_cmd_initrd="						\
