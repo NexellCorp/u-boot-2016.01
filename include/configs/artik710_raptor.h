@@ -281,6 +281,9 @@
 #define CONFIG_MII
 #define CONFIG_CMD_MII
 
+/* NET */
+#define CONFIG_CMD_GEN_ETHADDR
+
 /* FACTORY_INFO */
 #define CONFIG_CMD_FACTORY_INFO
 #define CONFIG_FACTORY_INFO_BUF_ADDR		0x70000000
@@ -339,6 +342,9 @@
 	"factory_save=factory_info save mmc 0 "				\
 		__stringify(CONFIG_FACTORY_INFO_START) " "		\
 		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
+	"factory_set_ethaddr=run factory_load; gen_eth_addr ;"		\
+		"factory_info write ethaddr $ethaddr;"			\
+		"run factory_save\0"					\
 	"boot_cmd_initrd="						\
 		"run load_fdt;"						\
 		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;" \
