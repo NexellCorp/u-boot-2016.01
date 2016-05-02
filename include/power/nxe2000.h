@@ -14,6 +14,20 @@
 /* NXE2000 registers */
 #define	NXE2000_NUM_OF_REGS 0xFF
 
+#define	NXE2000_REG_DC1CTL2					0x2D
+#define	NXE2000_REG_DC2CTL2					0x2F
+#define	NXE2000_REG_DC3CTL2					0x31
+#define	NXE2000_REG_DC4CTL2					0x33
+#define	NXE2000_REG_DC5CTL2					0x35
+#define	NXE2000_REG_CHGCTL1					0xB3
+#define	NXE2000_REG_BANKSEL					0xFF
+
+#define	NXE2000_POS_DCxCTL2_DCxOSC			6
+#define	NXE2000_POS_DCxCTL2_DCxSR			4
+#define	NXE2000_POS_DCxCTL2_DCxLIM			1
+#define	NXE2000_POS_DCxCTL2_DCxLIMSDEN		0
+#define	NXE2000_POS_CHGCTL1_SUSPEND			3
+
 /* Unified sub device IDs for AXP */
 /* LDO0 For RTCLDO ,LDO1-3 for ALDO,LDO*/
 enum nxe2000_regnum {
