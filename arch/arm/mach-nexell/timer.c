@@ -9,7 +9,6 @@
 #include <asm/io.h>
 #include <asm/arch/nexell.h>
 #include <asm/arch/clk.h>
-#include <asm/arch/reset.h>
 
 #if (CONFIG_TIMER_SYS_TICK_CH > 3)
 #error Not support timer channel. Please use "0~3" channels.
@@ -133,10 +132,6 @@ int timer_init(void)
 	TIMER_FREQ = tcnt;	/* Timer Count := 1 Mhz counting */
 	TIMER_HZ = TIMER_FREQ / CONFIG_SYS_HZ;
 	tcnt = TIMER_COUNT == 0xFFFFFFFF ? TIMER_COUNT + 1 : tcnt;
-
-	/* reset control: Low active ___|---   */
-	nx_rstcon_setrst(RESET_ID_TIMER, RSTCON_ASSERT);
-	nx_rstcon_setrst(RESET_ID_TIMER, RSTCON_NEGATE);
 
 	timer_stop(base, ch);
 	timer_clock(base, ch, tmux, tscl);
