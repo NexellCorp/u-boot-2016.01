@@ -7,6 +7,9 @@
 
 #include <config.h>
 #include <common.h>
+#ifdef CONFIG_PWM_NX
+#include <pwm.h>
+#endif
 #include <asm/io.h>
 
 #include <asm/arch/nexell.h>
@@ -64,9 +67,28 @@ void board_gpio_init(void)
 	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
 }
 
+#ifdef CONFIG_PWM_NX
+void board_backlight_init(void)
+{
+	pwm_init(CONFIG_BACKLIGHT_CH, CONFIG_BACKLIGHT_DIV,
+		 CONFIG_BACKLIGHT_INV);
+	pwm_config(CONFIG_BACKLIGHT_CH, TO_DUTY_NS(CONFIG_BACKLIGHT_DUTY,
+						   CONFIG_BACKLIGHT_HZ),
+		   TO_PERIOD_NS(CONFIG_BACKLIGHT_HZ));
+}
+#endif
+
+int mmc_get_env_dev(void)
+{
+	return 0;
+}
+
 int board_init(void)
 {
 	board_gpio_init();
+#ifdef CONFIG_PWM_NX
+	board_backlight_init();
+#endif
 	return 0;
 }
 
