@@ -38,7 +38,7 @@ struct nx_display_dev {
 	unsigned int fb_size;
 };
 
-static char * const dp_dev_str[] = {
+static char *const dp_dev_str[] = {
 	[DP_DEVICE_RESCONV] = "RESCONV",
 	[DP_DEVICE_RGBLCD] = "LCD",
 	[DP_DEVICE_HDMI] = "HDMI",
@@ -185,8 +185,8 @@ static void nx_display_parse_dp_layer(const void *blob, int node,
 		plane->enable = 0;
 
 	if (0 == plane->fb_base) {
-		debug("fail : dp plane.%d invalid fb base [0x%x] ->\n",
-			plane->layer, plane->fb_base);
+		printf("fail : dp plane.%d invalid fb base [0x%x] ->\n",
+		       plane->layer, plane->fb_base);
 		return;
 	}
 
@@ -313,8 +313,8 @@ static int nx_display_parse_dp_lcds(const void *blob, int node,
 		dp->dev_type = DP_DEVICE_HDMI;
 		return nx_display_parse_dp_hdmi(blob, node, dp);
 	} else {
-		debug("%s: node %s unknown display type\n", __func__,
-		      fdt_get_name(blob, node, NULL));
+		printf("%s: node %s unknown display type\n", __func__,
+		       fdt_get_name(blob, node, NULL));
 		return -EINVAL;
 	}
 
@@ -399,33 +399,33 @@ static struct nx_display_dev *nx_display_setup(void)
 #ifdef CONFIG_VIDEO_NX_RGB
 	case DP_DEVICE_RGBLCD:
 		nx_rgb_display(dp->module,
-			&dp->sync, &dp->ctrl, &dp->top,
-			dp->planes, (struct dp_rgb_dev *)dp->device);
+			       &dp->sync, &dp->ctrl, &dp->top,
+			       dp->planes, (struct dp_rgb_dev *)dp->device);
 		break;
 #endif
 #ifdef CONFIG_VIDEO_NX_MIPI
 	case DP_DEVICE_MIPI:
 		nx_mipi_display(dp->module,
-			&dp->sync, &dp->ctrl, &dp->top,
-			dp->planes, (struct dp_mipi_dev *)dp->device);
+				&dp->sync, &dp->ctrl, &dp->top,
+				dp->planes, (struct dp_mipi_dev *)dp->device);
 		break;
 #endif
 #ifdef CONFIG_VIDEO_NX_HDMI
 	case DP_DEVICE_HDMI:
 		nx_hdmi_display(dp->module,
-			&dp->sync, &dp->ctrl, &dp->top,
-			dp->planes, (struct dp_hdmi_dev *)dp->device);
+				&dp->sync, &dp->ctrl, &dp->top,
+				dp->planes, (struct dp_hdmi_dev *)dp->device);
 		break;
 #endif
 	default:
-		printf("fail : unknown lcd type !!!\n");
+		printf("fail : not support lcd type %d !!!\n", dp->dev_type);
 		goto err_setup;
 	};
 
 	printf("LCD: [%s] dp.%d.%d %dx%d %dbpp FB:0x%08x\n",
-		dp_dev_str[dp->dev_type], dp->module, dp->fb_plane->layer,
-		dp->fb_plane->width, dp->fb_plane->height, dp->depth*8,
-		dp->fb_addr);
+	       dp_dev_str[dp->dev_type], dp->module, dp->fb_plane->layer,
+	       dp->fb_plane->width, dp->fb_plane->height, dp->depth * 8,
+	       dp->fb_addr);
 
 	return dp;
 
@@ -457,7 +457,7 @@ void *video_hw_init(void)
 		break;
 	default:
 		printf("fail : not support LCD bit per pixel %d\n",
-			dp->depth * 8);
+		       dp->depth * 8);
 		return NULL;
 	}
 
@@ -468,7 +468,7 @@ void *video_hw_init(void)
 	graphic_device->winSizeX = dp->fb_plane->width;
 	graphic_device->winSizeY = dp->fb_plane->height;
 	graphic_device->plnSizeX =
-		graphic_device->winSizeX * graphic_device->gdfBytesPP;
+	    graphic_device->winSizeX * graphic_device->gdfBytesPP;
 
 	return graphic_device;
 }
@@ -497,8 +497,8 @@ static int nx_display_probe(struct udevice *dev)
 	for (i = 0; dp->top.plane_num > i; i++) {
 		dp->planes[i].layer = i;
 		if (dp->planes[i].fb_base && dp->planes[i].width &&
-			dp->planes[i].height && dp->planes[i].pixel_byte &&
-			dp->planes[i].format)
+		    dp->planes[i].height && dp->planes[i].pixel_byte &&
+		    dp->planes[i].format)
 			dp->planes[i].enable = 1;
 		else
 			dp->planes[i].enable = 0;
