@@ -58,5 +58,9 @@ void nx_rgb_display(int module,
 	}
 
 	dp_plane_screen_enable(module, 1);
+
 	rgb_switch(module, input, sync, dev);
+
+	dp_control_setup(module, sync, ctrl);
+	dp_control_enable(module, 1);
 }
