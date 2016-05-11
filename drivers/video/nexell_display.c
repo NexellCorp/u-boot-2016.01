@@ -235,9 +235,11 @@ static int nx_display_parse_dp_lvds(const void *blob, int node,
 	dev->pol_inv_de = fdtdec_get_int(blob, node, "pol_inv_de", 0);
 	dev->pol_inv_ck = fdtdec_get_int(blob, node, "pol_inv_ck", 0);
 
-	debug("DP: LVDS ->\n");
-	debug("f:0x%x, pol inv hs:%d, vs:%d, de:%d, ck:%d\n",
-	      dev->lvds_format, dev->pol_inv_hs, dev->pol_inv_vs,
+	debug("DP: LVDS -> %s\n",
+	      dev->lvds_format == DP_LVDS_FORMAT_VESA ? "VESA" :
+	      dev->lvds_format == DP_LVDS_FORMAT_JEIDA ? "JEIDA" : "LOC");
+	debug("pol inv hs:%d, vs:%d, de:%d, ck:%d\n",
+	      dev->pol_inv_hs, dev->pol_inv_vs,
 	      dev->pol_inv_de, dev->pol_inv_ck);
 
 	return 0;
@@ -401,6 +403,13 @@ static struct nx_display_dev *nx_display_setup(void)
 		nx_rgb_display(dp->module,
 			       &dp->sync, &dp->ctrl, &dp->top,
 			       dp->planes, (struct dp_rgb_dev *)dp->device);
+		break;
+#endif
+#ifdef CONFIG_VIDEO_NX_LVDS
+	case DP_DEVICE_LVDS:
+		nx_lvds_display(dp->module,
+				&dp->sync, &dp->ctrl, &dp->top,
+				dp->planes, (struct dp_lvds_dev *)dp->device);
 		break;
 #endif
 #ifdef CONFIG_VIDEO_NX_MIPI

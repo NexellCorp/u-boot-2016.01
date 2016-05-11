@@ -168,8 +168,14 @@ enum {
 	DP_CLOCK_END,
 };
 
+enum dp_lvds_format {
+	DP_LVDS_FORMAT_VESA = 0,
+	DP_LVDS_FORMAT_JEIDA = 1,
+	DP_LVDS_FORMAT_LOC = 2,
+};
+
 struct dp_lvds_dev {
-	unsigned int lvds_format;	/* 0:VESA, 1:JEIDA, 2: Location */
+	enum dp_lvds_format lvds_format; /* 0:VESA, 1:JEIDA, 2: Location */
 	int pol_inv_hs;		/* hsync polarity invert for VESA, JEIDA */
 	int pol_inv_vs;		/* bsync polarity invert for VESA, JEIDA */
 	int pol_inv_de;		/* de polarity invert for VESA, JEIDA */

@@ -7,6 +7,11 @@ config VIDEO_NX_RGB
 	---help---
       Support for RGB lcd output.
 
+config VIDEO_NX_LVDS
+	bool "LVDS LCD"
+	---help---
+      Support for LVDS lcd output.
+
 config VIDEO_NX_MIPI
 	bool "MiPi"
 	---help---
