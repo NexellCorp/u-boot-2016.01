@@ -360,6 +360,9 @@
 		"run boot_cmd_initrd\0"					\
 	"recoveryboot=run sdrecovery; setenv recoverymode recovery;"	\
 		"run ramfsboot\0"					\
+	"hwtestboot=run sdrecovery; setenv rootdev 1;"			\
+		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
+		"run mmcboot\0"						\
 	"bootcmd=run ramfsboot\0"
 
 #endif /* __CONFIG_H__ */
