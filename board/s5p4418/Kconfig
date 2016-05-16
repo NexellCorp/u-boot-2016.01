@@ -6,6 +6,12 @@ config TARGET_S5P4418_DRONE
 	help
 	  Support for s5p4418 drone platform.
 
+config TARGET_ARTIK530_RAPTOR
+        bool "ARTIK530_RAPTOR"
+	help
+	  Support for artik530_raptor platform.
+
 endchoice
 
 source "board/s5p4418/drone/Kconfig"
+source "board/s5p4418/artik530_raptor/Kconfig"
