@@ -171,6 +171,20 @@
 #define CONFIG_TIMER_SYS_TICK_CH		0
 
 /*-----------------------------------------------------------------------
+ * PWM
+ */
+#define CONFIG_PWM_NX
+
+/*-----------------------------------------------------------------------
+ * BACKLIGHT
+ */
+#define CONFIG_BACKLIGHT_CH			0
+#define CONFIG_BACKLIGHT_DIV			0
+#define CONFIG_BACKLIGHT_INV			1
+#define CONFIG_BACKLIGHT_DUTY			50
+#define CONFIG_BACKLIGHT_HZ			10000
+
+/*-----------------------------------------------------------------------
  * SD/MMC
  */
 
