@@ -144,9 +144,12 @@
  * serial console configuration
  */
 #define CONFIG_PL011_SERIAL
-#define CONFIG_CONS_INDEX			0
+#define CONFIG_CONS_INDEX			3
 #define CONFIG_PL011_CLOCK			50000000
-#define CONFIG_PL01x_PORTS			{(void *)PHY_BASEADDR_UART0}
+#define CONFIG_PL01x_PORTS			{(void *)PHY_BASEADDR_UART0, \
+						(void *)PHY_BASEADDR_UART1, \
+						(void *)PHY_BASEADDR_UART2, \
+						(void *)PHY_BASEADDR_UART3}
 
 #define CONFIG_BAUDRATE				115200
 #define CONFIG_SYS_BAUDRATE_TABLE \
