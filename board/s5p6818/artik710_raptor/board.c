@@ -132,6 +132,16 @@ void board_gpio_init(void)
 	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
 }
 
+#ifdef CONFIG_VIDEO_NX_LVDS
+void board_display_reset(void)
+{
+	nx_gpio_set_pad_function(4, 3, 0);	/* E_3 : LVDS RESET */
+	nx_gpio_set_output_enable(4, 3, 0);
+	mdelay(1);
+	nx_gpio_set_output_enable(4, 3, 1);
+}
+#endif
+
 int mmc_get_env_dev(void)
 {
 	int port_num;
@@ -162,6 +172,11 @@ int board_init(void)
 #ifdef CONFIG_USB_EHCI_EXYNOS
 	board_ehci_power_en();
 #endif
+
+#ifdef CONFIG_VIDEO_NX_LVDS
+	board_display_reset();
+#endif
+
 	return 0;
 }
 
