@@ -50,6 +50,13 @@ enum nxe2000_regnum {
 	NXE2000_ID_LDORTC2,
 };
 
+enum {
+	TYPE_UNKNOWN = 0,
+	TYPE_NXE1500,
+	TYPE_NXE2000,
+	TYPE_MAX,
+};
+
 struct sec_voltage_desc {
 	int max;
 	int min;

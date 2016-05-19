@@ -82,7 +82,8 @@ static struct dm_pmic_ops nxe2000_ops = {
 };
 
 static const struct udevice_id nxe2000_ids[] = {
-	{ .compatible = "nexell,nxe2000" },
+	{ .compatible = "nexell,nxe1500", .data = (ulong)TYPE_NXE1500 },
+	{ .compatible = "nexell,nxe2000", .data = (ulong)TYPE_NXE2000 },
 	{ }
 };
 
