@@ -290,8 +290,9 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 	}
 
 	if (fpart->fs_type & FASTBOOT_FS_EXT4) {
-		p = sprintf(cmd, "ext4_img_write %d %p %d %x", dev, buf,
-			    fpart->part_num, length);
+		p = sprintf(cmd, "ext4_img_write %d %p %d %x",
+			    dev, (unsigned int)buf, fpart->part_num,
+			    (unsigned int)length);
 		ret = run_command(cmd, 0);
 		if (ret < 0)
 			printf("Flash : %s\n", (ret < 0) ? "FAIL" : "DONE");
