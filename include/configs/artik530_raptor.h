@@ -161,6 +161,42 @@
  */
 #define	CONFIG_SYS_NO_FLASH
 
+
+/*-----------------------------------------------------------------------
+ * SD/MMC
+ */
+
+#define CONFIG_GENERIC_MMC
+#define CONFIG_MMC
+#define CONFIG_DWMMC
+#define CONFIG_NEXELL_DWMMC
+#define CONFIG_BOUNCE_BUFFER
+#define CONFIG_CMD_MMC
+
+#if defined(CONFIG_MMC)
+#define CONFIG_2NDBOOT_OFFSET		512
+#define CONFIG_2NDBOOT_SIZE		(64*1024)
+#define CONFIG_FIP_OFFSET		(CONFIG_2NDBOOT_OFFSET +\
+					 CONFIG_2NDBOOT_SIZE)
+#define CONFIG_FIP_SIZE			(3*1024*1024)
+#define CONFIG_ENV_IS_IN_MMC
+#define CONFIG_SYS_MMC_ENV_DEV		0
+#define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
+					 CONFIG_FIP_SIZE)
+#define CONFIG_ENV_SIZE			(16*1024)	/* env size */
+#endif
+
+#if defined(CONFIG_MMC)
+#define CONFIG_DOS_PARTITION
+#define CONFIG_CMD_FAT
+#define CONFIG_FS_FAT
+#define CONFIG_FAT_WRITE
+
+#define CONFIG_CMD_EXT4
+#define CONFIG_CMD_EXT4_WRITE
+#define CONFIG_FS_EXT4
+#define CONFIG_EXT4_WRITE
+#endif
 /*-----------------------------------------------------------------------
  * PLL
  */
