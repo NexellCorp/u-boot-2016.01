@@ -63,7 +63,7 @@ static const struct nxe2000_para nxe2000_ldo_param[] = {
 	{NXE2000_ID_LDO9, 0x54, 0x0, 0x7f, 0x45, 0, &ldo_v1},
 	{NXE2000_ID_LDO10, 0x55, 0x0, 0x7f, 0x45, 1, &ldo_v1},
 	{NXE2000_ID_LDORTC1, 0x56, 0x0, 0x7f, 0x45, 4, &ldo_v3},
-	{NXE2000_ID_LDORTC2, 0x57, 0x0, 0x7f, 0x45, 5, &ldo_v3},
+	{NXE2000_ID_LDORTC2, 0x57, 0x0, 0x7f, 0x45, 5, &ldo_v1},
 };
 
 static int nxe2000_reg_get_value(struct udevice *dev, const struct nxe2000_para *param)
