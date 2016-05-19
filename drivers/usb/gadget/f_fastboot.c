@@ -711,6 +711,7 @@ static int part_lists_make(const char *ptable_str, int ptable_str_len)
 	part_lists_init(0);
 
 	parse_comment(p, &p);
+	len -= (int)(p - ptable_str);
 	sort_string((char *)p, len);
 
 	/* new parts table */
@@ -1724,7 +1725,7 @@ static void cb_flash(struct usb_ep *ep, struct usb_request *req)
 	if (!strcmp("partmap", cmd)) {
 		const char *p = (void *)CONFIG_FASTBOOT_BUF_ADDR;
 		part_lists_init(1);
-		if (0 > part_lists_make(p, strlen(p))) {
+		if (0 > part_lists_make(p, download_bytes)) {
 			sprintf(response, "FAIL partition map parse");
 			goto err_flash;
 		}
