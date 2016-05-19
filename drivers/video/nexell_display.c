@@ -323,18 +323,24 @@ static int nx_display_parse_dp_lcds(const void *blob, int node,
 	return 0;
 }
 
-static int nx_display_parse_dt(const void *blob, struct nx_display_dev *dp)
+static int nx_display_parse_dt(const void *blob,
+			struct nx_display_dev *dp, int node)
 {
-	int node = fdtdec_next_compatible(blob, 0, COMPAT_NEXELL_DISPLAY);
 	const char *name, *dtype;
 	int ret = 0;
 
-	if (0 >= node) {
-		printf("%s: can't get device node for dp\n", __func__);
-		return -ENODEV;
+	if (!node) {
+		node = fdtdec_next_compatible(blob, 0, COMPAT_NEXELL_DISPLAY);
+		if (0 >= node) {
+			printf("%s: can't get device node for dp\n", __func__);
+			return -ENODEV;
+		}
 	}
 
-	dp->module = fdtdec_get_int(blob, node, "module", 0);
+	dp->module = fdtdec_get_int(blob, node, "module", -1);
+	if (-1 == dp->module)
+		dp->module = fdtdec_get_int(blob, node, "index", 0);
+
 	dtype = fdt_getprop(blob, node, "lcd-type", NULL);
 
 	for (node = fdt_first_subnode(blob, node);
@@ -361,7 +367,7 @@ static int nx_display_parse_dt(const void *blob, struct nx_display_dev *dp)
 static struct nx_display_dev *nx_display_setup(void)
 {
 	struct nx_display_dev *dp;
-	int i, ret;
+	int i, ret, node = 0;
 
 #ifdef CONFIG_DM
 	struct udevice *dev;
@@ -373,6 +379,7 @@ static struct nx_display_dev *nx_display_setup(void)
 		return NULL;
 
 	dp = dev_get_priv(dev);
+	node = dev->of_offset;
 
 #elif defined CONFIG_OF_CONTROL
 	dp = kzalloc(sizeof(*dp), GFP_KERNEL);
@@ -383,7 +390,7 @@ static struct nx_display_dev *nx_display_setup(void)
 #endif
 
 #if CONFIG_IS_ENABLED(OF_CONTROL)
-	ret = nx_display_parse_dt(gd->fdt_blob, dp);
+	ret = nx_display_parse_dt(gd->fdt_blob, dp, node);
 	if (ret)
 		goto err_setup;
 #endif
