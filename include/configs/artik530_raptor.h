@@ -263,6 +263,15 @@
 #define CONFIG_FIT_BEST_MATCH
 #define CONFIG_OF_LIBFDT
 
+/* NET */
+#define CONFIG_CMD_GEN_ETHADDR
+
+/* FACTORY_INFO */
+#define CONFIG_CMD_FACTORY_INFO
+#define CONFIG_FACTORY_INFO_BUF_ADDR		0x5c000000
+#define CONFIG_FACTORY_INFO_START		0x1c00
+#define CONFIG_FACTORY_INFO_SIZE		0x100
+
 /*-----------------------------------------------------------------------
  * ENV
  */
