@@ -256,9 +256,12 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 	if (fpart->fs_type == FASTBOOT_FS_2NDBOOT ||
 	    fpart->fs_type == FASTBOOT_FS_BOOT ||
 	    fpart->fs_type == FASTBOOT_FS_ENV) {
+		int blk_cnt = length / 512;
+		if (length % 512)
+			blk_cnt++;
 		p = sprintf(cmd, "mmc write ");
 		l = sprintf(&cmd[p], "0x%p 0x%llx 0x%llx", buf,
-			    fpart->start / 512, length / 512);
+			    fpart->start / 512, blk_cnt);
 		p += l;
 		cmd[p] = 0;
 
