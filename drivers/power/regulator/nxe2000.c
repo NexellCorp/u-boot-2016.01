@@ -43,12 +43,33 @@ static const struct sec_voltage_desc ldo_v3 = {
 	.step = 25000,
 };
 
+static const struct sec_voltage_desc ldo_v4 = {
+	.max = 3500000,
+	.min = 1200000,
+	.step = 25000,
+};
+
 static const struct nxe2000_para nxe2000_buck_param[] = {
 	{NXE2000_ID_DCDC1, 0x36, 0x0, 0xff, 0x2C, 0, &buck_v1},
 	{NXE2000_ID_DCDC2, 0x37, 0x0, 0xff, 0x2E, 0, &buck_v1},
 	{NXE2000_ID_DCDC3, 0x38, 0x0, 0xff, 0x30, 0, &buck_v1},
 	{NXE2000_ID_DCDC4, 0x39, 0x0, 0xff, 0x32, 0, &buck_v1},
 	{NXE2000_ID_DCDC5, 0x3A, 0x0, 0xff, 0x34, 0, &buck_v1},
+};
+
+static const struct nxe2000_para nxe1500_ldo_param[] = {
+	{NXE2000_ID_LDO1, 0x4C, 0x0, 0x7f, 0x44, 0, &ldo_v1},
+	{NXE2000_ID_LDO2, 0x4D, 0x0, 0x7f, 0x44, 1, &ldo_v1},
+	{NXE2000_ID_LDO3, 0x4E, 0x0, 0x7f, 0x44, 2, &ldo_v2},
+	{NXE2000_ID_LDO4, 0x4F, 0x0, 0x7f, 0x44, 3, &ldo_v1},
+	{NXE2000_ID_LDO5, 0x50, 0x0, 0x7f, 0x44, 4, &ldo_v1},
+	{NXE2000_ID_LDO6, 0x51, 0x0, 0x7f, 0x44, 5, &ldo_v2},
+	{NXE2000_ID_LDO7, 0x52, 0x0, 0x7f, 0x44, 6, &ldo_v1},
+	{NXE2000_ID_LDO8, 0x53, 0x0, 0x7f, 0x44, 7, &ldo_v2},
+	{NXE2000_ID_LDO9, 0x54, 0x0, 0x7f, 0x45, 0, &ldo_v1},
+	{NXE2000_ID_LDO10, 0x55, 0x0, 0x7f, 0x45, 1, &ldo_v1},
+	{NXE2000_ID_LDORTC1, 0x56, 0x0, 0x7f, 0x45, 4, &ldo_v4},
+	{NXE2000_ID_LDORTC2, 0x57, 0x0, 0x7f, 0x45, 5, &ldo_v1},
 };
 
 static const struct nxe2000_para nxe2000_ldo_param[] = {
@@ -113,16 +134,42 @@ static int nxe2000_ldo_probe(struct udevice *dev)
 }
 static int nxe2000_ldo_get_value(struct udevice *dev)
 {
+	const struct nxe2000_para *ldo_param = NULL;
 	int ldo = dev->driver_data;
 
-	return nxe2000_reg_get_value(dev, &nxe2000_ldo_param[ldo]);
+	switch (dev_get_driver_data(dev_get_parent(dev))) {
+	case TYPE_NXE1500:
+		ldo_param = &nxe1500_ldo_param[ldo];
+		break;
+	case TYPE_NXE2000:
+		ldo_param = &nxe2000_ldo_param[ldo];
+		break;
+	default:
+		debug("Unsupported NXE2000\n");
+		return -EINVAL;
+	}
+
+	return nxe2000_reg_get_value(dev, ldo_param);
 }
 
 static int nxe2000_ldo_set_value(struct udevice *dev, int uv)
 {
+	const struct nxe2000_para *ldo_param = NULL;
 	int ldo = dev->driver_data;
 
-	return nxe2000_reg_set_value(dev, &nxe2000_ldo_param[ldo], uv);
+	switch (dev_get_driver_data(dev_get_parent(dev))) {
+	case TYPE_NXE1500:
+		ldo_param = &nxe1500_ldo_param[ldo];
+		break;
+	case TYPE_NXE2000:
+		ldo_param = &nxe2000_ldo_param[ldo];
+		break;
+	default:
+		debug("Unsupported NXE2000\n");
+		return -EINVAL;
+	}
+
+	return nxe2000_reg_set_value(dev, ldo_param, uv);
 }
 
 static int nxe2000_reg_get_enable(struct udevice *dev, const struct nxe2000_para *param)
@@ -157,16 +204,42 @@ static int nxe2000_reg_set_enable(struct udevice *dev, const struct nxe2000_para
 
 static bool nxe2000_ldo_get_enable(struct udevice *dev)
 {
+	const struct nxe2000_para *ldo_param = NULL;
 	int ldo = dev->driver_data;
 
-	return nxe2000_reg_get_enable(dev, &nxe2000_ldo_param[ldo]);
+	switch (dev_get_driver_data(dev_get_parent(dev))) {
+	case TYPE_NXE1500:
+		ldo_param = &nxe1500_ldo_param[ldo];
+		break;
+	case TYPE_NXE2000:
+		ldo_param = &nxe2000_ldo_param[ldo];
+		break;
+	default:
+		debug("Unsupported NXE2000\n");
+		return -EINVAL;
+	}
+
+	return nxe2000_reg_get_enable(dev, ldo_param);
 }
 
 static int nxe2000_ldo_set_enable(struct udevice *dev, bool enable)
 {
+	const struct nxe2000_para *ldo_param = NULL;
 	int ldo = dev->driver_data;
 
-	return nxe2000_reg_set_enable(dev, &nxe2000_ldo_param[ldo], enable);
+	switch (dev_get_driver_data(dev_get_parent(dev))) {
+	case TYPE_NXE1500:
+		ldo_param = &nxe1500_ldo_param[ldo];
+		break;
+	case TYPE_NXE2000:
+		ldo_param = &nxe2000_ldo_param[ldo];
+		break;
+	default:
+		debug("Unsupported NXE2000\n");
+		return -EINVAL;
+	}
+
+	return nxe2000_reg_set_enable(dev, ldo_param, enable);
 }
 
 static int nxe2000_buck_probe(struct udevice *dev)
