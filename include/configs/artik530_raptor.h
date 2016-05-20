@@ -273,9 +273,78 @@
 #define CONFIG_FACTORY_INFO_SIZE		0x100
 
 /*-----------------------------------------------------------------------
- * ENV
+ * BOOTCOMMAND
  */
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-			"fdt_high=0xffffffff"
+#define CONFIG_REVISION_TAG
+
+#define CONFIG_DEFAULT_CONSOLE		"console=ttyAMA3,115200n8\0"
+
+#define CONFIG_ROOT_DEV		0
+#define CONFIG_BOOT_PART	1
+#define CONFIG_MODULE_PART	2
+#define CONFIG_ROOT_PART	3
+
+#define CONFIG_EXTRA_ENV_SETTINGS					\
+	"fdt_high=0xffffffff\0"						\
+	"initrd_high=0xffffffff\0"					\
+	"kerneladdr=0x48000000\0"					\
+	"kernel_file=uImage\0"						\
+	"ramdiskaddr=0x49000000\0"					\
+	"ramdisk_file=ramdisk.gz\0"					\
+	"fdtaddr=0x4a000000\0"						\
+	"load_fdt="							\
+		"loop=$board_rev; "					\
+		"number=$board_rev: "					\
+		"success=0; "						\
+		"until test $loop -eq 0 || test $success -ne 0; do "	\
+			"if test $loop -lt 10; then "			\
+				"number=0$loop; "			\
+			"else number=$loop; "				\
+			"fi; "						\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik530-raptor-rev${number}.dtb && setexpr success 1; " \
+			"setexpr loop $loop - 1; "			\
+			"done; "					\
+		"if test $success -eq 0; then "				\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik530-raptor-rev00.dtb;"	\
+		"fi; \0"						\
+	"console=" CONFIG_DEFAULT_CONSOLE				\
+	"consoleon=set console=" CONFIG_DEFAULT_CONSOLE			\
+		"; saveenv; reset\0"					\
+	"consoleoff=set console=ram; saveenv; reset\0"			\
+	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
+	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
+	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
+	"root_rw=rw\0"							\
+	"opts=loglevel=4\0"						\
+	"rootfs_type=ext4\0"						\
+	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
+	"factory_load=factory_info load mmc 0 "				\
+		__stringify(CONFIG_FACTORY_INFO_START) " "		\
+		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
+	"factory_save=factory_info save mmc 0 "				\
+		__stringify(CONFIG_FACTORY_INFO_START) " "		\
+		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
+	"factory_set_ethaddr=run factory_load; gen_eth_addr ;"		\
+		"factory_info write ethaddr $ethaddr;"			\
+		"run factory_save\0"					\
+	"boot_cmd_initrd="						\
+		"run load_fdt;"						\
+		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;" \
+		"ext4load mmc ${rootdev}:${bootpart} $ramdiskaddr $ramdisk_file;" \
+		"bootm $kerneladdr - $fdtaddr\0"		\
+	"ramfsboot=setenv bootargs ${console} "				\
+		"root=/dev/ram0 ${root_rw} initrd=${ramdiskaddr},16M ramdisk=16384 "	\
+		"${opts} ${recoverymode} bd_addr=${bd_addr};"		\
+		"run boot_cmd_initrd\0"					\
+	"mmcboot=setenv bootargs ${console} "				\
+		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
+		"${opts} bd_addr=${bd_addr};"				\
+		"run boot_cmd_initrd\0"					\
+	"recoveryboot=run sdrecovery; setenv recoverymode recovery;"	\
+		"run ramfsboot\0"					\
+	"hwtestboot=run sdrecovery; setenv rootdev 1;"			\
+		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
+		"run mmcboot\0"						\
+	"bootcmd=run ramfsboot\0"
 
 #endif /* __CONFIG_H__ */
