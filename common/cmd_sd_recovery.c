@@ -456,11 +456,15 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 		if (fs_type == UPDATE_SDCARD_FS_2NDBOOT ||
 		    fs_type == UPDATE_SDCARD_FS_BOOT ||
 		    fs_type == UPDATE_SDCARD_FS_ENV) {
+			int blk_cnt = length / 512;
+				if (length % 512)
+					blk_cnt++;
+
 			p = sprintf(cmd, "mmc write ");
 			l = sprintf(&cmd[p], "0x%x 0x%llx 0x%llx",
 				    (unsigned int)addr,
 				    start / 512,
-				    length / 512);
+				    blk_cnt);
 			p += l;
 			cmd[p] = 0;
 		} else if (fs_type & UPDATE_SDCARD_FS_MASK) {
