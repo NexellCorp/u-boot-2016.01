@@ -107,6 +107,8 @@ int mmc_get_env_dev(void)
 			return 0;
 		else if (port_num == SD_PORT_NUM)
 			return 1;
+	} else if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_USB) {
+		return 0;
 	}
 
 	return -1;

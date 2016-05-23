@@ -330,6 +330,7 @@
 #define SYSRSTCONFIG			(0x23C)
 #define BOOTMODE_MASK			(0x7)
 #define BOOTMODE_SDMMC			5
+#define BOOTMODE_USB			6
 #define BOOTMODE_SDMMC_PORT_VAL(x)	((((x) >> 3) & 1) |	\
 					 (((x) >> 19 & 1) << 1))
 #define EMMC_PORT_NUM			2
