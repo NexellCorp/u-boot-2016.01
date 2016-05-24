@@ -263,6 +263,20 @@
 #define CONFIG_FIT_BEST_MATCH
 #define CONFIG_OF_LIBFDT
 
+/*-----------------------------------------------------------------------
+ * GMAC
+ */
+#define CONFIG_PHY_REALTEK
+
+#define CONFIG_ETHPRIME			"RTL8211"
+#define CONFIG_PHY_ADDR			3
+
+#define CONFIG_DW_ALTDESCRIPTOR
+
+#define CONFIG_PHY_GIGE
+#define CONFIG_MII
+#define CONFIG_CMD_MII
+
 /* NET */
 #define CONFIG_CMD_GEN_ETHADDR
 
