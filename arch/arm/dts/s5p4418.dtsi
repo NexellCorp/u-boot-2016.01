@@ -11,6 +11,7 @@
 		mmc0 = "/mmc0:mmc@c0062000";
 		mmc1 = "/mmc1@c0068000";
 		mmc2 = "/mmc2@c0069000";
+		gmac = "/ethernet@c0060000";
 	};
 
 	mmc2:mmc@c0069000 {
@@ -40,6 +41,13 @@
 		reg = <0xc0062000 0x1000>;
 		nexell,bus-width = <4>;
 		index = <0>;
+		status = "disabled";
+	};
+
+	gmac:ethernet@c0060000 {
+		compatible = "nexell,nexell-gmac";
+		reg = <0xc0060000 0x8000>;
+		phy-mode = "rgmii";
 		status = "disabled";
 	};
 
