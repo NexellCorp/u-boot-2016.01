@@ -18,7 +18,7 @@
 		#size-cells = <0>;
 		compatible = "nexell,nexell-dwmmc";
 		reg = <0xc0069000 0x1000>;
-		nexell,bus-width = <8>;
+		nexell,bus-width = <4>;
 		index = <2>;
 		status = "disabled";
 	};
