@@ -119,4 +119,8 @@
 		}; /* nxe1500@32 */
 	}; /* nxe1500_i2c */
 
+	gmac:ethernet@c0060000 {
+		mac-address = [000000000000]; /* Filled in by U-Boot */
+		status = "okay";
+	};
 };
