@@ -65,13 +65,13 @@ static void set_board_rev(u32 revision)
 static void nx_phy_init(void)
 {
 	/* Set interrupt config */
-	nx_gpio_set_pad_function(0, 9, 0);
-	nx_gpio_set_output_enable(0, 9, 1);
-	nx_gpio_set_pad_function(0, 10, 0);	/* GPIO */
+	nx_gpio_set_pad_function(0, 11, 0);
+	nx_gpio_set_output_enable(0, 11, 1);
+	nx_gpio_set_pad_function(0, 12, 0);	/* GPIO */
 
 	/* PHY reset */
-	nx_gpio_set_output_value(0, 10, 1);
-	nx_gpio_set_output_enable(0, 10, 1);
+	nx_gpio_set_output_value(0, 12, 1);
+	nx_gpio_set_output_enable(0, 12, 1);
 
 	/* ALT FUNCTION - GMAC */
 	nx_gpio_set_pad_function(4, 7, 1);
