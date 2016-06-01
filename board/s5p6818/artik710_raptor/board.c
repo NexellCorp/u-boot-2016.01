@@ -207,9 +207,19 @@ void pmic_init(void)
 	int ret = -ENODEV;
 	uint8_t bit_mask = 0;
 
-	ret = pmic_get("nxe2000@32", &dev);
-	if (ret)
-		printf("Can't get PMIC: %s!\n", "nxe2000@32");
+#ifdef CONFIG_REVISION_TAG
+	if (get_board_rev() >= 3) {
+		ret = pmic_get("nxe2000_gpio@32", &dev);
+		if (ret)
+			printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
+	} else {
+#endif
+		ret = pmic_get("nxe2000@32", &dev);
+		if (ret)
+			printf("Can't get PMIC: %s!\n", "nxe2000@32");
+#ifdef CONFIG_REVISION_TAG
+	}
+#endif
 
 	bit_mask = 0x00;
 	ret = pmic_reg_write(dev, (u32)NXE2000_REG_BANKSEL, (u32)bit_mask);
