@@ -16,6 +16,10 @@
 #include <power/pmic.h>
 #include <power/regulator.h>
 #include <power/nxe2000.h>
+#ifdef CONFIG_REVISION_TAG
+#include <asm/arch/nexell.h>
+#include <asm/arch/nx_gpio.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -24,6 +28,36 @@ static const struct pmic_child_info pmic_children_info[] = {
 	{ .prefix = "BUCK", .driver = NXE2000_BUCK_DRIVER },
 	{ },
 };
+
+#ifdef CONFIG_REVISION_TAG
+static void gpio_init(void)
+{
+	nx_gpio_initialize();
+	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
+
+	nx_gpio_set_pad_function(4, 4, 0);
+	nx_gpio_set_pad_function(4, 5, 0);
+	nx_gpio_set_pad_function(4, 6, 0);
+	nx_gpio_set_output_value(4, 4, 0);
+	nx_gpio_set_output_value(4, 5, 0);
+	nx_gpio_set_output_value(4, 6, 0);
+}
+
+static u32 hw_revision(void)
+{
+	u32 val = 0;
+
+	val |= nx_gpio_get_input_value(4, 6);
+	val <<= 1;
+
+	val |= nx_gpio_get_input_value(4, 5);
+	val <<= 1;
+
+	val |= nx_gpio_get_input_value(4, 4);
+
+	return val;
+}
+#endif
 
 static int nxe2000_reg_count(struct udevice *dev)
 {
@@ -57,15 +91,32 @@ static int nxe2000_bind(struct udevice *dev)
 	const void *blob = gd->fdt_blob;
 	int children;
 
-	regulators_node = fdt_subnode_offset(blob, dev->of_offset,
-					     "voltage-regulators");
+#ifdef CONFIG_REVISION_TAG
+	gpio_init();
+
+	if ((hw_revision() < 3) && !strcmp(dev->name, "nxe2000_gpio@32"))
+		return 0;
+
+	if ((hw_revision() >= 3) && !strcmp(dev->name, "nxe2000@32"))
+		return 0;
+#endif
+
+	debug("%s: dev->name:%s\n", __func__, dev->name);
+
+	if (!strncmp(dev->name, "nxe2000", 7))
+		regulators_node = fdt_subnode_offset(blob,
+				fdt_path_offset(blob, "/"),
+				"voltage-regulators");
+	else
+		regulators_node = fdt_subnode_offset(blob, dev->of_offset,
+				"voltage-regulators");
+
 	if (regulators_node <= 0) {
-		debug("%s: %s regulators subnode not found!", __func__,
-							     dev->name);
-		return -ENXIO;
+		debug("%s: regulators subnode not found!", __func__);
+		return 0;
 	}
 
-	debug("%s: '%s' - found regulators subnode\n", __func__, dev->name);
+	debug("%s: found regulators subnode\n", __func__);
 
 	children = pmic_bind_children(dev, regulators_node, pmic_children_info);
 	if (!children)
