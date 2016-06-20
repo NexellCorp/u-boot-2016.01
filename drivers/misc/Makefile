@@ -39,3 +39,4 @@ obj-$(CONFIG_PCA9551_LED) += pca9551_led.o
 obj-$(CONFIG_RESET) += reset-uclass.o
 obj-$(CONFIG_FSL_DEVICE_DISABLE) += fsl_devdis.o
 obj-$(CONFIG_SENSORID) += sensorid-uclass.o
+obj-$(CONFIG_SENSORID_ARTIK) += sensorid_artik.o

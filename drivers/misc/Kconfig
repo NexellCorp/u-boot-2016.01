@@ -118,4 +118,11 @@ config SENSORID
 	help
 	  Enable sensorid driver which can be used to detect sensor type.
 
+config SENSORID_ARTIK
+	bool "Artik SensorID support"
+	depends on SENSORID
+	help
+	  MCU checks attached devices on add-on-board. And it reported
+	  Sendor ID inforamtion dynamically.
+
 endmenu
