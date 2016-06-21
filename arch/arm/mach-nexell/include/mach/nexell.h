@@ -130,6 +130,8 @@
 
 #define PHY_BASEADDR_CS_NAND		(0x2C000000)
 
+#define PHY_BASEADDR_SRAM		(0xFFFF0000)
+
 /*
  * Nexell clock generator
  */
@@ -328,6 +330,7 @@
 #define	SCR_SIGNAGURE_READ		(SCR_ALIVE_BASE + 0x070)
 
 #define SYSRSTCONFIG			(0x23C)
+#define DEVICEBOOTINFO			(0x50)
 #define BOOTMODE_MASK			(0x7)
 #define BOOTMODE_SDMMC			5
 #define BOOTMODE_USB			6
