@@ -66,7 +66,11 @@
 /* Use 65 instead of 64
  * null gets dropped
  * strcpy's need the extra byte */
-#define	RESP_SIZE				(65)
+#define	RESP_SIZE			(65)
+
+#ifndef CONFIG_FASTBOOT_DIV_SIZE
+#define CONFIG_FASTBOOT_DIV_SIZE	0x10000000 /* 256MiB */
+#endif
 
 /*
  * f_devices[0,1,2..] : mmc
@@ -158,6 +162,10 @@ static const char * const f_reserve_part[] = {
 	[2] = "setenv",			/* u-boot environment setting */
 	[3] = "cmd",			/* command run */
 };
+
+static unsigned int div_download_bytes;
+static char *div_dl_part;
+static bool is_div_dl;
 
 /*
  * device partition functions
@@ -253,15 +261,32 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 	if (0 > get_device("mmc", simple_itoa(dev), &desc))
 		return -1;
 
+	if (is_div_dl) {
+		blk = fpart->start/blk_size;
+		cnt = (length/blk_size) + ((length & (blk_size-1)) ? 1 : 0);
+
+		printf("write image to 0x%llx(0x%x), 0x%llx(0x%x)\n",
+		       fpart->start, (unsigned int)blk, length,
+		       (unsigned int)cnt);
+
+		ret = mmc_bwrite(dev, blk, cnt, buf);
+
+		fpart->start += length;
+
+		if (0 > ret)
+			return ret;
+		else
+			return 0;
+	}
+
 	if (fpart->fs_type == FASTBOOT_FS_2NDBOOT ||
 	    fpart->fs_type == FASTBOOT_FS_BOOT ||
 	    fpart->fs_type == FASTBOOT_FS_ENV) {
-		int blk_cnt = length / 512;
-		if (length % 512)
-			blk_cnt++;
+		blk = fpart->start/blk_size;
+		cnt = (length/blk_size) + ((length & (blk_size-1)) ? 1 : 0);
 		p = sprintf(cmd, "mmc write ");
 		l = sprintf(&cmd[p], "0x%p 0x%llx 0x%llx", buf,
-			    fpart->start / 512, blk_cnt);
+			    blk, cnt);
 		p += l;
 		cmd[p] = 0;
 
@@ -306,7 +331,7 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 	cnt = (length/blk_size) + ((length & (blk_size-1)) ? 1 : 0);
 
 	printf("write image to 0x%llx(0x%x), 0x%llx(0x%x)\n", fpart->start,
-	       (unsigned int)blk, length, (unsigned int)blk);
+	       (unsigned int)blk, length, (unsigned int)cnt);
 
 	ret = mmc_bwrite(dev, blk, cnt, buf);
 
@@ -1034,10 +1059,11 @@ static int parse_cmd(const char *cmd, const char **ret, char *str, int len)
 	return 0;
 }
 
-static int fb_setenv(const char *str, int len)
+static int fb_setenv(const char *str, int str_len)
 {
 	const char *p = str;
-	char cmd[32];
+	int len = str_len;
+	char cmd[128];
 	char arg[1024];
 	int err = -1;
 
@@ -1053,14 +1079,16 @@ static int fb_setenv(const char *str, int len)
 		setenv(cmd, (char *)arg);
 		saveenv();
 		err = 0;
-	} while (1);
+		len -= (int)(p - str);
+	} while (len > 1);
 
 	return err;
 }
 
-static int fb_command(const char *str, int len)
+static int fb_command(const char *str, int str_len)
 {
 	const char *p = str;
+	int len = str_len;
 	char cmd[128];
 	int err = -1;
 
@@ -1073,7 +1101,8 @@ static int fb_command(const char *str, int len)
 		err = run_command(cmd, 0);
 		if (0 > err)
 			break;
-	} while (1);
+		len -= (int)(p - str);
+	} while (len > 1);
 
 	return err;
 }
@@ -1613,12 +1642,20 @@ static void rx_handler_dl_image(struct usb_ep *ep, struct usb_request *req)
 	if (buffer_size < transfer_size)
 		transfer_size = buffer_size;
 
-	memcpy((void *)CONFIG_FASTBOOT_BUF_ADDR + download_bytes,
-	       buffer, transfer_size);
-
-	pre_dot_num = download_bytes / BYTES_PER_DOT;
-	download_bytes += transfer_size;
-	now_dot_num = download_bytes / BYTES_PER_DOT;
+	if (!is_div_dl) {
+		memcpy((void *)CONFIG_FASTBOOT_BUF_ADDR + download_bytes,
+		       buffer, transfer_size);
+		pre_dot_num = download_bytes / BYTES_PER_DOT;
+		download_bytes += transfer_size;
+		now_dot_num = download_bytes / BYTES_PER_DOT;
+	} else {
+		memcpy((void *)CONFIG_FASTBOOT_BUF_ADDR + div_download_bytes,
+		       buffer, transfer_size);
+		pre_dot_num = div_download_bytes / BYTES_PER_DOT;
+		download_bytes += transfer_size;
+		div_download_bytes += transfer_size;
+		now_dot_num = div_download_bytes / BYTES_PER_DOT;
+	}
 
 	if (pre_dot_num != now_dot_num) {
 		putc('.');
@@ -1646,6 +1683,15 @@ static void rx_handler_dl_image(struct usb_ep *ep, struct usb_request *req)
 		req->length = rx_bytes_expected(max);
 		if (req->length < ep->maxpacket)
 			req->length = ep->maxpacket;
+		if (is_div_dl &&
+		    (div_download_bytes >= CONFIG_FASTBOOT_DIV_SIZE)) {
+			fb_flash_write_based_partmap(div_dl_part,
+						     (void *)
+						     CONFIG_FASTBOOT_BUF_ADDR,
+						     div_download_bytes,
+						     response);
+			div_download_bytes = 0;
+		}
 	}
 
 	req->actual = 0;
@@ -1661,14 +1707,29 @@ static void cb_download(struct usb_ep *ep, struct usb_request *req)
 	strsep(&cmd, ":");
 	download_size = simple_strtoul(cmd, NULL, 16);
 	download_bytes = 0;
+	div_download_bytes = 0;
+	is_div_dl = 0;
 
 	printf("Starting download of %d bytes\n", download_size);
 
 	if (0 == download_size) {
 		sprintf(response, "FAILdata invalid size");
 	} else if (download_size > CONFIG_FASTBOOT_BUF_SIZE) {
-		download_size = 0;
-		sprintf(response, "FAILdata too large");
+		div_dl_part = getenv("partition");
+		if (div_dl_part) {
+			is_div_dl = 1;
+			sprintf(response, "DATA%08x", download_size);
+			req->complete = rx_handler_dl_image;
+			max = is_high_speed ? hs_ep_out.wMaxPacketSize :
+				fs_ep_out.wMaxPacketSize;
+			req->length = rx_bytes_expected(max);
+			if (req->length < ep->maxpacket)
+				req->length = ep->maxpacket;
+
+		} else {
+			download_size = 0;
+			sprintf(response, "FAILdata too large");
+		}
 	} else {
 		sprintf(response, "DATA%08x", download_size);
 		req->complete = rx_handler_dl_image;
@@ -1763,6 +1824,14 @@ static void cb_flash(struct usb_ep *ep, struct usb_request *req)
 
 	/* memory partition : do nothing */
 	} else if (0 == strcmp("mem", cmd)) {
+		fastboot_okay(response, "");
+		goto done_flash;
+	}
+
+	if (is_div_dl) {
+		fb_flash_write_based_partmap(div_dl_part,
+					     (void *)CONFIG_FASTBOOT_BUF_ADDR,
+					     div_download_bytes, response);
 		fastboot_okay(response, "");
 		goto done_flash;
 	}

@@ -262,6 +262,12 @@ int board_late_init(void)
 	pmic_init();
 #endif
 
+#ifdef CONFIG_REVISION_TAG
+	set_board_rev(board_rev);
+#endif
+#ifdef CONFIG_CMD_FACTORY_INFO
+	run_command("run factory_load", 0);
+#endif
 	return 0;
 }
 
