@@ -22,10 +22,17 @@ config ARCH_S5P4418
 	bool "Nexell S5P4418 family"
 	select NEXELL_ARMV7_COMMON
 
+
 config ARCH_S5P6818
 	bool "Nexell S5P6818 family"
 	select NEXELL_ARMV8_COMMON
+
 endchoice
+
+config CPU_NXP4330
+	bool "Nexell NXP4330 CPU"
+	depends on ARCH_S5P4418
+
 
 if ARCH_S5P4418
 menu "Board for S5P4418"
