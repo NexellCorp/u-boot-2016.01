@@ -16,8 +16,14 @@ config TARGET_S5P4418_AVN_REF
 	help
 	  Support for s5p4418 avn_ref platform.
 
+config TARGET_S5P4418_NAVI_REF
+	bool "S5P4418_NAVI_REF"
+	help
+	  Support for s5p4418 navi_ref platform.
+
 endchoice
 
 source "board/s5p4418/drone/Kconfig"
 source "board/s5p4418/artik530_raptor/Kconfig"
 source "board/s5p4418/avn_ref/Kconfig"
+source "board/s5p4418/navi_ref/Kconfig"
