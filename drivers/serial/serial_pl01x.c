@@ -80,6 +80,13 @@ static int pl01x_generic_serial_init(struct pl01x_regs *regs,
 		writel(0, &regs->pl010_cr);
 		break;
 	case TYPE_PL011:
+#ifdef CONFIG_PL011_SERIAL_FLUSH_ON_INIT
+		/* Empty RX fifo if necessary */
+		if (readl(&regs->pl011_cr) & UART_PL011_CR_UARTEN) {
+			while (!(readl(&regs->fr) & UART_PL01x_FR_RXFE))
+				readl(&regs->dr);
+		}
+#endif
 		/* disable everything */
 		writel(0, &regs->pl011_cr);
 		break;
