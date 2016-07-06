@@ -6,6 +6,7 @@
  */
 
 #include "skeleton.dtsi"
+#include "../../../include/generated/autoconf.h"
 / {
 	aliases {
 		mmc0 = "/mmc0:mmc@c0062000";
@@ -13,7 +14,17 @@
 		mmc2 = "/mmc2@c0069000";
 		gmac = "/ethernet@c0060000";
 	};
-
+#ifdef CONFIG_CPU_NXP4330
+	mmc0:mmc@c0062000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-dwmmc";
+		reg = <0xc0062000 0x1000>;
+		nexell,bus-width = <4>;
+		index = <0>;
+		status = "disabled";
+	};
+#else
 	mmc2:mmc@c0069000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -23,7 +34,7 @@
 		index = <2>;
 		status = "disabled";
 	};
-
+#endif
 	mmc1:mmc@c0068000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -34,6 +45,17 @@
 		status = "disabled";
 	};
 
+#ifdef CONFIG_CPU_NXP4330
+	mmc2:mmc@c0069000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-dwmmc";
+		reg = <0xc0069000 0x1000>;
+		nexell,bus-width = <4>;
+		index = <2>;
+		status = "disabled";
+	};
+#else
 	mmc0:mmc@c0062000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -43,7 +65,7 @@
 		index = <0>;
 		status = "disabled";
 	};
-
+#endif
 	gmac:ethernet@c0060000 {
 		compatible = "nexell,nexell-gmac";
 		reg = <0xc0060000 0x8000>;
