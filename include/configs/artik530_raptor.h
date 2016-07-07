@@ -359,6 +359,6 @@
 	"hwtestboot=run sdrecovery; setenv rootdev 1;"			\
 		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
 		"run mmcboot\0"						\
-	"bootcmd=run ramfsboot\0"
+	"bootcmd=run mmcboot\0"
 
 #endif /* __CONFIG_H__ */
