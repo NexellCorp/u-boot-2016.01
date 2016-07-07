@@ -331,6 +331,9 @@
 	"root_rw=rw\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
+	"lcd1_0=s6e8fa0\0"						\
+	"lcd2_0=gst7d0038\0"						\
+	"lcd_panel=s6e8fa0\0"						\
 	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
 	"factory_load=factory_info load mmc 0 "				\
 		__stringify(CONFIG_FACTORY_INFO_START) " "		\
@@ -348,11 +351,13 @@
 		"bootm $kerneladdr - $fdtaddr\0"		\
 	"ramfsboot=setenv bootargs ${console} "				\
 		"root=/dev/ram0 ${root_rw} initrd=${ramdiskaddr},16M ramdisk=16384 "	\
-		"${opts} ${recoverymode} bd_addr=${bd_addr};"		\
+		"${opts} ${recoverymode} bd_addr=${bd_addr} "		\
+		"drm_panel=$lcd_panel;"					\
 		"run boot_cmd_initrd\0"					\
 	"mmcboot=setenv bootargs ${console} "				\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
-		"${opts} bd_addr=${bd_addr};"				\
+		"${opts} bd_addr=${bd_addr} "				\
+		"drm_panel=$lcd_panel;"					\
 		"run boot_cmd_initrd\0"					\
 	"recoveryboot=run sdrecovery; setenv recoverymode recovery;"	\
 		"run ramfsboot\0"					\
