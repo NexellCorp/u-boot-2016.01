@@ -285,7 +285,7 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 		blk = fpart->start/blk_size;
 		cnt = (length/blk_size) + ((length & (blk_size-1)) ? 1 : 0);
 		p = sprintf(cmd, "mmc write ");
-		l = sprintf(&cmd[p], "0x%p 0x%llx 0x%llx", buf,
+		l = sprintf(&cmd[p], "0x%p 0x%lx 0x%lx", buf,
 			    blk, cnt);
 		p += l;
 		cmd[p] = 0;
