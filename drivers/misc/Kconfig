@@ -112,4 +112,10 @@ config RESET
 	  effect a reset. The uclass will try all available drivers when
 	  reset_walk() is called.
 
+config SENSORID
+	bool "Enable support for sensorid drivers"
+	depends on DM
+	help
+	  Enable sensorid driver which can be used to detect sensor type.
+
 endmenu
