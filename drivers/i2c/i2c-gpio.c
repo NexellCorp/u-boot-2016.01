@@ -298,8 +298,6 @@ static int i2c_gpio_set_bus_speed(struct udevice *dev, unsigned int speed_hz)
 	struct gpio_desc *scl = &bus->gpios[PIN_SCL];
 	struct gpio_desc *sda = &bus->gpios[PIN_SDA];
 
-	bus->udelay = 1000000 / (speed_hz << 2);
-
 	i2c_gpio_send_reset(scl, sda, bus->udelay);
 
 	return 0;

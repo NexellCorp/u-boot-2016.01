@@ -69,6 +69,20 @@
 		};
 	};
 
+	sensorid:i2c_gpio@2 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_b 18 1>,
+			<&gpio_b 11 1>;
+
+		i2c-gpio,delay-us = <10>;
+		sensor_id@36 {
+			compatible = "samsung,artik_sensorid";
+			reg = <0x36>;
+		};
+	};
+
 	voltage-regulators {
 		dcdc0: BUCK0 {
 			regulator-name = "dcdc1";
