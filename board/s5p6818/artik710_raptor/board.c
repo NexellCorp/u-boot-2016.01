@@ -266,6 +266,13 @@ void pmic_init(void)
 	}
 #endif
 
+	bit_mask = pmic_reg_read(dev, NXE2000_REG_PWRONTIMSET);
+	bit_mask &= ~(0x1 << NXE2000_POS_PWRONTIMSET_OFF_JUDGE_PWRON);
+	bit_mask |= (0x0 << NXE2000_POS_PWRONTIMSET_OFF_JUDGE_PWRON);
+	ret = pmic_write(dev, NXE2000_REG_PWRONTIMSET, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC REG: %d!\n", NXE2000_REG_PWRONTIMSET);
+
 	bit_mask = 0x00;
 	ret = pmic_reg_write(dev, (u32)NXE2000_REG_BANKSEL, (u32)bit_mask);
 	if (ret)
