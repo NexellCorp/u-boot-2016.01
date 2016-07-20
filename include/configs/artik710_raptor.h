@@ -367,7 +367,12 @@
 		"run ramfsboot\0"					\
 	"hwtestboot=run sdrecovery; setenv rootdev 1;"			\
 		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
-		"run mmcboot\0"						\
+		"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-explorer.dtb; "	\
+		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;" \
+		"setenv bootargs ${console} "				\
+		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
+		"${opts} ${recoverymode} bd_addr=${bd_addr};"		\
+		"bootm $kerneladdr - $fdtaddr\0"		\
 	"bootcmd=run mmcboot\0"
 
 #endif /* __CONFIG_H__ */
