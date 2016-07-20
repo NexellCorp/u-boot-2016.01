@@ -123,4 +123,8 @@
 		mac-address = [000000000000]; /* Filled in by U-Boot */
 		status = "okay";
 	};
+
+	ehci:usbhost@c0030000 {
+		status = "okay";
+	};
 };
