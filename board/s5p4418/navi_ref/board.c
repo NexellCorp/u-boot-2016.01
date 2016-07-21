@@ -17,6 +17,13 @@
 #include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
 
+#ifdef CONFIG_DM_PMIC_NXE2000
+#include <dm.h>
+#include <dm/uclass-internal.h>
+#include <power/pmic.h>
+#include <power/nxe2000.h>
+#endif
+
 #ifdef CONFIG_USB_GADGET
 #include <usb.h>
 #include <usb/dwc2_udc.h>
@@ -113,8 +120,82 @@ void dram_init_banksize(void)
 	gd->bd->bi_dram[0].size  = CONFIG_SYS_SDRAM_SIZE;
 }
 
+#ifdef CONFIG_DM_PMIC_NXE2000
+void pmic_init(void)
+{
+	static struct udevice *dev;
+	int ret = -ENODEV;
+	uint8_t bit_mask = 0;
+
+	ret = pmic_get("nxe2000_gpio@32", &dev);
+	if (ret)
+		printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
+
+	bit_mask = pmic_reg_read(dev, NXE2000_REG_PWRONTIMSET);
+	bit_mask &= ~(0x1 << NXE2000_POS_PWRONTIMSET_OFF_JUDGE_PWRON);
+	bit_mask |= (0x0 << NXE2000_POS_PWRONTIMSET_OFF_JUDGE_PWRON);
+	ret = pmic_write(dev, NXE2000_REG_PWRONTIMSET, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC REG: %d!\n", NXE2000_REG_PWRONTIMSET);
+
+	bit_mask = 0x00;
+	ret = pmic_reg_write(dev, (u32)NXE2000_REG_BANKSEL, (u32)bit_mask);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_BANKSEL);
+
+	bit_mask = ((0 << NXE2000_POS_DCxCTL2_DCxOSC) |
+			(0 << NXE2000_POS_DCxCTL2_DCxSR) |
+			(3 << NXE2000_POS_DCxCTL2_DCxLIM) |
+			(0 << NXE2000_POS_DCxCTL2_DCxLIMSDEN));
+	ret = pmic_write(dev, NXE2000_REG_DC1CTL2, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_DC1CTL2);
+
+	bit_mask = ((0 << NXE2000_POS_DCxCTL2_DCxOSC) |
+			(0 << NXE2000_POS_DCxCTL2_DCxSR) |
+			(3 << NXE2000_POS_DCxCTL2_DCxLIM) |
+			(0 << NXE2000_POS_DCxCTL2_DCxLIMSDEN));
+	ret = pmic_write(dev, NXE2000_REG_DC2CTL2, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_DC2CTL2);
+
+	bit_mask = ((0 << NXE2000_POS_DCxCTL2_DCxOSC) |
+			(0 << NXE2000_POS_DCxCTL2_DCxSR) |
+			(1 << NXE2000_POS_DCxCTL2_DCxLIM) |
+			(1 << NXE2000_POS_DCxCTL2_DCxLIMSDEN));
+	ret = pmic_write(dev, NXE2000_REG_DC3CTL2, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_DC3CTL2);
+
+	bit_mask = ((0 << NXE2000_POS_DCxCTL2_DCxOSC) |
+			(0 << NXE2000_POS_DCxCTL2_DCxSR) |
+			(1 << NXE2000_POS_DCxCTL2_DCxLIM) |
+			(1 << NXE2000_POS_DCxCTL2_DCxLIMSDEN));
+	ret = pmic_write(dev, NXE2000_REG_DC4CTL2, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_DC4CTL2);
+
+	bit_mask = ((0 << NXE2000_POS_DCxCTL2_DCxOSC) |
+			(0 << NXE2000_POS_DCxCTL2_DCxSR) |
+			(1 << NXE2000_POS_DCxCTL2_DCxLIM) |
+			(1 << NXE2000_POS_DCxCTL2_DCxLIMSDEN));
+	ret = pmic_write(dev, NXE2000_REG_DC5CTL2, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_DC5CTL2);
+
+	bit_mask = (1 << NXE2000_POS_CHGCTL1_SUSPEND);
+	ret = pmic_write(dev, NXE2000_REG_CHGCTL1, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_CHGCTL1);
+}
+#endif
+
 int board_late_init(void)
 {
+#ifdef CONFIG_DM_PMIC_NXE2000
+	pmic_init();
+#endif
+
 	return 0;
 }
 
