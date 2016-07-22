@@ -13,3 +13,6 @@
 #define CMD_SEN3_RAW		0x22
 #define CMD_SEN4_RAW		0x23
 #define CMD_ADDON		0x30
+
+#define SENSORID_LCD_MAX	2
+#define SENSORID_LCD_NONE	0x4
