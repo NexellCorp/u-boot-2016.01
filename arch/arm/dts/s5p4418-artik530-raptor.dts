@@ -119,6 +119,19 @@
 		}; /* nxe1500@32 */
 	}; /* nxe1500_i2c */
 
+	sensorid:i2c_gpio@2 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_b 18 1>,
+			<&gpio_b 11 1>;
+		i2c-gpio,delay-us = <12>;
+		sensor_id@36 {
+			compatible = "samsung,artik_sensorid";
+			reg = <0x36>;
+		};
+	};
+
 	gmac:ethernet@c0060000 {
 		mac-address = [000000000000]; /* Filled in by U-Boot */
 		status = "okay";
