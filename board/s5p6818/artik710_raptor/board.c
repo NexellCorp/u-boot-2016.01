@@ -67,7 +67,9 @@ static void get_sensorid(u32 revision)
 {
 	static struct udevice *dev;
 	uint16_t buf[5] = {0, };
-	int ret;
+	char panel_env[64], *panel_str;
+	bool found_panel = false;
+	int i, ret;
 
 	if (revision < 3)
 		return;
@@ -93,6 +95,22 @@ static void get_sensorid(u32 revision)
 	printf("LCD#1:0x%X, LCD#2:0x%X, CAM#1:0x%X, CAM#2:0x%X\n",
 			buf[0], buf[1], buf[2], buf[3]);
 	printf("ADD-ON-BOARD : 0x%X\n", buf[4]);
+
+	for (i = 0; i < SENSORID_LCD_MAX; i++) {
+		if (buf[i] != SENSORID_LCD_NONE) {
+			snprintf(panel_env, sizeof(panel_env), "lcd%d_%d",
+				 i + 1, buf[i]);
+			panel_str = getenv(panel_env);
+			if (panel_str) {
+				setenv("lcd_panel", panel_str);
+				found_panel = true;
+			}
+			break;
+		}
+	}
+
+	if (!found_panel)
+		setenv("lcd_panel", "NONE");
 }
 #endif
 
