@@ -27,6 +27,11 @@
 #include <usb/dwc2_udc.h>
 #endif
 
+#ifdef CONFIG_SENSORID_ARTIK
+#include <sensorid.h>
+#include <sensorid_artik.h>
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_REVISION_TAG
@@ -58,6 +63,55 @@ static void set_board_rev(u32 revision)
 
 	snprintf(info, ARRAY_SIZE(info), "%d", revision);
 	setenv("board_rev", info);
+}
+#endif
+
+#ifdef CONFIG_SENSORID_ARTIK
+static void get_sensorid(u32 revision)
+{
+	static struct udevice *dev;
+	uint16_t buf[5] = {0, };
+	char panel_env[64], *panel_str;
+	bool found_panel = false;
+	int i, ret;
+
+	ret = uclass_get_device_by_name(UCLASS_SENSOR_ID, "sensor_id@36", &dev);
+	if (ret < 0) {
+		printf("Cannot find sensor_id device\n");
+		return;
+	}
+
+	ret = sensorid_get_type(dev, &buf[0], 4);
+	if (ret < 0) {
+		printf("Cannot read sensor type - %d\n", ret);
+		return;
+	}
+
+	ret = sensorid_get_addon(dev, &buf[4]);
+	if (ret < 0) {
+		printf("Cannot read add-on board type - %d\n", ret);
+		return;
+	}
+
+	printf("LCD#1:0x%X, LCD#2:0x%X, CAM#1:0x%X, CAM#2:0x%X\n",
+			buf[0], buf[1], buf[2], buf[3]);
+	printf("ADD-ON-BOARD : 0x%X\n", buf[4]);
+
+	for (i = 0; i < SENSORID_LCD_MAX; i++) {
+		if (buf[i] != SENSORID_LCD_NONE) {
+			snprintf(panel_env, sizeof(panel_env), "lcd%d_%d",
+				 i + 1, buf[i]);
+			panel_str = getenv(panel_env);
+			if (panel_str) {
+				setenv("lcd_panel", panel_str);
+				found_panel = true;
+			}
+			break;
+		}
+	}
+
+	if (!found_panel)
+		setenv("lcd_panel", "NONE");
 }
 #endif
 
@@ -107,6 +161,12 @@ static void nx_phy_init(void)
 	nx_gpio_set_drive_strength(4, 20, 3);
 	nx_gpio_set_drive_strength(4, 21, 3);
 	nx_gpio_set_drive_strength(4, 24, 3);	/* TX clk */
+
+#ifdef CONFIG_SENSORID_ARTIK
+	/* I2C-GPIO for AVR */
+	nx_gpio_set_pad_function(1, 11, 2);
+	nx_gpio_set_pad_function(1, 18, 2);
+#endif
 }
 
 void serial_clock_init(void)
@@ -130,6 +190,16 @@ void serial_clock_init(void)
 	clk_set_rate(clk, CONFIG_PL011_CLOCK);
 	clk_enable(clk);
 }
+
+#ifdef CONFIG_USB_EHCI_EXYNOS
+void board_ehci_power_en(void)
+{
+	/* ehci host power */
+	nx_gpio_set_pad_function(0, 16, 0);     /* GPIO */
+	nx_gpio_set_output_value(0, 16, 1);
+	nx_gpio_set_output_enable(0, 16, 1);
+}
+#endif
 
 /* call from u-boot */
 int board_early_init_f(void)
@@ -182,6 +252,9 @@ int board_init(void)
 #endif
 
 	nx_phy_init();
+#ifdef CONFIG_USB_EHCI_EXYNOS
+	board_ehci_power_en();
+#endif
 
 	l2_cache_en();
 
@@ -270,6 +343,9 @@ int board_late_init(void)
 #endif
 #ifdef CONFIG_CMD_FACTORY_INFO
 	run_command("run factory_load", 0);
+#endif
+#ifdef CONFIG_SENSORID_ARTIK
+	get_sensorid(board_rev);
 #endif
 	return 0;
 }

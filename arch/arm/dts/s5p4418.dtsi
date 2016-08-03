@@ -81,7 +81,7 @@
 		status = "disabled";
 		phy {
 			compatible = "samsung,exynos-usb-phy";
-			reg = <0 0xC0011000>;
+			reg = <0xC0011000>;
 		};
 	};
 
