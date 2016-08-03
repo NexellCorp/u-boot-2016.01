@@ -1,0 +1,44 @@
+/*
+ * (C) Copyright 2016 Nexell
+ * Hyejung Kwon <cjscld15@nexell.co.kr>
+ *
+ * SPDX-License-Identifier: GPL-2.0+
+ */
+
+/dts-v1/;
+#include "s5p6818.dtsi"
+
+/ {
+	model = "Avn reference board based on Nexell s5p6818";
+	cpu-model = "S5p6818";
+
+	compatible = "nexell,avn-ref", "nexell,avn",
+		   "nexell,s5p6818";
+
+	mmc0:mmc@c0062000 {
+		frequency = <50000000>;
+		nexell,drive_dly = <0x0>;
+		nexell,drive_shift = <0x03>;
+		nexell,sample_dly = <0x00>;
+		nexell,sample_shift = <0x02>;
+		status = "okay";
+	};
+
+	mmc2:mmc@c0069000 {
+		frequency = <50000000>;
+		nexell,drive_dly = <0x0>;
+		nexell,drive_shift = <0x03>;
+		nexell,sample_dly = <0x00>;
+		nexell,sample_shift = <0x02>;
+		nexell,bus-width = <4>;
+		index = <2>;
+		status = "okay";
+	};
+
+	ehci:usbhost@c0030000 {
+		status = "okay";
+	};
+
+
+};
+
