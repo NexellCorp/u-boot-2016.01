@@ -135,4 +135,6 @@ endif
 
 source "drivers/pinctrl/uniphier/Kconfig"
 
+source "drivers/pinctrl/nexell/Kconfig"
+
 endmenu
