@@ -158,4 +158,10 @@
 		gpio-controller;
 		#gpio-cells = <2>;
 	};
+
+	pinctrl@C0010000 {
+		compatible = "nexell,s5pxx18-pinctrl";
+		reg = <0xc0010000 0xf000>;
+		u-boot,dm-pre-reloc;
+	};
 };
