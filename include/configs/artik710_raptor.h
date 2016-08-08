@@ -364,19 +364,16 @@
 		"run boot_cmd_initrd\0"					\
 	"mmcboot=setenv bootargs ${console} "				\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
-		"${opts} bd_addr=${bd_addr} "				\
+		"${opts} ${recoverymode} bd_addr=${bd_addr} "		\
 		"drm_panel=$lcd_panel;"					\
 		"run boot_cmd_initrd\0"					\
-	"recoveryboot=run sdrecovery; setenv recoverymode recovery;"	\
-		"run ramfsboot\0"					\
-	"hwtestboot=run sdrecovery; setenv rootdev 1;"			\
+	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
+	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
+	"hwtestboot=setenv rootdev 1;"					\
 		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
-		"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-explorer.dtb; "	\
-		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;" \
-		"setenv bootargs ${console} "				\
-		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
-		"${opts} ${recoverymode} bd_addr=${bd_addr};"		\
-		"bootm $kerneladdr - $fdtaddr\0"		\
+		"setenv fdtfile s5p6818-artik710-explorer.dtb; "	\
+		"run mmcboot\0"						\
+	"hwtest_recoveryboot=run recovery_cmd; run hwtestboot\0"	\
 	"bootcmd=run mmcboot\0"
 
 #endif /* __CONFIG_H__ */
