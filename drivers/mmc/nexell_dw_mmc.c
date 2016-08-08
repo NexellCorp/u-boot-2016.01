@@ -79,7 +79,7 @@ static unsigned int dw_mci_get_clk(struct dwmci_host *host, uint freq)
 {
 	struct clk *clk;
 	int index = host->dev_index;
-	char name[50] = { NULL, };
+	char name[50] = {0, };
 
 	sprintf(name, "%s.%d", DEV_NAME_SDHC, index);
 	clk = clk_get((const char *)name);
