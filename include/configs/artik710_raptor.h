@@ -309,7 +309,9 @@
 	"ramdiskaddr=0x49000000\0"					\
 	"ramdisk_file=ramdisk.gz\0"					\
 	"fdtaddr=0x4a000000\0"						\
-	"load_fdt="							\
+	"fdtfile=\0"							\
+	"get_fdt_file="							\
+		"if test -z \"$fdtfile\"; then "			\
 		"loop=$board_rev; "					\
 		"number=$board_rev: "					\
 		"success=0; "						\
@@ -318,13 +320,15 @@
 				"number=0$loop; "			\
 			"else number=$loop; "				\
 			"fi; "						\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor-rev${number}.dtb && setexpr success 1; " \
+			"setenv fdtfile s5p6818-artik710-raptor-rev${number}.dtb && setexpr success 1; " \
 			"setexpr loop $loop - 1; "			\
 			"done; "					\
 		"if test $success -eq 0; then "				\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor-rev00.dtb || "	\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-artik710-raptor.dtb; "	\
-		"fi; \0"						\
+			"setenv fdtfile s5p6818-artik710-raptor-rev00.dtb || "	\
+			"setenv fdtfile s5p6818-artik710-raptor.dtb; "	\
+		"fi; fi; \0"						\
+	"load_fdt=run get_fdt_file; "					\
+		"ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile\0"	\
 	"console=" CONFIG_DEFAULT_CONSOLE				\
 	"consoleon=set console=" CONFIG_DEFAULT_CONSOLE			\
 		"; saveenv; reset\0"					\
