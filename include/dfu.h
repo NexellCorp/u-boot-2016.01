@@ -80,7 +80,7 @@ struct sf_internal_data {
 	u64 size;
 };
 
-#define DFU_NAME_SIZE			32
+#define DFU_NAME_SIZE			64
 #define DFU_CMD_BUF_SIZE		128
 #ifndef CONFIG_SYS_DFU_DATA_BUF_SIZE
 #define CONFIG_SYS_DFU_DATA_BUF_SIZE		(1024*1024*8)	/* 8 MiB */
