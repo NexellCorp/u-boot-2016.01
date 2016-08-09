@@ -29,11 +29,6 @@ static void nx_gpio_set_bit(u32 *value, u32 bit, int enable)
 	writel(newvalue, value);
 }
 
-static int nx_gpio_get_bit(u32 value, u32 bit)
-{
-	return (int)((value >> bit) & (1ul));
-}
-
 static void nx_gpio_set_bit2(u32 *value, u32 bit, u32 bit_value)
 {
 	register u32 newvalue = *value;
@@ -41,11 +36,6 @@ static void nx_gpio_set_bit2(u32 *value, u32 bit, u32 bit_value)
 	newvalue = (u32)(newvalue | (bit_value << (bit * 2)));
 
 	writel(newvalue, value);
-}
-
-static u32 nx_gpio_get_bit2(u32 value, u32 bit)
-{
-	return (u32)((u32)(value >> (bit * 2)) & 3ul);
 }
 
 static int nx_gpio_open_module(void *base)
@@ -115,8 +105,9 @@ int s5pxx18_pinctrl_init(struct udevice *dev)
 {
 	s5pxx18_pinctrl_gpio_init(dev);
 	s5pxx18_pinctrl_alive_init(dev);
-}
 
+	return 0;
+}
 
 static int is_pin_alive(const char *name)
 {
