@@ -28,8 +28,6 @@
 #endif /* CONFIG_ARCH_NEXELL */
 #include "designware.h"
 
-#define ptr_to_int32(x)		((uint32_t)((uintptr_t)(x) & 0xFFFFFFFF))
-
 DECLARE_GLOBAL_DATA_PTR;
 
 static int dw_mdio_read(struct mii_dev *bus, int addr, int devad, int reg)
@@ -108,10 +106,8 @@ static void tx_descs_init(struct dw_eth_dev *priv)
 
 	for (idx = 0; idx < CONFIG_TX_DESCR_NUM; idx++) {
 		desc_p = &desc_table_p[idx];
-		desc_p->dmamac_addr =
-			ptr_to_int32(&txbuffs[idx * CONFIG_ETH_BUFSIZE]);
-		desc_p->dmamac_next =
-			ptr_to_int32(&desc_table_p[idx + 1]);
+		desc_p->dmamac_addr = &txbuffs[idx * CONFIG_ETH_BUFSIZE];
+		desc_p->dmamac_next = &desc_table_p[idx + 1];
 
 #if defined(CONFIG_DW_ALTDESCRIPTOR)
 		desc_p->txrx_status &= ~(DESC_TXSTS_TXINT | DESC_TXSTS_TXLAST |
@@ -129,14 +125,14 @@ static void tx_descs_init(struct dw_eth_dev *priv)
 	}
 
 	/* Correcting the last pointer of the chain */
-	desc_p->dmamac_next = ptr_to_int32(&desc_table_p[0]);
+	desc_p->dmamac_next = &desc_table_p[0];
 
 	/* Flush all Tx buffer descriptors at once */
 	flush_dcache_range((unsigned int)priv->tx_mac_descrtable,
 			   (unsigned int)priv->tx_mac_descrtable +
 			   sizeof(priv->tx_mac_descrtable));
 
-	writel(ptr_to_int32(&desc_table_p[0]), &dma_p->txdesclistaddr);
+	writel((ulong)&desc_table_p[0], &dma_p->txdesclistaddr);
 	priv->tx_currdescnum = 0;
 }
 
@@ -159,10 +155,8 @@ static void rx_descs_init(struct dw_eth_dev *priv)
 
 	for (idx = 0; idx < CONFIG_RX_DESCR_NUM; idx++) {
 		desc_p = &desc_table_p[idx];
-		desc_p->dmamac_addr =
-			ptr_to_int32(&rxbuffs[idx * CONFIG_ETH_BUFSIZE]);
-		desc_p->dmamac_next =
-			ptr_to_int32(&desc_table_p[idx + 1]);
+		desc_p->dmamac_addr = &rxbuffs[idx * CONFIG_ETH_BUFSIZE];
+		desc_p->dmamac_next = &desc_table_p[idx + 1];
 
 		desc_p->dmamac_cntl =
 			(MAC_MAX_FRAME_SZ & DESC_RXCTRL_SIZE1MASK) |
@@ -172,14 +166,14 @@ static void rx_descs_init(struct dw_eth_dev *priv)
 	}
 
 	/* Correcting the last pointer of the chain */
-	desc_p->dmamac_next = ptr_to_int32(&desc_table_p[0]);
+	desc_p->dmamac_next = &desc_table_p[0];
 
 	/* Flush all Rx buffer descriptors at once */
 	flush_dcache_range((unsigned int)priv->rx_mac_descrtable,
 			   (unsigned int)priv->rx_mac_descrtable +
 			   sizeof(priv->rx_mac_descrtable));
 
-	writel(ptr_to_int32(&desc_table_p[0]), &dma_p->rxdesclistaddr);
+	writel((ulong)&desc_table_p[0], &dma_p->rxdesclistaddr);
 	priv->rx_currdescnum = 0;
 }
 
@@ -305,7 +299,7 @@ static int _dw_eth_send(struct dw_eth_dev *priv, void *packet, int length)
 	uint32_t desc_start = (uint32_t)desc_p;
 	uint32_t desc_end = desc_start +
 		roundup(sizeof(*desc_p), ARCH_DMA_MINALIGN);
-	uint32_t data_start = ptr_to_int32(desc_p->dmamac_addr);
+	uint32_t data_start = (uint32_t)desc_p->dmamac_addr;
 	uint32_t data_end = data_start +
 		roundup(length, ARCH_DMA_MINALIGN);
 	/*
