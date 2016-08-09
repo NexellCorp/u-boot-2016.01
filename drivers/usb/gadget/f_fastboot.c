@@ -192,7 +192,7 @@ static int mmc_make_parts(int dev, uint64_t (*parts)[2], int count)
 	}
 
 	if (p >= sizeof(cmd)) {
-		printf("** %s: cmd stack overflow : stack %lu, cmd %d **\n",
+		printf("** %s: cmd stack overflow : stack %zu, cmd %d **\n",
 		       __func__, sizeof(cmd), p);
 		while (1)
 			;
