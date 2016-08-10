@@ -806,7 +806,7 @@ int dwc2_udc_probe(struct dwc2_plat_otg_data *pdata)
 
 	dev->pdata = pdata;
 
-	reg = (struct dwc2_usbotg_reg *)pdata->regs_otg;
+	reg = (struct dwc2_usbotg_reg *)(uintptr_t)pdata->regs_otg;
 
 	/* regs_otg = (void *)pdata->regs_otg; */
 

@@ -27,7 +27,7 @@
 
 void otg_phy_init(struct dwc2_udc *dev)
 {
-	void __iomem *phy = (void __iomem *)dev->pdata->regs_phy;
+	void __iomem *phy = (void __iomem *)(uintptr_t)dev->pdata->regs_phy;
 	u32 reg;
 
 	/* USB PHY0 Enable */
@@ -76,7 +76,7 @@ void otg_phy_init(struct dwc2_udc *dev)
 
 void otg_phy_off(struct dwc2_udc *dev)
 {
-	void __iomem *phy = (void __iomem *)dev->pdata->regs_phy;
+	void __iomem *phy = (void __iomem *)(uintptr_t)dev->pdata->regs_phy;
 
 	/* USB PHY0 Disable */
 	debug("USB PHY0 Disable\n");
