@@ -62,6 +62,15 @@ static void set_board_rev(u32 revision)
 }
 #endif
 
+#ifdef CONFIG_DISPLAY_BOARDINFO
+int checkboard(void)
+{
+	printf("\nBoard: ARTIK710 Raptor\n");
+
+	return 0;
+}
+#endif
+
 #ifdef CONFIG_SENSORID_ARTIK
 static void get_sensorid(u32 revision)
 {
@@ -362,16 +371,28 @@ int board_late_init(void)
 
 #ifdef CONFIG_USB_GADGET
 struct dwc2_plat_otg_data s5p6818_otg_data = {
-	.phy_control	= NULL,
 	.regs_phy	= PHY_BASEADDR_TIEOFF,
 	.regs_otg	= PHY_BASEADDR_HSOTG,
-	.usb_phy_ctrl	= NULL,
-	.usb_flags	= NULL,
 };
 
 int board_usb_init(int index, enum usb_init_type init)
 {
 	debug("USB_udc_probe\n");
 	return dwc2_udc_probe(&s5p6818_otg_data);
+}
+
+int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
+{
+	if (!strcmp(name, "usb_dnl_thor")) {
+		put_unaligned(CONFIG_G_DNL_THOR_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_THOR_PRODUCT_NUM, &dev->idProduct);
+	} else if (!strcmp(name, "usb_dnl_ums")) {
+		put_unaligned(CONFIG_G_DNL_UMS_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_UMS_PRODUCT_NUM, &dev->idProduct);
+	} else {
+		put_unaligned(CONFIG_G_DNL_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_PRODUCT_NUM, &dev->idProduct);
+	}
+	return 0;
 }
 #endif

@@ -352,11 +352,8 @@ int board_late_init(void)
 
 #ifdef CONFIG_USB_GADGET
 struct dwc2_plat_otg_data s5p4418_otg_data = {
-	.phy_control	= NULL,
 	.regs_phy	= PHY_BASEADDR_TIEOFF,
 	.regs_otg	= PHY_BASEADDR_HSOTG,
-	.usb_phy_ctrl	= NULL,
-	.usb_flags	= NULL,
 };
 
 int board_usb_init(int index, enum usb_init_type init)

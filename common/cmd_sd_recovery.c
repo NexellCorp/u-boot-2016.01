@@ -386,7 +386,7 @@ static int make_mmc_partition(struct update_sdcard_part *fp)
 
 	if (p >= sizeof(args)) {
 		printf("cmd stack overflow : ");
-		printf("stack %ld, cmd %d **\n",
+		printf("stack %zu, cmd %d **\n",
 		       sizeof(args), p);
 		while (1)
 			;
@@ -461,7 +461,7 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 					blk_cnt++;
 
 			p = sprintf(cmd, "mmc write ");
-			l = sprintf(&cmd[p], "0x%x 0x%llx 0x%llx",
+			l = sprintf(&cmd[p], "0x%x 0x%llx 0x%x",
 				    (unsigned int)addr,
 				    start / 512,
 				    blk_cnt);

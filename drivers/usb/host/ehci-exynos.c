@@ -360,7 +360,7 @@ static int ehci_usb_probe(struct udevice *dev)
 #endif
 
 	setup_usb_phy(ctx->usb);
-	hcor = (struct ehci_hcor *)((uint32_t)ctx->hcd +
+	hcor = (struct ehci_hcor *)(ctx->hcd +
 			HC_LENGTH(ehci_readl(&ctx->hcd->cr_capbase)));
 
 	return ehci_register(dev, ctx->hcd, hcor, NULL, 0, USB_INIT_HOST);

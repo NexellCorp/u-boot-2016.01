@@ -81,7 +81,7 @@
 		status = "disabled";
 		phy {
 			compatible = "samsung,exynos-usb-phy";
-			reg = <0xC0011000>;
+			reg = <0xC0011000 0x100>;
 		};
 	};
 
@@ -157,4 +157,9 @@
 		#gpio-cells = <2>;
 	};
 
+	pinctrl@C0010000 {
+		compatible = "nexell,s5pxx18-pinctrl";
+		reg = <0xc0010000 0xf000>;
+		u-boot,dm-pre-reloc;
+	};
 };

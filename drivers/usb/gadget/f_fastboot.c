@@ -192,7 +192,7 @@ static int mmc_make_parts(int dev, uint64_t (*parts)[2], int count)
 	}
 
 	if (p >= sizeof(cmd)) {
-		printf("** %s: cmd stack overflow : stack %lu, cmd %d **\n",
+		printf("** %s: cmd stack overflow : stack %zu, cmd %d **\n",
 		       __func__, sizeof(cmd), p);
 		while (1)
 			;
@@ -319,8 +319,7 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 
 	if (fpart->fs_type & FASTBOOT_FS_EXT4) {
 		p = sprintf(cmd, "ext4_img_write %d %p %d %x",
-			    dev, (unsigned int)buf, fpart->part_num,
-			    (unsigned int)length);
+			    dev, buf, fpart->part_num, (unsigned int)length);
 		ret = run_command(cmd, 0);
 		if (ret < 0)
 			printf("Flash : %s\n", (ret < 0) ? "FAIL" : "DONE");

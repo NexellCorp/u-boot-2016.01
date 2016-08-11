@@ -120,8 +120,8 @@ int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 	char run_cmd[64];
 	unsigned char *tmp_align;
 
-	if (((unsigned  int)data%8) != 0) {
-		tmp_align = (char *)ALIGN_BASE;
+	if (((unsigned long)data % 8) != 0) {
+		tmp_align = (unsigned char *)ALIGN_BASE;
 		int offset = 0;
 
 		do {

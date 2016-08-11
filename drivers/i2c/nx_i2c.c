@@ -88,7 +88,7 @@ static uint i2c_get_clkrate(struct nx_i2c_bus *bus)
 {
 	struct clk *clk;
 	int index = bus->bus_num;
-	char name[50] = { NULL, };
+	char name[50] = {0, };
 
 	sprintf(name, "%s.%d", DEV_NAME_I2C, index);
 	clk = clk_get((const char *)name);
