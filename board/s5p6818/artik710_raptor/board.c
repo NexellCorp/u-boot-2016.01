@@ -177,16 +177,6 @@ static void nx_phy_init(void)
 #endif
 }
 
-#ifdef CONFIG_USB_EHCI_EXYNOS
-void board_ehci_power_en(void)
-{
-	/* ehci host power */
-	nx_gpio_set_pad_function(0, 16, 0);     /* GPIO */
-	nx_gpio_set_output_value(0, 16, 1);
-	nx_gpio_set_output_enable(0, 16, 1);
-}
-#endif
-
 /* call from u-boot */
 int board_early_init_f(void)
 {
@@ -243,9 +233,6 @@ int board_init(void)
 #endif
 
 	nx_phy_init();
-#ifdef CONFIG_USB_EHCI_EXYNOS
-	board_ehci_power_en();
-#endif
 
 #ifdef CONFIG_VIDEO_NX_LVDS
 	board_display_reset();
