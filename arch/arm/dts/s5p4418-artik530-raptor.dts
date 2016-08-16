@@ -138,6 +138,7 @@
 	};
 
 	ehci:usbhost@c0030000 {
+		samsung,vbus-gpio = <&gpio_a 16 0>;
 		status = "okay";
 	};
 };
