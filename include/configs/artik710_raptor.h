@@ -344,11 +344,10 @@
 
 #define CONFIG_EXTRA_ENV_SETTINGS					\
 	"fdt_high=0xffffffffffffffff\0"					\
-	"initrd_high=0xffffffffffffffff\0"				\
-	"kerneladdr=0x48000000\0"					\
-	"kernel_file=uImage\0"						\
+	"kerneladdr=0x40080000\0"					\
+	"kernel_file=Image\0"						\
 	"ramdiskaddr=0x49000000\0"					\
-	"ramdisk_file=ramdisk.gz\0"					\
+	"ramdisk_file=uInitrd\0"					\
 	"fdtaddr=0x4a000000\0"						\
 	"fdtfile=\0"							\
 	"load_fdt="							\
@@ -371,9 +370,9 @@
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "	\
 		"fi;\0"							\
 	"console=" CONFIG_DEFAULT_CONSOLE				\
-	"consoleon=set console=" CONFIG_DEFAULT_CONSOLE			\
+	"consoleon=setenv console=" CONFIG_DEFAULT_CONSOLE		\
 		"; saveenv; reset\0"					\
-	"consoleoff=set console=ram; saveenv; reset\0"			\
+	"consoleoff=setenv console=ram; saveenv; reset\0"		\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
@@ -394,21 +393,20 @@
 	"factory_set_ethaddr=run factory_load; gen_eth_addr ;"		\
 		"factory_info write ethaddr $ethaddr;"			\
 		"run factory_save\0"					\
-	"boot_cmd_initrd="						\
-		"run load_fdt;"						\
-		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;" \
-		"ext4load mmc ${rootdev}:${bootpart} $ramdiskaddr $ramdisk_file;" \
-		"bootm $kerneladdr - $fdtaddr\0"		\
-	"ramfsboot=setenv bootargs ${console} "				\
-		"root=/dev/ram0 ${root_rw} initrd=${ramdiskaddr},16M ramdisk=16384 "	\
-		"${opts} ${recoverymode} bd_addr=${bd_addr} "		\
-		"drm_panel=$lcd_panel;"					\
-		"run boot_cmd_initrd\0"					\
-	"mmcboot=setenv bootargs ${console} "				\
+	"load_args=run factory_load; setenv bootargs ${console} "	\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
-		"${opts} ${recoverymode} bd_addr=${bd_addr} "		\
-		"drm_panel=$lcd_panel;"					\
-		"run boot_cmd_initrd\0"					\
+		"rootfstype=${rootfs_type} ${opts} ${recoverymode} "	\
+		"drm_panel=$lcd_panel\0"				\
+	"load_kernel=ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file\0" \
+	"load_initrd=ext4load mmc ${rootdev}:${bootpart} $ramdiskaddr $ramdisk_file\0" \
+	"boot_cmd_initrd="						\
+		"run load_fdt; run load_kernel; run load_initrd;"	\
+		"booti $kerneladdr $ramdiskaddr $fdtaddr\0"		\
+	"boot_cmd_mmcboot="						\
+		"run load_fdt; run load_kernel;"			\
+		"booti $kerneladdr - $fdtaddr\0"			\
+	"ramfsboot=run load_args; run boot_cmd_initrd\0"		\
+	"mmcboot=run load_args; run boot_cmd_mmcboot\0"			\
 	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
 	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
 	"hwtestboot=setenv rootdev 1;"					\
@@ -416,6 +414,6 @@
 		"setenv fdtfile s5p6818-artik710-explorer.dtb; "	\
 		"run mmcboot\0"						\
 	"hwtest_recoveryboot=run recovery_cmd; run hwtestboot\0"	\
-	"bootcmd=run mmcboot\0"
+	"bootcmd=run ramfsboot\0"
 
 #endif /* __CONFIG_H__ */
