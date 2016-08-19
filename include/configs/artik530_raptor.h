@@ -308,6 +308,7 @@
 	"ramdisk_file=uInitrd\0"					\
 	"fdtaddr=0x4a000000\0"						\
 	"load_fdt="							\
+		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
 		"number=$board_rev: "					\
 		"success=0; "						\
@@ -321,6 +322,8 @@
 			"done; "					\
 		"if test $success -eq 0; then "				\
 			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik530-raptor-rev00.dtb;"	\
+		"fi; "							\
+		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
 		"fi; \0"						\
 	"console=" CONFIG_DEFAULT_CONSOLE				\
 	"consoleon=setenv console=" CONFIG_DEFAULT_CONSOLE		\
@@ -363,6 +366,7 @@
 	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
 	"hwtestboot=run sdrecovery; setenv rootdev 1;"			\
 		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
+		"setenv fdtfile s5p4418-artik530-explorer.dtb;"		\
 		"run mmcboot\0"						\
 	"bootcmd=run ramfsboot\0"
 
