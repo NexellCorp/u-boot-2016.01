@@ -364,10 +364,11 @@
 	"mmcboot=run load_args; run boot_cmd_mmcboot\0"			\
 	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
 	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
-	"hwtestboot=run sdrecovery; setenv rootdev 1;"			\
+	"hwtestboot=setenv rootdev 1;"					\
 		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
 		"setenv fdtfile s5p4418-artik530-explorer.dtb;"		\
 		"run mmcboot\0"						\
+	"hwtest_recoveryboot=run recovery_cmd; run hwtestboot\0"        \
 	"bootcmd=run ramfsboot\0"
 
 #endif /* __CONFIG_H__ */
