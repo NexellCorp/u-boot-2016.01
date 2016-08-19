@@ -356,10 +356,10 @@
 	"load_initrd=ext4load mmc ${rootdev}:${bootpart} $ramdiskaddr $ramdisk_file\0" \
 	"boot_cmd_initrd="						\
 		"run load_fdt; run load_kernel; run load_initrd;"	\
-		"booti $kerneladdr $ramdiskaddr $fdtaddr\0"		\
+		"bootz $kerneladdr $ramdiskaddr $fdtaddr\0"		\
 	"boot_cmd_mmcboot="						\
 		"run load_fdt; run load_kernel;"			\
-		"booti $kerneladdr - $fdtaddr\0"			\
+		"bootz $kerneladdr - $fdtaddr\0"			\
 	"ramfsboot=run load_args; run boot_cmd_initrd\0"		\
 	"mmcboot=run load_args; run boot_cmd_mmcboot\0"			\
 	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
