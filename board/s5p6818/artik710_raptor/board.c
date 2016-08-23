@@ -21,7 +21,6 @@
 
 #ifdef CONFIG_USB_GADGET
 #include <usb.h>
-#include <usb/dwc2_udc.h>
 #endif
 
 #ifdef CONFIG_SENSORID_ARTIK
@@ -357,17 +356,6 @@ int board_late_init(void)
 }
 
 #ifdef CONFIG_USB_GADGET
-struct dwc2_plat_otg_data s5p6818_otg_data = {
-	.regs_phy	= PHY_BASEADDR_TIEOFF,
-	.regs_otg	= PHY_BASEADDR_HSOTG,
-};
-
-int board_usb_init(int index, enum usb_init_type init)
-{
-	debug("USB_udc_probe\n");
-	return dwc2_udc_probe(&s5p6818_otg_data);
-}
-
 int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
 {
 	if (!strcmp(name, "usb_dnl_thor")) {
