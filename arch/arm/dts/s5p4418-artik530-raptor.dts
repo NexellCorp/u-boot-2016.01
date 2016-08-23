@@ -141,4 +141,9 @@
 		samsung,vbus-gpio = <&gpio_a 16 0>;
 		status = "okay";
 	};
+
+	dwc2otg@c0040000 {
+		status = "okay";
+	};
+
 };
