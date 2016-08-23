@@ -3,15 +3,8 @@ if TARGET_ARTIK530_RAPTOR
 config SYS_BOARD
 	default "artik530_raptor"
 
-config SYS_VENDOR
-	default "s5p4418"
-
 config SYS_CONFIG_NAME
 	default "artik530_raptor"
-
-config S5P4418_FEATURES
-	bool
-	default y
 
 endif
 
