@@ -3,16 +3,8 @@ if TARGET_ARTIK710_RAPTOR
 config SYS_BOARD
 	default "artik710_raptor"
 
-config SYS_VENDOR
-	default "s5p6818"
-
 config SYS_CONFIG_NAME
 	default "artik710_raptor"
-
-config S5P6818_FEATURES
-	bool
-	default y
-	select ARM64
 
 endif
 
