@@ -15,10 +15,6 @@
 #include <asm/arch/nexell.h>
 #include <asm/arch/nx_gpio.h>
 
-#ifdef CONFIG_USB_GADGET
-#include <usb.h>
-#include <usb/dwc2_udc.h>
-#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -90,18 +86,3 @@ int board_late_init(void)
 	return 0;
 }
 
-#ifdef CONFIG_USB_GADGET
-struct dwc2_plat_otg_data s5p6818_otg_data = {
-	.phy_control	= NULL,
-	.regs_phy	= PHY_BASEADDR_TIEOFF,
-	.regs_otg	= PHY_BASEADDR_HSOTG,
-	.usb_phy_ctrl	= NULL,
-	.usb_flags	= NULL,
-};
-
-int board_usb_init(int index, enum usb_init_type init)
-{
-	debug("USB_udc_probe\n");
-	return dwc2_udc_probe(&s5p6818_otg_data);
-}
-#endif
