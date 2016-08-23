@@ -22,11 +22,6 @@
 #include <power/nxe2000.h>
 #endif
 
-#ifdef CONFIG_USB_GADGET
-#include <usb.h>
-#include <usb/dwc2_udc.h>
-#endif
-
 #ifdef CONFIG_SENSORID_ARTIK
 #include <sensorid.h>
 #include <sensorid_artik.h>
@@ -336,16 +331,3 @@ int board_late_init(void)
 #endif
 	return 0;
 }
-
-#ifdef CONFIG_USB_GADGET
-struct dwc2_plat_otg_data s5p4418_otg_data = {
-	.regs_phy	= PHY_BASEADDR_TIEOFF,
-	.regs_otg	= PHY_BASEADDR_HSOTG,
-};
-
-int board_usb_init(int index, enum usb_init_type init)
-{
-	debug("USB_udc_probe\n");
-	return dwc2_udc_probe(&s5p4418_otg_data);
-}
-#endif
