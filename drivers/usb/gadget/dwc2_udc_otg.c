@@ -19,6 +19,10 @@
  */
 #undef DEBUG
 #include <common.h>
+#ifdef CONFIG_DM_USB
+#include <dm.h>
+#include <dm/device-internal.h>
+#endif
 #include <asm/errno.h>
 #include <linux/list.h>
 #include <malloc.h>
@@ -793,10 +797,61 @@ static struct dwc2_udc memory = {
 	},
 };
 
+#ifdef CONFIG_DM_USB
+/* Declare global data pointer */
+DECLARE_GLOBAL_DATA_PTR;
+static int dwc2_udc_ofdata_to_platdata(struct udevice *dev)
+{
+	struct dwc2_plat_otg_data *plat = dev_get_priv(dev);
+	int ret;
+	struct fdt_resource fdt_res;
+
+	ret = fdt_get_resource(gd->fdt_blob, dev->of_offset, "reg", 0,
+			       &fdt_res);
+	plat->regs_phy = fdt_res.start;
+	if (ret < 0) {
+		error("phy registers not found");
+		return ret;
+	}
+
+	ret = fdt_get_resource(gd->fdt_blob, dev->of_offset, "reg", 1,
+			       &fdt_res);
+	plat->regs_otg = fdt_res.start;
+	if (ret < 0) {
+		error("otg registers not found");
+		return ret;
+	}
+
+	return 0;
+}
+
+#include <usb.h>
+int board_usb_init(int index, enum usb_init_type init)
+{
+	struct udevice *bus;
+	struct uclass *uc;
+	int ret;
+
+	ret = uclass_get(UCLASS_USB, &uc);
+
+	uclass_foreach_dev(bus, uc) {
+		/* init low_level USB */
+		debug("bus name : %s\n", bus->name);
+		if (!strncmp(bus->name, "dwc2otg", 7)) {
+			debug("USB_udc_probe\n");
+			ret = device_probe(bus);
+		}
+	}
+
+	return ret;
+}
+#endif
+
 /*
  *	probe - binds to the platform device
  */
 
+#ifndef CONFIG_DM_USB
 int dwc2_udc_probe(struct dwc2_plat_otg_data *pdata)
 {
 	struct dwc2_udc *dev = &memory;
@@ -831,8 +886,50 @@ int dwc2_udc_probe(struct dwc2_plat_otg_data *pdata)
 
 	udc_reinit(dev);
 
+#else
+static int dwc2_udc_probe(struct udevice *dev)
+{
+	struct dwc2_plat_otg_data *pdata = dev_get_priv(dev);
+	struct dwc2_udc *udc_dev = &memory;
+	int retval = 0;
+
+	debug("%s: %p\n", __func__, pdata);
+
+	udc_dev->pdata = pdata;
+
+	reg = (struct dwc2_usbotg_reg *)(uintptr_t)pdata->regs_otg;
+
+	/* regs_otg = (void *)pdata->regs_otg; */
+
+	udc_dev->gadget.is_dualspeed = 1;	/* Hack only*/
+	udc_dev->gadget.is_otg = 0;
+	udc_dev->gadget.is_a_peripheral = 0;
+	udc_dev->gadget.b_hnp_enable = 0;
+	udc_dev->gadget.a_hnp_support = 0;
+	udc_dev->gadget.a_alt_hnp_support = 0;
+
+	the_controller = udc_dev;
+
+	usb_ctrl = memalign(CONFIG_SYS_CACHELINE_SIZE,
+			    ROUND(sizeof(struct usb_ctrlrequest),
+				  CONFIG_SYS_CACHELINE_SIZE));
+	if (!usb_ctrl) {
+		error("No memory available for UDC!\n");
+		return -ENOMEM;
+	}
+
+	usb_ctrl_dma_addr = (dma_addr_t) usb_ctrl;
+
+	udc_reinit(udc_dev);
+
 	return retval;
 }
+
+static int dwc2_udc_remove(struct udevice *dev)
+{
+	return 0;
+}
+#endif
 
 int usb_gadget_handle_interrupts(int index)
 {
@@ -843,3 +940,22 @@ int usb_gadget_handle_interrupts(int index)
 		return dwc2_udc_irq(1, (void *)the_controller);
 	return 0;
 }
+
+#ifdef CONFIG_DM_USB
+static const struct udevice_id dwc2_udc_ids[] = {
+	{ .compatible = "nexell,dwc2" },
+	{ }
+};
+
+U_BOOT_DRIVER(usb_dwc2_udc) = {
+	.name	= "dwc2_udc",
+	.id	= UCLASS_USB,
+	.of_match = dwc2_udc_ids,
+	.ofdata_to_platdata = dwc2_udc_ofdata_to_platdata,
+	.probe	= dwc2_udc_probe,
+	.remove = dwc2_udc_remove,
+	.ops	= &dwc2_udc_ops,
+	.priv_auto_alloc_size = sizeof(struct dwc2_plat_otg_data),
+	.flags = DM_FLAG_ALLOC_PRIV_DMA,
+};
+#endif

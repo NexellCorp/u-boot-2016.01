@@ -20,6 +20,8 @@ struct dwc2_plat_otg_data {
 	unsigned int	usb_gusbcfg;
 };
 
+#ifndef CONFIG_DM_USB
 int dwc2_udc_probe(struct dwc2_plat_otg_data *pdata);
+#endif
 
 #endif	/* __DWC2_USB_GADGET */
