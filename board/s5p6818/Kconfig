@@ -13,5 +13,8 @@ config TARGET_ARTIK710_RAPTOR
 
 endchoice
 
+config SYS_VENDOR
+	default "s5p6818"
+
 source "board/s5p6818/drone/Kconfig"
 source "board/s5p6818/artik710_raptor/Kconfig"
