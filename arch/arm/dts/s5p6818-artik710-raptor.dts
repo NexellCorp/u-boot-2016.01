@@ -45,6 +45,10 @@
 		status = "okay";
 	};
 
+	dwc2otg@c0040000 {
+		status = "okay";
+	};
+
 	nxe2000_hw:i2c@c00a6000 {
 		status ="okay";
 		nexell,i2c-sda-delay = <100>;
