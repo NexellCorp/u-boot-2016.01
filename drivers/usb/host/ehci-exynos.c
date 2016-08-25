@@ -14,11 +14,11 @@
 #include <malloc.h>
 #include <usb.h>
 #include <asm/arch/ehci.h>
+#include <asm/gpio.h>
 #if !defined(CONFIG_ARCH_NEXELL)
 #include <asm/arch/cpu.h>
 #include <asm/arch/system.h>
 #include <asm/arch/power.h>
-#include <asm/gpio.h>
 #else
 #include <asm/arch/reset.h>
 #include <asm/arch/nexell.h>
@@ -35,9 +35,7 @@ struct exynos_ehci_platdata {
 	struct usb_platdata usb_plat;
 	fdt_addr_t hcd_base;
 	fdt_addr_t phy_base;
-#if !defined(CONFIG_ARCH_NEXELL)
 	struct gpio_desc vbus_gpio;
-#endif
 };
 
 /**
@@ -82,11 +80,9 @@ static int ehci_usb_ofdata_to_platdata(struct udevice *dev)
 		debug("Can't get the usbphy register address\n");
 		return -ENXIO;
 	}
-#if !defined(CONFIG_ARCH_NEXELL)
 	/* Vbus gpio */
 	gpio_request_by_name(dev, "samsung,vbus-gpio", 0,
 			     &plat->vbus_gpio, GPIOD_IS_OUT);
-#endif
 
 	return 0;
 }
@@ -353,11 +349,9 @@ static int ehci_usb_probe(struct udevice *dev)
 	ctx->hcd = (struct ehci_hccr *)plat->hcd_base;
 	ctx->usb = (struct exynos_usb_phy *)plat->phy_base;
 
-#if !defined(CONFIG_ARCH_NEXELL)
 	/* setup the Vbus gpio here */
 	if (dm_gpio_is_valid(&plat->vbus_gpio))
 		dm_gpio_set_value(&plat->vbus_gpio, 1);
-#endif
 
 	setup_usb_phy(ctx->usb);
 	hcor = (struct ehci_hcor *)(ctx->hcd +

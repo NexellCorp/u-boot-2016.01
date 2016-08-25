@@ -85,10 +85,13 @@ static void nx_alive_set_pullup(void *base, u32 pin, bool enable)
 static int s5pxx18_pinctrl_gpio_init(struct udevice *dev)
 {
 	struct nexell_pinctrl_priv *priv = dev_get_priv(dev);
+	unsigned long reg;
 	int i;
 
+	reg = priv->base + 0xA000;
 	for (i = 0; i < 5; i++) {
-		nx_gpio_open_module((void *)priv->base);
+		nx_gpio_open_module((void *)reg);
+		reg += 0x1000;
 	}
 
 	return 0;
@@ -97,7 +100,8 @@ static int s5pxx18_pinctrl_gpio_init(struct udevice *dev)
 static int s5pxx18_pinctrl_alive_init(struct udevice *dev)
 {
 	struct nexell_pinctrl_priv *priv = dev_get_priv(dev);
-	writel(1, priv->base + ALIVE_PWRGATE);
+	unsigned long reg = priv->base + 0x800;
+	writel(1, reg + ALIVE_PWRGATE);
 	return 0;
 }
 

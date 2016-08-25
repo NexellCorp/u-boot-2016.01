@@ -85,6 +85,14 @@
 		};
 	};
 
+	dwc2otg@c0040000 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "nexell,dwc2";
+		reg = <0xC0011000 0x100>, <0xC0040000 0x11000>;
+		status = "disabled";
+	};
+
 	dp0:dp@c0102800 {
 		#address-cells = <1>;
 		#size-cells = <0>;

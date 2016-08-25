@@ -12,6 +12,8 @@
 #include <asm/sections.h>
 #include <part.h>
 
+DECLARE_GLOBAL_DATA_PTR;
+
 #define MMC_BLOCK_SIZE		(512)
 #define SECTOR_BITS		9	/* 512B */
 
@@ -47,7 +49,7 @@ struct ext4_chunk_header {
 #define EXT4_CHUNK_TYPE_FILL		0xCAC2
 #define EXT4_CHUNK_TYPE_NONE		0xCAC3
 
-#define ALIGN_BASE CONFIG_SYS_SDRAM_BASE + CONFIG_SYS_SDRAM_SIZE - 0x6000000
+#define ALIGN_BUFFER_SIZE		0x4000000
 #define WRITE_SECTOR 65536					/* 32 MB */
 
 typedef int (*WRITE_RAW_CHUNK_CB)(char *data, unsigned int sector,
@@ -121,8 +123,11 @@ int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 	unsigned char *tmp_align;
 
 	if (((unsigned long)data % 8) != 0) {
-		tmp_align = (unsigned char *)ALIGN_BASE;
 		int offset = 0;
+
+		/* align buffer start = malloc_start_address - ALIGN_BUFFER_SIZE */
+		tmp_align = (unsigned char *)(gd->relocaddr - TOTAL_MALLOC_LEN);
+		tmp_align -= ALIGN_BUFFER_SIZE;
 
 		do {
 			if (sector_size > WRITE_SECTOR) {

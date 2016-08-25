@@ -105,6 +105,14 @@
 		};
 	};
 
+	dwc2otg@c0040000 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "nexell,dwc2";
+		reg = <0xC0011000 0x100>, <0xC0040000 0x11000>;
+		status = "disabled";
+	};
+
 	gpio_a:gpio@c001a000 {
 		compatible = "nexell,nexell-gpio";
 		reg = <0xc001a000 0x00000010>;

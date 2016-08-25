@@ -22,11 +22,6 @@
 #include <power/nxe2000.h>
 #endif
 
-#ifdef CONFIG_USB_GADGET
-#include <usb.h>
-#include <usb/dwc2_udc.h>
-#endif
-
 #ifdef CONFIG_SENSORID_ARTIK
 #include <sensorid.h>
 #include <sensorid_artik.h>
@@ -191,16 +186,6 @@ void serial_clock_init(void)
 	clk_enable(clk);
 }
 
-#ifdef CONFIG_USB_EHCI_EXYNOS
-void board_ehci_power_en(void)
-{
-	/* ehci host power */
-	nx_gpio_set_pad_function(0, 16, 0);     /* GPIO */
-	nx_gpio_set_output_value(0, 16, 1);
-	nx_gpio_set_output_enable(0, 16, 1);
-}
-#endif
-
 /* call from u-boot */
 int board_early_init_f(void)
 {
@@ -252,9 +237,6 @@ int board_init(void)
 #endif
 
 	nx_phy_init();
-#ifdef CONFIG_USB_EHCI_EXYNOS
-	board_ehci_power_en();
-#endif
 
 	l2_cache_en();
 
@@ -349,16 +331,3 @@ int board_late_init(void)
 #endif
 	return 0;
 }
-
-#ifdef CONFIG_USB_GADGET
-struct dwc2_plat_otg_data s5p4418_otg_data = {
-	.regs_phy	= PHY_BASEADDR_TIEOFF,
-	.regs_otg	= PHY_BASEADDR_HSOTG,
-};
-
-int board_usb_init(int index, enum usb_init_type init)
-{
-	debug("USB_udc_probe\n");
-	return dwc2_udc_probe(&s5p4418_otg_data);
-}
-#endif
