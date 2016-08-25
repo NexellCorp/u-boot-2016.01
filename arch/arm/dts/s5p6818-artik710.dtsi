@@ -8,8 +8,6 @@
 #include "s5p6818.dtsi"
 
 / {
-	#include "s5p6818-pinctrl.dtsi"
-
 	mmc2:mmc@c0069000 {
 		nexell,drive_dly = <0x0>;
 		nexell,drive_shift = <0x03>;
