@@ -180,12 +180,6 @@ int mmc_get_env_dev(void)
 	return -1;
 }
 
-void l2_cache_en(void)
-{
-	nx_tieoff_set(NX_TIEOFF_CORTEXA9MP_TOP_QUADL2C_L2RET1N_0, 1);
-	nx_tieoff_set(NX_TIEOFF_CORTEXA9MP_TOP_QUADL2C_L2RET1N_1, 1);
-}
-
 int board_init(void)
 {
 	board_gpio_init();
@@ -196,8 +190,6 @@ int board_init(void)
 #endif
 
 	nx_phy_init();
-
-	l2_cache_en();
 
 	return 0;
 }
