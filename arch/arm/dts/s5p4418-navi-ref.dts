@@ -36,6 +36,10 @@
 		status = "okay";
 	};
 
+	dwc2otg@c0040000 {
+		status = "okay";
+	};
+
 	nxe2000_gpio:i2c_gpio@0 {
 		compatible = "i2c-gpio";
 		#address-cells = <1>;
