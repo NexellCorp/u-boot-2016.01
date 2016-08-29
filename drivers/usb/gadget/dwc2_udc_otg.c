@@ -885,7 +885,7 @@ int dwc2_udc_probe(struct dwc2_plat_otg_data *pdata)
 	usb_ctrl_dma_addr = (dma_addr_t) usb_ctrl;
 
 	udc_reinit(dev);
-
+}
 #else
 static int dwc2_udc_probe(struct udevice *dev)
 {
