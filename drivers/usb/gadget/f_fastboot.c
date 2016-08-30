@@ -1390,7 +1390,7 @@ static int fastboot_set_alt(struct usb_function *f,
 		ret = usb_ep_enable(f_fb->in_ep, &hs_ep_in);
 		is_high_speed = true;
 	} else {
-		ret = usb_ep_enable(f_fb->out_ep, &fs_ep_in);
+		ret = usb_ep_enable(f_fb->in_ep, &fs_ep_in);
 		is_high_speed = false;
 	}
 	if (ret) {
