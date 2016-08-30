@@ -152,16 +152,6 @@ int board_early_init_f(void)
 	return 0;
 }
 
-void board_gpio_init(void)
-{
-	nx_gpio_initialize();
-	nx_gpio_set_base_address(0, (void *)PHY_BASEADDR_GPIOA);
-	nx_gpio_set_base_address(1, (void *)PHY_BASEADDR_GPIOB);
-	nx_gpio_set_base_address(2, (void *)PHY_BASEADDR_GPIOC);
-	nx_gpio_set_base_address(3, (void *)PHY_BASEADDR_GPIOD);
-	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
-}
-
 int mmc_get_env_dev(void)
 {
 	int port_num;
@@ -182,8 +172,6 @@ int mmc_get_env_dev(void)
 
 int board_init(void)
 {
-	board_gpio_init();
-
 #ifdef CONFIG_REVISION_TAG
 	check_hw_revision();
 	printf("HW Revision:\t%d\n", board_rev);

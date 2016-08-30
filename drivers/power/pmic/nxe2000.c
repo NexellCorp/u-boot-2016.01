@@ -32,9 +32,6 @@ static const struct pmic_child_info pmic_children_info[] = {
 #ifdef CONFIG_REVISION_TAG
 static void gpio_init(void)
 {
-	nx_gpio_initialize();
-	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
-
 	nx_gpio_set_pad_function(4, 4, 0);
 	nx_gpio_set_pad_function(4, 5, 0);
 	nx_gpio_set_pad_function(4, 6, 0);

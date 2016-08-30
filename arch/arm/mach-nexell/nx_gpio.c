@@ -10,6 +10,7 @@
  */
 #include <linux/types.h>
 #include <asm/io.h>
+#include <asm/arch/nexell.h>
 #include "asm/arch/nx_gpio.h"
 #define NUMBER_OF_GPIO_MODULE 5
 u32 __g_nx_gpio_valid_bit[NUMBER_OF_GPIO_MODULE] = {
@@ -18,9 +19,11 @@ u32 __g_nx_gpio_valid_bit[NUMBER_OF_GPIO_MODULE] = {
 static struct {
 	struct nx_gpio_register_set *pregister;
 } __g_module_variables[NUMBER_OF_GPIO_MODULE] = {
-	{
-		NULL,
-	},
+	{ (struct nx_gpio_register_set *)PHY_BASEADDR_GPIOA },
+	{ (struct nx_gpio_register_set *)PHY_BASEADDR_GPIOB },
+	{ (struct nx_gpio_register_set *)PHY_BASEADDR_GPIOC },
+	{ (struct nx_gpio_register_set *)PHY_BASEADDR_GPIOD },
+	{ (struct nx_gpio_register_set *)PHY_BASEADDR_GPIOE },
 };
 
 enum { nx_gpio_max_bit = 32 };
