@@ -38,7 +38,7 @@ int arch_cpu_init(void)
 {
 	flush_dcache_all();
 	cpu_base_init();
-	nx_clk_init();
+	clk_init();
 	return 0;
 }
 #endif
