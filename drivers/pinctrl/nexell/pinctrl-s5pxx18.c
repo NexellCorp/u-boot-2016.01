@@ -128,7 +128,8 @@ static int s5pxx18_pinctrl_set_state(struct udevice *dev,
 {
 	const void *fdt = gd->fdt_blob;
 	int node = config->of_offset;
-	unsigned int count, idx, pin, ret;
+	int ret;
+	unsigned int count, idx, pin;
 	unsigned int pinfunc, pinpud, pindrv;
 	unsigned long reg;
 	const char *name;
