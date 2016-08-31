@@ -13,6 +13,7 @@
 #include <fat.h>
 #include <fs.h>
 #include <part.h>
+#include <div64.h>
 
 #define	UPDATE_SDCARD_MMC_MAX		3
 #define	UPDATE_SDCARD_EEPROM_MAX	1
@@ -342,7 +343,7 @@ int update_sd_do_load(cmd_tbl_t *cmdtp, int flag, int argc,
 
 	if (time > 0) {
 		puts(" (");
-		print_size(len_read / time * 1000, "/s");
+		print_size(lldiv(len_read, time) * 1000, "/s");
 		puts(")");
 	}
 	puts("\n");
@@ -456,14 +457,14 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 		if (fs_type == UPDATE_SDCARD_FS_2NDBOOT ||
 		    fs_type == UPDATE_SDCARD_FS_BOOT ||
 		    fs_type == UPDATE_SDCARD_FS_ENV) {
-			int blk_cnt = length / 512;
+			int blk_cnt = lldiv(length, 512);
 				if (length % 512)
 					blk_cnt++;
 
 			p = sprintf(cmd, "mmc write ");
 			l = sprintf(&cmd[p], "0x%x 0x%llx 0x%x",
 				    (unsigned int)addr,
-				    start / 512,
+				    lldiv(start, 512),
 				    blk_cnt);
 			p += l;
 			cmd[p] = 0;
@@ -514,7 +515,7 @@ static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
 		printf("%lld bytes read in %lu ms", len, time);
 		if (time > 0) {
 			puts(" (");
-			print_size(len / time * 1000, "/s");
+			print_size(lldiv(len, time) * 1000, "/s");
 			puts(")");
 		}
 		puts("\n");
