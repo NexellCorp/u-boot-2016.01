@@ -65,6 +65,15 @@ static void set_board_rev(u32 revision)
 }
 #endif
 
+#ifdef CONFIG_DISPLAY_BOARDINFO
+int checkboard(void)
+{
+	printf("\nBoard: ARTIK530 Raptor\n");
+
+	return 0;
+}
+#endif
+
 #ifdef CONFIG_SENSORID_ARTIK
 static void get_sensorid(u32 revision)
 {
