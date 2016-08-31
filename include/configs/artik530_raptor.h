@@ -27,8 +27,9 @@
 
 /* malloc() pool */
 #define	CONFIG_MEM_MALLOC_START			0x44000000
-/* more than 2M for ubifs: MAX 16M */
-#define CONFIG_MEM_MALLOC_LENGTH		(32*1024*1024)
+#define CONFIG_MEM_MALLOC_LENGTH	(CONFIG_ENV_SIZE + (1 << 20) +	\
+					CONFIG_SYS_DFU_DATA_BUF_SIZE * 2 + \
+					(8 << 20))
 
 /* when CONFIG_LCD */
 #define CONFIG_FB_ADDR				0x46000000
@@ -232,6 +233,23 @@
 #define CONFIG_PARTITION_UUIDS
 #define CONFIG_RANDOM_UUID
 
+#define CONFIG_CMD_DFU
+#define CONFIG_USB_GADGET_DOWNLOAD
+
+#define CONFIG_DISPLAY_BOARDINFO
+
+/* TIZEN THOR downloader support */
+#define CONFIG_CMD_THOR_DOWNLOAD
+#define CONFIG_USB_FUNCTION_THOR
+
+#define CONFIG_USB_FUNCTION_DFU
+#define CONFIG_DFU_MMC
+#define CONFIG_SYS_DFU_DATA_BUF_SIZE SZ_32M
+#define DFU_DEFAULT_POLL_TIMEOUT 300
+
+#define CONFIG_CMD_USB_MASS_STORAGE
+#define CONFIG_USB_FUNCTION_MASS_STORAGE
+
 /*-----------------------------------------------------------------------
  * Fastboot and USB OTG
  */
@@ -251,7 +269,11 @@
 #define CONFIG_SYS_CACHELINE_SIZE       64
 #define CONFIG_G_DNL_VENDOR_NUM         0x18d1  /* google */
 #define CONFIG_G_DNL_PRODUCT_NUM        0x0002  /* nexus one */
-#define CONFIG_G_DNL_MANUFACTURER       "Nexell Corporation"
+#define CONFIG_G_DNL_THOR_VENDOR_NUM	0x04e8
+#define CONFIG_G_DNL_THOR_PRODUCT_NUM	0x685D
+#define CONFIG_G_DNL_UMS_VENDOR_NUM	0x04e8
+#define CONFIG_G_DNL_UMS_PRODUCT_NUM	0x685C
+#define CONFIG_G_DNL_MANUFACTURER       "Samsung Electronics"
 
 /*-----------------------------------------------------------------------
  * Nexell USB Downloader
@@ -300,6 +322,22 @@
 #define CONFIG_MODULE_PART	2
 #define CONFIG_ROOT_PART	3
 
+#define CONFIG_DFU_ALT \
+	"bl1-emmcboot.img raw 0x1 0x80;" \
+	"bootloader.img raw 0x81 0x1800;" \
+	"/uImage ext4 0 1;" \
+	"/zImage ext4 0 1;" \
+	"/uInitrd ext4 0 1;" \
+	"/ramdisk.gz ext4 0 1;" \
+	"/s5p6818-artik530-raptor-rev03.dtb ext4 0 1;" \
+	"/s5p6818-artik530-raptor-rev00.dtb ext4 0 1;" \
+	"/s5p6818-artik530-explorer.dtb ext4 0 1;" \
+	"boot part 0 1;" \
+	"modules part 0 2;" \
+	"rootfs part 0 3;" \
+	"params.bin raw 0x1881 0x20;" \
+	"/Image.itb ext4 0 2\0"
+
 #define CONFIG_EXTRA_ENV_SETTINGS					\
 	"fdt_high=0xffffffff\0"						\
 	"kerneladdr=0x40080000\0"					\
@@ -335,6 +373,7 @@
 	"root_rw=rw\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
+	"dfu_alt_info=" CONFIG_DFU_ALT					\
 	"lcd1_0=s6e8fa0\0"						\
 	"lcd2_0=gst7d0038\0"						\
 	"lcd_panel=s6e8fa0\0"						\
