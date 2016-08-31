@@ -75,6 +75,12 @@ static int dw_mdio_write(struct mii_dev *bus, int addr, int devad, int reg,
 		udelay(10);
 	};
 
+#ifdef CONFIG_PHY_REALTEK
+	/* realtek phy work-around */
+	if (!ret)
+		dw_mdio_read(bus, addr, devad, reg);
+#endif
+
 	return ret;
 }
 

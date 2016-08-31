@@ -8,6 +8,8 @@
 #include "skeleton.dtsi"
 #include "../../../include/generated/autoconf.h"
 / {
+	#include "s5p4418-pinctrl.dtsi"
+
 	aliases {
 		mmc0 = "/mmc0:mmc@c0062000";
 		mmc1 = "/mmc1@c0068000";
@@ -70,6 +72,9 @@
 		compatible = "nexell,nexell-gmac";
 		reg = <0xc0060000 0x8000>;
 		phy-mode = "rgmii";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gmac_txd>, <&gmac_rxd>, <&gmac_txen>,
+			<&gmac_mdc>, <&gmac_mdio>, <&gmac_rxclk>, <&gmac_txclk>;
 		status = "disabled";
 	};
 
