@@ -817,7 +817,7 @@ void clk_disable(struct clk *clk)
 /*
  * Core clocks APIs
  */
-void __init nx_clk_init(void)
+void __init clk_init(void)
 {
 	struct clk_dev *cdev = st_clk_devs;
 	struct clk_dev_peri *peri = clk_periphs;

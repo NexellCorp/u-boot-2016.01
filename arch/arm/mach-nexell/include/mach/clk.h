@@ -12,7 +12,7 @@ struct clk {
 	unsigned long rate;
 };
 
-void nx_clk_init(void);
+void clk_init(void);
 
 struct clk *clk_get(const char *id);
 void clk_put(struct clk *clk);

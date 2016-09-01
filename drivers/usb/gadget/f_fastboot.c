@@ -321,8 +321,7 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 		p = sprintf(cmd, "ext4_img_write %d %p %d %x",
 			    dev, buf, fpart->part_num, (unsigned int)length);
 		ret = run_command(cmd, 0);
-		if (ret < 0)
-			printf("Flash : %s\n", (ret < 0) ? "FAIL" : "DONE");
+		printf("Flash : %s\n", (ret < 0) ? "FAIL" : "DONE");
 		return ret;
 	}
 
@@ -463,9 +462,6 @@ static int parse_part_device(const char *parts, const char **ret,
 	char str[32];
 	int i = 0, id_len;
 
-	if (ret)
-		*ret = NULL;
-
 	p = parts;
 	id = p;
 
@@ -532,9 +528,6 @@ static int parse_part_partition(const char *parts, const char **ret,
 	char str[32] = { 0, };
 	int i = 0;
 
-	if (ret)
-		*ret = NULL;
-
 	p = parts;
 	id = p;
 
@@ -589,9 +582,6 @@ static int parse_part_fs(const char *parts, const char **ret,
 	char str[16] = { 0, };
 	int i = 0;
 
-	if (ret)
-		*ret = NULL;
-
 	p = parts;
 	id = p;
 
@@ -634,9 +624,6 @@ static int parse_part_address(const char *parts, const char **ret,
 	const char *p, *id;
 	char str[64] = { 0, };
 	int id_len;
-
-	if (ret)
-		*ret = NULL;
 
 	p = parts;
 	id = p;
@@ -1403,7 +1390,7 @@ static int fastboot_set_alt(struct usb_function *f,
 		ret = usb_ep_enable(f_fb->in_ep, &hs_ep_in);
 		is_high_speed = true;
 	} else {
-		ret = usb_ep_enable(f_fb->out_ep, &fs_ep_in);
+		ret = usb_ep_enable(f_fb->in_ep, &fs_ep_in);
 		is_high_speed = false;
 	}
 	if (ret) {
