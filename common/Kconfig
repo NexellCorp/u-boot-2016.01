@@ -539,6 +539,13 @@ config CMD_SD_RECOVERY
 	  support recovery mmc card by images in other mmc card.
 	  This command depends on specific packaging methods.
 
+config CMD_CHECK_HW
+	bool check_hw
+	default n
+	help
+	  support check hw revision.
+	  Reading the gpio confirms the HW version.
+
 endmenu
 
 menu "Boot timing"
