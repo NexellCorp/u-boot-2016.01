@@ -15,6 +15,8 @@
 
 #define VENDORID			0x04e8	/* Samsung Vendor ID */
 #define PRODUCTID			0x1234	/* Nexell Product ID */
+#define NXP4330_USBD_VID		0x2375
+#define NXP4330_USBD_PID		0x4330
 
 #define BASEADDR_BOOTSTATUS \
 	(BASEADDR_SRAM+(INTERNAL_SRAM_SIZE/2))
@@ -454,9 +456,28 @@ void get_usbid(u16 *vid, u16 *pid)
 {
 	struct nx_ecid_registerset * const nx_ecidreg
 		= (struct nx_ecid_registerset *)PHY_BASEADDR_ECID;
-	u32 id = readl(&nx_ecidreg->ecid[3]);
+	char *cmp_name = "NEXELL-NXP4330-R0-LF3000";
+	char name[49];
+	int i;
 
-	cal_usbid(vid, pid, id);
+	for (i = 0 ; i < 48 ; i++)
+		name[i] = (char)nx_ecidreg->chipname[i];
+
+	for (i = 0; i < 48; i++) {
+		if ((name[i] == '-') && (name[i+1] == '-')) {
+			name[i] = 0;
+			name[i+1] = 0;
+		}
+	}
+
+	if (!strcmp(name, cmp_name)) {
+		*vid = NXP4330_USBD_VID;
+		*pid = NXP4330_USBD_PID;
+	} else {
+		u32 id = readl(&nx_ecidreg->ecid[3]);
+
+		cal_usbid(vid, pid, id);
+	}
 }
 
 static struct nx_usb_otg_registerset *nx_otgreg =
