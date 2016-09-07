@@ -13,8 +13,6 @@
 #include <asm/io.h>
 
 #include <asm/arch/nexell.h>
-#include <asm/arch/clk.h>
-#include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -23,32 +21,9 @@ DECLARE_GLOBAL_DATA_PTR;
  * intialize nexell soc and board status.
  */
 
-void serial_clock_init(void)
-{
-	char dev[10];
-	int id;
-
-	sprintf(dev, "nx-uart.%d", CONFIG_CONS_INDEX);
-	id = RESET_ID_UART0 + CONFIG_CONS_INDEX;
-
-	struct clk *clk = clk_get((const char *)dev);
-
-	/* reset control: Low active ___|---   */
-	nx_rstcon_setrst(id, RSTCON_ASSERT);
-	udelay(10);
-	nx_rstcon_setrst(id, RSTCON_NEGATE);
-	udelay(10);
-
-	/* set clock   */
-	clk_disable(clk);
-	clk_set_rate(clk, CONFIG_PL011_CLOCK);
-	clk_enable(clk);
-}
-
 /* call from u-boot */
 int board_early_init_f(void)
 {
-	serial_clock_init();
 	return 0;
 }
 
