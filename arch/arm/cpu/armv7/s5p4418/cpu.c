@@ -14,6 +14,7 @@
 #include <asm/arch/nexell.h>
 #include <asm/arch/clk.h>
 #include <asm/arch/reset.h>
+#include <asm/arch/tieoff.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -25,7 +26,7 @@ void s_init(void)
 {
 }
 
-void cpu_base_init(void)
+static void cpu_soc_init(void)
 {
 	/*
 	 * NOTE> ALIVE Power Gate must enable for Alive register access.
@@ -36,17 +37,47 @@ void cpu_base_init(void)
 
 	/* write 0xf0 on alive scratchpad reg for boot success check */
 	writel(readl(SCR_SIGNAGURE_READ) | 0xF0, (SCR_SIGNAGURE_SET));
+
+	/* set l2 cache tieoff */
+	nx_tieoff_set(NX_TIEOFF_CORTEXA9MP_TOP_QUADL2C_L2RET1N_0, 1);
+	nx_tieoff_set(NX_TIEOFF_CORTEXA9MP_TOP_QUADL2C_L2RET1N_1, 1);
 }
 
-#if defined(CONFIG_ARCH_CPU_INIT)
+#ifdef CONFIG_PL011_SERIAL
+static void serial_device_init(void)
+{
+	char dev[10];
+	int id;
+
+	sprintf(dev, "nx-uart.%d", CONFIG_CONS_INDEX);
+	id = RESET_ID_UART0 + CONFIG_CONS_INDEX;
+
+	struct clk *clk = clk_get((const char *)dev);
+
+	/* reset control: Low active ___|---   */
+	nx_rstcon_setrst(id, RSTCON_ASSERT);
+	udelay(10);
+	nx_rstcon_setrst(id, RSTCON_NEGATE);
+	udelay(10);
+
+	/* set clock   */
+	clk_disable(clk);
+	clk_set_rate(clk, CONFIG_PL011_CLOCK);
+	clk_enable(clk);
+}
+#endif
+
 int arch_cpu_init(void)
 {
 	flush_dcache_all();
-	cpu_base_init();
+	cpu_soc_init();
 	clk_init();
+
+#ifdef CONFIG_PL011_SERIAL
+	serial_device_init();
+#endif
 	return 0;
 }
-#endif
 
 #if defined(CONFIG_DISPLAY_CPUINFO)
 int print_cpuinfo(void)
