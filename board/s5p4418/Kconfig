@@ -21,6 +21,11 @@ config TARGET_S5P4418_NAVI_REF
 	help
 	  Support for s5p4418 navi_ref platform.
 
+config TARGET_S5P4418_CLUSTER_REF
+	bool "S5P4418_CLUSTER_REF"
+	help
+	  Support for s5p4418 cluster_ref platform.
+
 endchoice
 
 config SYS_VENDOR
@@ -30,3 +35,4 @@ source "board/s5p4418/drone/Kconfig"
 source "board/s5p4418/artik530_raptor/Kconfig"
 source "board/s5p4418/avn_ref/Kconfig"
 source "board/s5p4418/navi_ref/Kconfig"
+source "board/s5p4418/cluster_ref/Kconfig"
