@@ -9,7 +9,7 @@
 #include "s5p4418.dtsi"
 
 / {
-	model = "Nexell navi_ref board based on s5p4418";
+	model = "Nexell cluster_ref board based on s5p4418";
 	cpu-model = "S5p4418";
 
 	compatible = "nexell,s5p4418";
