@@ -10,16 +10,17 @@
 #include <asm/io.h>
 
 #include <asm/arch/nexell.h>
-#include <asm/arch/clk.h>
-#include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
-#include <asm/arch/tieoff.h>
 
 #ifdef CONFIG_DM_PMIC_NXE2000
 #include <dm.h>
 #include <dm/uclass-internal.h>
 #include <power/pmic.h>
 #include <power/nxe2000.h>
+#endif
+
+#ifdef CONFIG_USB_GADGET
+#include <usb.h>
 #endif
 
 #ifdef CONFIG_SENSORID_ARTIK
@@ -58,6 +59,15 @@ static void set_board_rev(u32 revision)
 
 	snprintf(info, ARRAY_SIZE(info), "%d", revision);
 	setenv("board_rev", info);
+}
+#endif
+
+#ifdef CONFIG_DISPLAY_BOARDINFO
+int checkboard(void)
+{
+	printf("\nBoard: ARTIK530 Raptor\n");
+
+	return 0;
 }
 #endif
 
@@ -123,32 +133,9 @@ static void nx_phy_init(void)
 #endif
 }
 
-void serial_clock_init(void)
-{
-	char dev[10];
-	int id;
-
-	sprintf(dev, "nx-uart.%d", CONFIG_CONS_INDEX);
-	id = RESET_ID_UART0 + CONFIG_CONS_INDEX;
-
-	struct clk *clk = clk_get((const char *)dev);
-
-	/* reset control: Low active ___|---   */
-	nx_rstcon_setrst(id, RSTCON_ASSERT);
-	udelay(10);
-	nx_rstcon_setrst(id, RSTCON_NEGATE);
-	udelay(10);
-
-	/* set clock   */
-	clk_disable(clk);
-	clk_set_rate(clk, CONFIG_PL011_CLOCK);
-	clk_enable(clk);
-}
-
 /* call from u-boot */
 int board_early_init_f(void)
 {
-	serial_clock_init();
 	return 0;
 }
 
@@ -270,3 +257,20 @@ int board_late_init(void)
 #endif
 	return 0;
 }
+
+#ifdef CONFIG_USB_GADGET
+int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
+{
+	if (!strcmp(name, "usb_dnl_thor")) {
+		put_unaligned(CONFIG_G_DNL_THOR_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_THOR_PRODUCT_NUM, &dev->idProduct);
+	} else if (!strcmp(name, "usb_dnl_ums")) {
+		put_unaligned(CONFIG_G_DNL_UMS_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_UMS_PRODUCT_NUM, &dev->idProduct);
+	} else {
+		put_unaligned(CONFIG_G_DNL_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_PRODUCT_NUM, &dev->idProduct);
+	}
+	return 0;
+}
+#endif

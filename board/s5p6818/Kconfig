@@ -1,8 +1,8 @@
 choice
 	prompt "Board select"
 
-config TARGET_DRONE
-	bool "DRONE"
+config TARGET_S5P6818_DRONE
+	bool "S5P6818_DRONE"
 	help
 	  Support for s5p6818 drone platform.
 
@@ -19,6 +19,13 @@ endchoice
 
 config SYS_VENDOR
 	default "s5p6818"
+
+config SYS_CONFIG_NAME
+	string "Board header file"
+	help
+	  This option should contain the base name of board header file.
+	  The header file include/configs/<CONFIG_SYS_CONFIG_NAME>.h
+	  should be included from include/config.h.
 
 source "board/s5p6818/drone/Kconfig"
 source "board/s5p6818/avn_ref/Kconfig"

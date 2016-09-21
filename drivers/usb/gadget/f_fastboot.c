@@ -693,8 +693,21 @@ static inline void part_lists_init(int init)
 
 	for (i = 0; FASTBOOT_DEV_SIZE > i; i++, fd++) {
 		struct list_head *head = &fd->link;
+		if (head->next == NULL)
+			INIT_LIST_HEAD(head);
 
 		if (init) {
+			if (!list_empty(head)) {
+				debug("delete [%s]:", fd->device);
+				list_for_each_safe(entry, n, head) {
+					fp = list_entry(entry, struct fastboot_part, link);
+					debug("%s ", fp->partition);
+					list_del(entry);
+					free(fp);
+				}
+			}
+			debug("\n");
+
 			INIT_LIST_HEAD(head);
 			memset(fd->parts, 0x0, sizeof(FASTBOOT_DEV_PART_MAX*2));
 			continue;
@@ -734,24 +747,23 @@ static int part_lists_make(const char *ptable_str, int ptable_str_len)
 
 	/* new parts table */
 	while (1) {
-		fd = f_devices;
-		fp = malloc(sizeof(*fp));
-
-		if (!fp) {
-			printf("* Can't malloc fastboot part table entry *\n");
-			err = -1;
-			break;
-		}
-
 		if (parse_part_head(p, &p)) {
 			if (err)
 				printf("-- unknown parts head: [%s]\n", p);
 			break;
 		}
 
+		fp = malloc(sizeof(*fp));
+		if (!fp) {
+			printf("* Can't malloc fastboot part table entry *\n");
+			err = -1;
+			break;
+		}
+
 		for (p_fnc_ptr = parse_part_seqs; *p_fnc_ptr; ++p_fnc_ptr) {
 			if ((*p_fnc_ptr)(p, &p, &fd, fp) != 0) {
 				err = -1;
+				free(fp);
 				goto fail_parse;
 			}
 		}
@@ -1857,6 +1869,8 @@ err_flash:
 done_flash:
 	fastboot_flash_session_id++;
 	fastboot_tx_write_str(response);
+
+	part_lists_init(0);
 }
 #endif
 

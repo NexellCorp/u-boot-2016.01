@@ -9,6 +9,7 @@
 #include <command.h>
 #include <mmc.h>
 #include <part.h>
+#include <div64.h>
 
 #define MMC_BLOCK_SIZE			(512)
 #define	MAX_PART_TABLE			(8)
@@ -99,8 +100,8 @@ int mmc_make_part_table_extended(block_dev_desc_t *desc, lbaint_t lba_start,
 
 	pt = (struct dos_partition *)(buffer + DOS_PART_TBL_OFFSET);
 	for (i = 0; 2 > i && part_num > i; i++, pt++) {
-		lba_s = (lbaint_t)(parts[i][0] / desc->blksz);
-		lba_l = (lbaint_t)(parts[i][1] / desc->blksz);
+		lba_s = (lbaint_t)(lldiv(parts[i][0], desc->blksz));
+		lba_l = (lbaint_t)(lldiv(parts[i][1], desc->blksz));
 
 		if (0 == lba_s) {
 			printf("-- Fail: invalid part.%d start 0x%llx --\n",
@@ -185,7 +186,7 @@ int mmc_make_part_table(block_dev_desc_t *desc,
 	debug("Total = %lld * %d :0x%llx (%d.%d G)\n",
 	      avalible, (int)desc->blksz,
 	      (uint64_t)(avalible)*desc->blksz,
-	      (int)((avalible*desc->blksz)/(1024*1024*1024)),
+	      (int)(lldiv((avalible*desc->blksz),(1024*1024*1024))),
 	      (int)((avalible*desc->blksz)%(1024*1024*1024)));
 
 	memset(buffer, 0x0, sizeof(buffer));
@@ -198,12 +199,12 @@ int mmc_make_part_table(block_dev_desc_t *desc,
 	}
 
 	pt = (struct dos_partition *)(buffer + DOS_PART_TBL_OFFSET);
-	last_lba = (int)(parts[0][0] / (uint64_t)desc->blksz);
+	last_lba = (int)(lldiv(parts[0][0], (uint64_t)desc->blksz));
 
 	for (i = 0; part_tables > i; i++, pt++) {
-		lba_s = (lbaint_t)(parts[i][0] / desc->blksz);
+		lba_s = (lbaint_t)(lldiv(parts[i][0], desc->blksz));
 		lba_l = parts[i][1] ?
-			(lbaint_t)(parts[i][1] / desc->blksz) :
+			(lbaint_t)(lldiv(parts[i][1], desc->blksz)) :
 					(desc->lba - last_lba);
 
 		if (0 == lba_s) {
@@ -240,7 +241,7 @@ int mmc_make_part_table(block_dev_desc_t *desc,
 	}
 
 	if (part_EBR) {
-		lba_s = (lbaint_t)(parts[3][0] / desc->blksz) - DOS_EBR_BLOCK;
+		lba_s = (lbaint_t)(lldiv(parts[3][0], desc->blksz)) - DOS_EBR_BLOCK;
 		lba_l = (lbaint_t)(desc->lba - last_lba);
 
 		if (last_lba > lba_s) {
