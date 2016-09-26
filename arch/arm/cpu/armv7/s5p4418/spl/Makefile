@@ -5,5 +5,5 @@
 # SPDX-License-Identifier:      GPL-2.0+
 #
 
-obj-y 	+= cpu.o
-obj-$(CONFIG_SPL_BUILD) += spl/
+extra-$(CONFIG_SPL_BUILD) := start.o
+obj-$(CONFIG_SPL_BUILD) := crt0.o

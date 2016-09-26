@@ -75,7 +75,7 @@ int get_env_id(void)
 	return env_id;
 }
 
-#ifndef CONFIG_SPL_BUILD
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_CLI_FRAMEWORK)
 /*
  * Command interface: print one or all environment variables
  *
@@ -341,7 +341,7 @@ ulong getenv_hex(const char *varname, ulong default_val)
 	return value;
 }
 
-#ifndef CONFIG_SPL_BUILD
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_CLI_FRAMEWORK)
 static int do_env_set(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	if (argc < 2)
@@ -700,7 +700,7 @@ ulong getenv_ulong(const char *name, int base, ulong default_val)
 	return str ? simple_strtoul(str, NULL, base) : default_val;
 }
 
-#ifndef CONFIG_SPL_BUILD
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_CLI_FRAMEWORK)
 #if defined(CONFIG_CMD_SAVEENV) && !defined(CONFIG_ENV_IS_NOWHERE)
 static int do_env_save(cmd_tbl_t *cmdtp, int flag, int argc,
 		       char * const argv[])
@@ -741,7 +741,7 @@ int envmatch(uchar *s1, int i2)
 	return -1;
 }
 
-#ifndef CONFIG_SPL_BUILD
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_CLI_FRAMEWORK)
 static int do_env_default(cmd_tbl_t *cmdtp, int __flag,
 			  int argc, char * const argv[])
 {

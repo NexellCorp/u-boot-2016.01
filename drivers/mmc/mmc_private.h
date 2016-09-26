@@ -20,7 +20,7 @@ extern int mmc_set_blocklen(struct mmc *mmc, int len);
 void mmc_adapter_card_type_ident(void);
 #endif
 
-#ifndef CONFIG_SPL_BUILD
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_CLI_FRAMEWORK)
 
 extern unsigned long mmc_berase(int dev_num, lbaint_t start, lbaint_t blkcnt);
 

@@ -233,8 +233,10 @@ static void boot_prep_linux(bootm_headers_t *images)
 		setup_board_tags(&params);
 		setup_end_tag(gd->bd);
 	} else {
+#ifndef CONFIG_SPL
 		printf("FDT and ATAGS support not compiled in - hanging\n");
 		hang();
+#endif
 	}
 }
 
@@ -320,6 +322,11 @@ static void boot_jump_linux(bootm_headers_t *images, int flag)
 #endif
 }
 
+__weak void arch_preboot_linux(int flag, int argc, char * const argv[],
+			       bootm_headers_t *images)
+{
+}
+
 /* Main Entry point for arm bootm implementation
  *
  * Modeled after the powerpc implementation
@@ -329,6 +336,8 @@ static void boot_jump_linux(bootm_headers_t *images, int flag)
 int do_bootm_linux(int flag, int argc, char * const argv[],
 		   bootm_headers_t *images)
 {
+	arch_preboot_linux(flag, argc, argv, images);
+
 	/* No need for those on ARM */
 	if (flag & BOOTM_STATE_OS_BD_T || flag & BOOTM_STATE_OS_CMDLINE)
 		return -1;

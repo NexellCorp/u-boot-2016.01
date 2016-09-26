@@ -481,7 +481,7 @@ int hdelete_r(const char *key, struct hsearch_data *htab, int flag)
  * hexport()
  */
 
-#ifndef CONFIG_SPL_BUILD
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_CLI_FRAMEWORK)
 /*
  * Export the data stored in the hash table in linearized form.
  *
