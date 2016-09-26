@@ -1743,8 +1743,9 @@ static void cb_download(struct usb_ep *ep, struct usb_request *req)
 	fastboot_tx_write_str(response);
 }
 
-static void do_bootm_on_complete(struct usb_ep *ep, struct usb_request *req)
+static void do_boot_on_complete(struct usb_ep *ep, struct usb_request *req)
 {
+#ifdef CONFIG_CMD_BOOTM
 	char boot_addr_start[12];
 	char *bootm_args[] = { "bootm", boot_addr_start, NULL };
 
@@ -1755,11 +1756,14 @@ static void do_bootm_on_complete(struct usb_ep *ep, struct usb_request *req)
 
 	/* This only happens if image is somehow faulty so we start over */
 	do_reset(NULL, 0, 0, NULL);
+#else
+	puts("not set boot command\n");
+#endif
 }
 
 static void cb_boot(struct usb_ep *ep, struct usb_request *req)
 {
-	fastboot_func->in_req->complete = do_bootm_on_complete;
+	fastboot_func->in_req->complete = do_boot_on_complete;
 	fastboot_tx_write_str("OKAY");
 }
 
@@ -1774,7 +1778,6 @@ static void cb_continue(struct usb_ep *ep, struct usb_request *req)
 	fastboot_tx_write_str("OKAY");
 }
 
-#ifdef CONFIG_FASTBOOT_FLASH
 static void cb_flash(struct usb_ep *ep, struct usb_request *req)
 {
 	char *cmd = req->buf;
@@ -1872,7 +1875,6 @@ done_flash:
 
 	part_lists_init(0);
 }
-#endif
 
 static void cb_oem(struct usb_ep *ep, struct usb_request *req)
 {
@@ -1896,7 +1898,6 @@ static void cb_oem(struct usb_ep *ep, struct usb_request *req)
 	}
 }
 
-#ifdef CONFIG_FASTBOOT_FLASH
 static void cb_erase(struct usb_ep *ep, struct usb_request *req)
 {
 	char *cmd = req->buf;
@@ -1919,7 +1920,6 @@ static void cb_erase(struct usb_ep *ep, struct usb_request *req)
 #endif
 	fastboot_tx_write_str(response);
 }
-#endif
 
 struct cmd_dispatch_info {
 	char *cmd;
@@ -1943,7 +1943,6 @@ static const struct cmd_dispatch_info cmd_dispatch_info[] = {
 		.cmd = "continue",
 		.cb = cb_continue,
 	},
-#ifdef CONFIG_FASTBOOT_FLASH
 	{
 		.cmd = "flash",
 		.cb = cb_flash,
@@ -1951,7 +1950,6 @@ static const struct cmd_dispatch_info cmd_dispatch_info[] = {
 		.cmd = "erase",
 		.cb = cb_erase,
 	},
-#endif
 	{
 		.cmd = "oem",
 		.cb = cb_oem,
