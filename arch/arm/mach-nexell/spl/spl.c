@@ -184,10 +184,8 @@ static inline int spl_mmc_init(void)
 	 defined CONFIG_USB_GADGET
 #include <usb/dwc2_udc.h>
 
-static struct dwc2_plat_otg_data nx_otg_data = {
-	.regs_phy = 0xc0011000,
-	.regs_otg = 0xc0040000,
-};
+static struct dwc2_plat_otg_data
+	nx_otg_data = CONFIG_USB_GADGET_REGS;
 
 static inline int spl_udc_probe(void)
 {
