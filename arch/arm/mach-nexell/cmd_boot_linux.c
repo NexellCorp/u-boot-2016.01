@@ -11,6 +11,7 @@
 #include <environment.h>
 #include <errno.h>
 #include <image.h>
+#include <fdt_support.h>
 
 #if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_CLI_FRAMEWORK)
 
@@ -35,7 +36,8 @@ static void boot_go_set_os(cmd_tbl_t *cmdtp, int flag, int argc,
 #else
 	#error "Not support architecture ..."
 #endif
-#ifndef CONFIG_SPL_BUILD
+
+#if !defined(CONFIG_OF_LIBFDT) && !defined(CONFIG_SPL_BUILD)
 	/* set DTB address for linux kernel */
 	if (argc > 2) {
 		unsigned long ft_addr;
@@ -57,6 +59,27 @@ static void boot_go_set_os(cmd_tbl_t *cmdtp, int flag, int argc,
 #endif
 }
 
+#if defined(CONFIG_OF_LIBFDT) && defined(CONFIG_LMB)
+static void boot_start_lmb(bootm_headers_t *images)
+{
+	ulong		mem_start;
+	phys_size_t	mem_size;
+
+	lmb_init(&images->lmb);
+
+	mem_start = getenv_bootm_low();
+	mem_size = getenv_bootm_size();
+
+	lmb_add(&images->lmb, (phys_addr_t)mem_start, mem_size);
+
+	arch_lmb_reserve(&images->lmb);
+	board_lmb_reserve(&images->lmb);
+}
+#else
+#define lmb_reserve(lmb, base, size)
+static inline void boot_start_lmb(bootm_headers_t *images) { }
+#endif
+
 int do_boot_linux(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	boot_os_fn *boot_fn;
@@ -64,11 +87,26 @@ int do_boot_linux(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	int flags;
 	int ret;
 
-	flags = BOOTM_STATE_OS_GO |
-		BOOTM_STATE_START;
+	boot_start_lmb(images);
+
+	flags  = BOOTM_STATE_START;
 
 	argc--; argv++;
 	boot_go_set_os(cmdtp, flag, argc, argv, images);
+
+#if defined(CONFIG_OF_LIBFDT)
+	/* find flattened device tree */
+	ret = boot_get_fdt(flag, argc, argv, IH_ARCH_DEFAULT, images,
+			   &images->ft_addr, &images->ft_len);
+	if (ret) {
+		puts("Could not find a valid device tree\n");
+		return 1;
+	}
+	set_working_fdt_addr((ulong)images->ft_addr);
+#endif
+#if !defined(CONFIG_OF_LIBFDT)
+	flags |= BOOTM_STATE_OS_GO;
+#endif
 
 	boot_fn = do_bootm_linux;
 	ret = boot_fn(flags, argc, argv, images);
@@ -86,5 +124,25 @@ U_BOOT_CMD(
 	"boot linux image from memory",
 	"[addr [arg ...]]\n    - boot linux image stored in memory\n"
 	"\tuse a '-' for the DTB address\n"
+);
+#endif
+
+#if defined(CONFIG_CMD_BOOTD) && !defined(CONFIG_CMD_BOOTM)
+int do_bootd(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+{
+	return run_command(getenv("bootcmd"), flag);
+}
+
+U_BOOT_CMD(
+	boot,	1,	1,	do_bootd,
+	"boot default, i.e., run 'bootcmd'",
+	""
+);
+
+/* keep old command name "bootd" for backward compatibility */
+U_BOOT_CMD(
+	bootd, 1,	1,	do_bootd,
+	"boot default, i.e., run 'bootcmd'",
+	""
 );
 #endif

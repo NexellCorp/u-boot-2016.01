@@ -20,6 +20,7 @@ void __assert_fail(const char *assertion, const char *file, unsigned line,
 }
 #endif
 
+#ifndef CONFIG_OF_LIBFDT
 void arch_preboot_linux(int flag, int argc, char *const argv[],
 			bootm_headers_t *images)
 {
@@ -44,6 +45,7 @@ void arch_preboot_linux(int flag, int argc, char *const argv[],
 			gd->bd->bi_boot_params = ft_addr;
 	}
 }
+#endif
 
 #undef show_boot_progress
 void show_boot_progress(int val)
