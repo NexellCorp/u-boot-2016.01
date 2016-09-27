@@ -112,6 +112,22 @@
 #define CONFIG_SYS_BARGSIZE			CONFIG_SYS_CBSIZE
 
 /*-----------------------------------------------------------------------
+ * Etc Command definition
+ */
+#define	CONFIG_CMD_IMI				/* image info	*/
+#define CONFIG_CMDLINE_EDITING			/* add command line history */
+#define	CONFIG_CMDLINE_TAG			/* use bootargs commandline */
+#define	CONFIG_CMD_BOOTL			/* boot linux image */
+
+#undef  CONFIG_BOOTM_NETBSD
+#undef  CONFIG_BOOTM_PLAN9
+#undef  CONFIG_BOOTM_RTEMS
+#undef  CONFIG_BOOTM_VXWORKS
+
+#define	CONFIG_CMD_BOOTD
+#define	CONFIG_OF_LIBFDT
+
+/*-----------------------------------------------------------------------
  * Default Boot Environments
  */
 #define CONFIG_BOOTDELAY			1
@@ -130,19 +146,6 @@
 #ifdef CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #endif
-
-/*-----------------------------------------------------------------------
- * Etc Command definition
- */
-#define	CONFIG_CMD_IMI				/* image info	*/
-#define CONFIG_CMDLINE_EDITING			/* add command line history */
-#define	CONFIG_CMDLINE_TAG			/* use bootargs commandline */
-#define	CONFIG_CMD_BOOTL			/* boot linux image */
-
-#undef  CONFIG_BOOTM_NETBSD
-#undef  CONFIG_BOOTM_PLAN9
-#undef  CONFIG_BOOTM_RTEMS
-#undef  CONFIG_BOOTM_VXWORKS
 
 /*-----------------------------------------------------------------------
  * serial console configuration
@@ -192,7 +195,7 @@
 #define CONFIG_SYS_MMC_ENV_DEV		0
 #define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
 					 CONFIG_FIP_SIZE)
-#define CONFIG_ENV_SIZE			(512)	/* env size */
+#define CONFIG_ENV_SIZE			(1024)	/* env size */
 #endif
 
 #ifndef CONFIG_FIT
@@ -236,6 +239,8 @@
 #define CONFIG_USB_GADGET_VBUS_DRAW     0
 #define CONFIG_USB_GADGET_DWC2_OTG
 #define CONFIG_USB_GADGET_NX_UDC_OTG_PHY
+#define CONFIG_USB_GADGET_REGS {	\
+		.regs_phy = 0xc0011000, .regs_otg = 0xc0040000 }
 
 #define CONFIG_SYS_CACHELINE_SIZE       64
 
@@ -264,10 +269,9 @@
  * SPL
  */
 #ifdef CONFIG_SPL
+
 /* SPL FRAMEWORK */
-#if 1
 #define	CONFIG_SPL_CLI_FRAMEWORK	/* set prompt mode */
-#endif
 
 /* Support Devices */
 #define	CONFIG_SPL_SERIAL_SUPPORT
