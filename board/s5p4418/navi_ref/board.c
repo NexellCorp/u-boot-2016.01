@@ -20,7 +20,8 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #if !defined CONFIG_OF_CONTROL && !defined CONFIG_DM_USB &&	\
 	 defined CONFIG_USB_GADGET
-static struct dwc2_plat_otg_data nx_otg_data = CONFIG_USB_GADGET_REGS;
+static struct dwc2_plat_otg_data
+		nx_otg_data = CONFIG_USB_GADGET_REGS;
 
 static void board_udc_probe(void)
 {
