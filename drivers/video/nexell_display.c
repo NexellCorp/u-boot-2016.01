@@ -38,6 +38,11 @@ struct nx_display_dev {
 	unsigned int fb_size;
 };
 
+#if defined CONFIG_SPL_BUILD ||	\
+	(!defined(CONFIG_DM) && !defined(CONFIG_OF_CONTROL))
+static struct nx_display_dev *dp_dev;
+#endif
+
 static char *const dp_dev_str[] = {
 	[DP_DEVICE_RESCONV] = "RESCONV",
 	[DP_DEVICE_RGBLCD] = "LCD",
@@ -60,7 +65,7 @@ __weak void __dp_mipi_exit(int width, int height, void *private_data)
 	printf("[todo for mipi %s:%s]\n", __FILE__, __func__);
 }
 
-#if CONFIG_IS_ENABLED(OF_CONTROL)
+#if !defined CONFIG_SPL_BUILD && CONFIG_IS_ENABLED(OF_CONTROL)
 static void nx_display_parse_dp_sync(const void *blob, int node,
 				     struct dp_sync_info *sync)
 {
@@ -166,7 +171,6 @@ static void nx_display_parse_dp_layer(const void *blob, int node,
 				      struct dp_plane_info *plane)
 {
 	plane->fb_base = fdtdec_get_int(blob, node, "fb_base", 0);
-	plane->format = fdtdec_get_int(blob, node, "format", 0);
 	plane->left = fdtdec_get_int(blob, node, "left", 0);
 	plane->width = fdtdec_get_int(blob, node, "width", 0);
 	plane->top = fdtdec_get_int(blob, node, "top", 0);
@@ -323,11 +327,17 @@ static int nx_display_parse_dp_lcds(const void *blob, int node,
 	return 0;
 }
 
+#define	DT_SYNC		(1<<0)
+#define	DT_CTRL		(1<<1)
+#define	DT_PLANES	(1<<2)
+#define	DT_DEVICE	(1<<3)
+
 static int nx_display_parse_dt(const void *blob,
 			struct nx_display_dev *dp, int node)
 {
 	const char *name, *dtype;
 	int ret = 0;
+	unsigned int dt_status = 0;
 
 	if (!node) {
 		node = fdtdec_next_compatible(blob, 0, COMPAT_NEXELL_DISPLAY);
@@ -347,17 +357,30 @@ static int nx_display_parse_dt(const void *blob,
 	     node > 0; node = fdt_next_subnode(blob, node)) {
 		name = fdt_get_name(blob, node, NULL);
 
-		if (0 == strcmp("dp-sync", name))
+		if (0 == strcmp("dp-sync", name)) {
+			dt_status |= DT_SYNC;
 			nx_display_parse_dp_sync(blob, node, &dp->sync);
+		}
 
-		if (0 == strcmp("dp-ctrl", name))
+		if (0 == strcmp("dp-ctrl", name)) {
+			dt_status |= DT_CTRL;
 			nx_display_parse_dp_ctrl(blob, node, &dp->ctrl);
+		}
 
-		if (0 == strcmp("dp-planes", name))
+		if (0 == strcmp("dp-planes", name)) {
+			dt_status |= DT_PLANES;
 			nx_display_parse_dp_planes(blob, node, dp);
+		}
 
-		if (0 == strcmp("dp-device", name))
+		if (0 == strcmp("dp-device", name)) {
+			dt_status |= DT_DEVICE;
 			ret = nx_display_parse_dp_lcds(blob, node, dtype, dp);
+		}
+	}
+
+	if (dt_status != (DT_SYNC | DT_CTRL | DT_PLANES | DT_DEVICE)) {
+		printf("Not enough DT config for display [0x%x]\n", dt_status);
+		return -ENODEV;
 	}
 
 	return ret;
@@ -367,9 +390,10 @@ static int nx_display_parse_dt(const void *blob,
 static struct nx_display_dev *nx_display_setup(void)
 {
 	struct nx_display_dev *dp;
-	int i, ret, node = 0;
+	int i, ret;
+	int node = 0;
 
-#ifdef CONFIG_DM
+#if !defined CONFIG_SPL_BUILD && defined CONFIG_DM
 	struct udevice *dev;
 
 	/* call driver probe */
@@ -381,15 +405,17 @@ static struct nx_display_dev *nx_display_setup(void)
 	dp = dev_get_priv(dev);
 	node = dev->of_offset;
 
-#elif defined CONFIG_OF_CONTROL
+#elif !defined CONFIG_SPL_BUILD && defined CONFIG_OF_CONTROL
 	dp = kzalloc(sizeof(*dp), GFP_KERNEL);
 	if (!dp) {
 		printf("failed to allocate display object.\n");
 		return NULL;
 	}
+#else
+	dp = dp_dev;
 #endif
 
-#if CONFIG_IS_ENABLED(OF_CONTROL)
+#if !defined CONFIG_SPL_BUILD && CONFIG_IS_ENABLED(OF_CONTROL)
 	ret = nx_display_parse_dt(gd->fdt_blob, dp, node);
 	if (ret)
 		goto err_setup;
@@ -489,12 +515,12 @@ void *video_hw_init(void)
 	return graphic_device;
 }
 
-#ifdef CONFIG_DM
-static int nx_display_probe(struct udevice *dev)
+#if defined CONFIG_SPL_BUILD || defined CONFIG_DM || !defined CONFIG_OF_CONTROL
+static int nx_display_dev_probe(struct nx_display_platdata *plat,
+			struct nx_display_dev *dp)
 {
-	struct nx_display_platdata *plat = dev_get_platdata(dev);
-	struct nx_display_dev *dp = dev_get_priv(dev);
 	int i = 0;
+
 	if (!plat)
 		return -EINVAL;
 
@@ -522,6 +548,13 @@ static int nx_display_probe(struct udevice *dev)
 
 	return 0;
 }
+#endif
+
+#ifdef CONFIG_DM
+static int nx_display_probe(struct udevice *dev)
+{
+	return nx_display_dev_probe(dev_get_platdata(dev), dev_get_priv(dev));
+}
 
 #if CONFIG_IS_ENABLED(OF_CONTROL)
 static const struct udevice_id nx_display_id[] = {
@@ -539,4 +572,16 @@ U_BOOT_DRIVER(nexell_display) = {
 	.probe = nx_display_probe,
 	.priv_auto_alloc_size = sizeof(struct nx_display_dev),
 };
-#endif
+#elif defined CONFIG_SPL_BUILD || !defined(CONFIG_OF_CONTROL)
+int nx_display_probe(struct nx_display_platdata *plat)
+{
+	struct nx_display_dev *dp = kzalloc(sizeof(*dp), GFP_KERNEL);
+	if (!dp) {
+		printf("failed to allocate display object.\n");
+		return -1;
+	}
+	dp_dev = dp;
+
+	return nx_display_dev_probe(plat, dp_dev);
+}
+#endif /* CONFIG_DM */
