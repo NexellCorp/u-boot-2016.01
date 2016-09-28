@@ -44,7 +44,7 @@
 
 #define SECURE_BOOT (0)
 
-#define SECURE_BINGEN_VER "20160705-1"
+#define SECURE_BINGEN_VER "20160909-1"
 
 
 #define __ALIGN(x, a) __ALIGN_MASK(x, (a)-1)

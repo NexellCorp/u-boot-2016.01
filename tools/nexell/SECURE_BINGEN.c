@@ -43,11 +43,19 @@ static uint64_t launch_addr = -1;
 
 /* Address of the device to find the image want to load.*/
 static uint64_t load_addr[NR_BOOTINFO];
-static uint8_t bootdev[NR_BOOTINFO];
+static uint8_t load_dev[NR_BOOTINFO];
 static uint8_t portnum[NR_BOOTINFO];
 static uint8_t load_count;
 static uint8_t boot_count;
 static uint8_t port_count;
+
+static uint8_t bootdev = BOOT_FROM_SDMMC;
+/* When loading unified image might using usb */
+static uint8_t unified_image;
+static uint32_t simg_ofs[NR_BOOTINFO];
+static uint32_t simg_siz[NR_BOOTINFO];
+static uint8_t simg_ofscnt;
+static uint8_t simg_sizcnt;
 
 
 /* Data Dump */
@@ -251,51 +259,68 @@ static int nsih_parsing(int8_t *nsih_name)
 static void nsih_user_config(char *buffer)
 {
 	int32_t i = 0;
+	struct nx_tbbinfo *info;
 
 	/* 2ndboot & 3rdboot Header Modify Information. */
 	pBootInfo = (struct nx_bootheader *)buffer;
+	info = &pBootInfo->tbbi;
 
 	/* Device Dependency */
-	pBootInfo->tbbi.LoadSize = input_size;
+	info->loadsize = input_size;
 
 	/* NSIH Default (Load Address, Launch Address) */
 	if (loaded_addr != -1)
-		pBootInfo->tbbi.LoadAddr = loaded_addr;
+		info->loadaddr = loaded_addr;
 	if (launch_addr != -1)
-		pBootInfo->tbbi.StartAddr = launch_addr;
+		info->startaddr = launch_addr;
 
-	/* Address of the device to find the image want to load.*/
-	for (i = 0; i < load_count; i++)
-		pBootInfo->tbbi.dbi[i].sdmmcbi.deviceaddr = load_addr[i];
 
-	for (i = 0; i < boot_count; i++)
-		pBootInfo->tbbi.dbi[i].sdmmcbi.loaddevicenum = bootdev[i];
+	if (bootdev == BOOT_FROM_USB) {
+		/* Address of split image to load */
+		for (i = 0; i < load_count; i++)
+			info->dbi[i].usbbi.split_loadaddr = load_addr[i];
 
-	for (i = 0; i < port_count; i++)
-		pBootInfo->tbbi.dbi[i].sdmmcbi.portnumber = portnum[i];
+		for (i = 0; i < simg_ofscnt; i++)
+			info->dbi[i].usbbi.split_offset = simg_ofs[i];
 
+		for (i = 0; i < simg_sizcnt; i++)
+			info->dbi[i].usbbi.split_size = simg_siz[i];
+	} else {
+		/* Address of the device to find the image want to load.*/
+		for (i = 0; i < load_count; i++)
+			info->dbi[i].sdmmcbi.deviceaddr = load_addr[i];
+
+		for (i = 0; i < boot_count; i++)
+			info->dbi[i].sdmmcbi.loaddevicenum = load_dev[i];
+
+		for (i = 0; i < port_count; i++)
+			info->dbi[i].sdmmcbi.portnumber = portnum[i];
+	}
+
+	info->unified = unified_image;
+	info->bootdev = bootdev;
 
 	/* Signature (NSIH) */
-	pBootInfo->tbbi.signature = HEADER_ID;
+	info->signature = HEADER_ID;
 	/* CRC code generation must be last */
-	pBootInfo->tbbi.CRC32 =
+	info->crc32 =
 		__calc_crc((void *)(buffer + HEADER_SIZE), input_size);
 
 #ifdef BOOT_DEBUG
-	NX_DEBUG("LOADSIZE   : %u\n", pBootInfo->tbbi.LoadSize);
-	NX_DEBUG("LOADADDR   : %llx\n", pBootInfo->tbbi.LoadAddr);
-	NX_DEBUG("LAUNCHADDR : %llx\n", pBootInfo->tbbi.StartAddr);
-	NX_DEBUG("SIGNATURE  : %x\n", pBootInfo->tbbi.signature);
-	NX_DEBUG("CRC32	     : %x\n", pBootInfo->tbbi.CRC32);
+	NX_DEBUG("LOADSIZE   : %u\n", info->loadsize);
+	NX_DEBUG("LOADADDR   : %llx\n", info->loadaddr);
+	NX_DEBUG("LAUNCHADDR : %llx\n", info->startaddr);
+	NX_DEBUG("SIGNATURE  : %x\n", info->signature);
+	NX_DEBUG("crc32      : %x\n", info->crc32);
 	for (i = 0; i < load_count; i++)
 		NX_DEBUG("to load device addr: 0x%llx\n",
-			 pBootInfo->tbbi.dbi[i].sdmmcbi.deviceaddr);
+			 info->dbi[i].sdmmcbi.deviceaddr);
 	for (i = 0; i < boot_count; i++)
 		NX_DEBUG("boot device number: %d\n",
-			 pBootInfo->tbbi.dbi[i].sdmmcbi.loaddevicenum);
+			 info->dbi[i].sdmmcbi.loaddevicenum);
 	for (i = 0; i < port_count; i++)
 		NX_DEBUG("port number: %d\n",
-			 pBootInfo->tbbi.dbi[i].sdmmcbi.portnumber);
+			 info->dbi[i].sdmmcbi.portnumber);
 #endif
 }
 
@@ -453,9 +478,9 @@ out_close:
 	return ret;
 }
 
-/* @ Function : useage.
+/* @ Function : usage.
  * @ Param    : None.
- * @ Remak   : Help on useage.
+ * @ Remak   : Help on usage.
  */
 static void usage(void)
 {
@@ -463,7 +488,13 @@ static void usage(void)
 	printf(" Release  Version         : Ver.%s\n", SECURE_BINGEN_VER);
 	printf("-----------------------------------------------------------\n");
 	printf(" Usage :\n");
-	printf("   -h [HELP]                     : show usage\n");
+	printf("   -h [HELP]                  : show usage\n");
+	printf("   -k [dev id]                : DEVID_USB=0, DEVID_SDMMC=3\n");
+	printf("\n");
+	printf("  if usb\n");
+	printf("   -u                         : unified image\n");
+	printf("   -m [load address]          : split load address\n");
+	printf("   -z [load size]             : split load size\n");
 	printf("-----------------------------------------------------------\n");
 	printf("\n");
 }
@@ -488,7 +519,7 @@ int32_t main(int32_t argc, char **argv)
 	}
 
 	while (-1 != (param_opt =
-		      getopt(argc, argv, "hc:t:n:i:o:l:e:m:b:p:"))) {
+		      getopt(argc, argv, "hc:t:n:i:o:l:e:m:b:p:uf:z:k:"))) {
 		switch (param_opt) {
 		case 'h':
 			usage();
@@ -525,19 +556,19 @@ int32_t main(int32_t argc, char **argv)
 
 			load_addr[load_count] = strtoull(optarg, NULL, 0);
 			NX_DEBUG(" load[%d] %llu\n",
-				 load_count+1, load_addr[load_count]);
+				 load_count + 1, load_addr[load_count]);
 			load_count++;
 			break;
 		case 'b':
 			if (boot_count >= NR_BOOTINFO) {
-				NX_ERROR("Too many bootdev entry (max:%d)\n",
+				NX_ERROR("Too many load_dev entry (max:%d)\n",
 					 NR_BOOTINFO);
 				break;
 			}
 
-			bootdev[boot_count] = strtoull(optarg, NULL, 0);
-			NX_DEBUG(" bootdev[%d] %llu\n",
-				 boot_count+1, bootdev[boot_count]);
+			load_dev[boot_count] = strtoull(optarg, NULL, 0);
+			NX_DEBUG(" load_dev[%d] %llu\n",
+				 boot_count + 1, load_dev[boot_count]);
 			boot_count++;
 			break;
 		case 'p':
@@ -549,18 +580,44 @@ int32_t main(int32_t argc, char **argv)
 
 			portnum[port_count] = strtoull(optarg, NULL, 0);
 			NX_DEBUG(" portnum[%d] %llu\n",
-				 port_count+1, portnum[port_count]);
+				 port_count + 1, portnum[port_count]);
 			port_count++;
+			break;
+		case 'u':
+			unified_image = 1;
+			break;
+		case 'f':
+			if (simg_ofscnt >= NR_BOOTINFO) {
+				NX_ERROR("Too many split ofs entry (max:%d)\n",
+					 NR_BOOTINFO);
+				break;
+			}
+
+			simg_ofs[simg_ofscnt] = strtoul(optarg, NULL, 0);
+			NX_DEBUG(" split ofs[%d] %lu\n",
+				 simg_ofscnt + 1, simg_ofs[simg_ofscnt]);
+			simg_ofscnt++;
+			break;
+		case 'z':
+			if (simg_sizcnt >= NR_BOOTINFO) {
+				NX_ERROR("Too many split ofs entry (max:%d)\n",
+					 NR_BOOTINFO);
+				break;
+			}
+
+			simg_siz[simg_sizcnt] = strtoul(optarg, NULL, 0);
+			NX_DEBUG(" split ofs[%d] %lu\n",
+				 simg_sizcnt + 1, simg_siz[simg_sizcnt]);
+			simg_sizcnt++;
+			break;
+		case 'k':
+			bootdev = strtoull(optarg, NULL, 0);
 			break;
 		/* Unknown Option */
 		default:
 			NX_ERROR("unknown option_num parameter\n");
 			break;
 		}
-	}
-	if (load_count != boot_count || load_count != port_count) {
-		NX_ERROR("wrong boot info params (load, bootdev, portnum)\n");
-		return -1;
 	}
 
 	if (nsih_name == NULL) {
