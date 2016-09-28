@@ -48,3 +48,4 @@ obj-$(CONFIG_OF_LIBFDT) += $(U-BOOT_TOP)/common/fdt_support.o
 # devices
 obj-$(CONFIG_USB_GADGET) += $(U-BOOT_TOP)/drivers/usb/gadget/
 obj-$(CONFIG_GENERIC_MMC) += $(U-BOOT_TOP)/drivers/mmc/mmc_write.o
+obj-$(CONFIG_VIDEO) += $(U-BOOT_TOP)/drivers/video/

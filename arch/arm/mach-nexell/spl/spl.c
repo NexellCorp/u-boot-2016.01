@@ -194,6 +194,22 @@ static inline int spl_udc_probe(void)
 }
 #endif
 
+#if defined CONFIG_VIDEO
+#include <stdio_dev.h>
+#include <asm/arch/display.h>
+
+__weak int spl_display_probe(void)
+{
+	return 0;
+}
+
+static int spl_video_probe(void)
+{
+	drv_video_init();
+	return 0;
+}
+#endif
+
 static int spl_bootdelay(void)
 {
 	int abort = 0;
@@ -283,6 +299,10 @@ static init_fnc_t init_sequence_r[] = {
 	 defined CONFIG_USB_GADGET
 	spl_udc_probe,
 #endif
+#if defined CONFIG_VIDEO
+	spl_display_probe,
+	spl_video_probe,
+#endif
 	NULL,
 };
 #endif /* CONFIG_SPL_CLI_FRAMEWORK */
@@ -324,6 +344,11 @@ __weak void spl_cli_init(void)
 {
 }
 
+__weak int spl_late_init(void)
+{
+	return 0;
+}
+
 void spl_board_init_r(gd_t *dummy1, ulong dummy2)
 {
 	if (spl_init_call_list(init_sequence_f))
@@ -336,6 +361,10 @@ void spl_board_init_r(gd_t *dummy1, ulong dummy2)
 	debug_core_status();
 
 	cli_init();
+
+	if (spl_late_init())
+		hang();
+
 	spl_autoboot();
 	cli_loop();
 
