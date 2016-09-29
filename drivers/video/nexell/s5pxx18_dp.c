@@ -109,7 +109,8 @@ int dp_control_setup(int module,
 	}
 
 	/* CLKGEN0/1 */
-	nx_dpc_set_clock_source(module, 0, ctrl->clk_src_lv0);
+	nx_dpc_set_clock_source(module, 0, ctrl->clk_src_lv0 == 3 ?
+				6 : ctrl->clk_src_lv0);
 	nx_dpc_set_clock_divisor(module, 0, ctrl->clk_div_lv0);
 	nx_dpc_set_clock_source(module, 1, ctrl->clk_src_lv1);
 	nx_dpc_set_clock_divisor(module, 1, ctrl->clk_div_lv1);
@@ -165,6 +166,8 @@ int dp_control_setup(int module,
 
 void dp_control_enable(int module, int on)
 {
+	debug("%s: dp.%d top %s\n", __func__, module, on ? "ON" : "OFF");
+
 	nx_dpc_set_dpc_enable(module, on);
 	nx_dpc_set_clock_divisor_enable(module, on);
 }
