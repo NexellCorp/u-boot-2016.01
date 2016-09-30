@@ -96,7 +96,7 @@
  *	U-Boot Environments
  */
 /* refer to common/env_common.c	*/
-#define CONFIG_BOOTDELAY			0
+#define CONFIG_BOOTDELAY			1
 
 /*-----------------------------------------------------------------------
  * Miscellaneous configurable options
@@ -279,7 +279,7 @@
  */
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 			"fdt_high=0xffffffff\0" \
-                        "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet printk.time=1\0" \
+                        "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet printk.time=1 consoleblank=0\0" \
                         "boot_cmd_mmcboot="   \
                                    "ext4load mmc 0:1 0x40008000 zImage;ext4load mmc 0:1 49000000 s5p4418-navi_ref-rev00.dtb;" \
                                    "bootz 0x40008000 - 49000000\0" \
