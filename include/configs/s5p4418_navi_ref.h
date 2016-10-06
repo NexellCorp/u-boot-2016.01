@@ -98,7 +98,6 @@
 /* refer to common/env_common.c	*/
 #define CONFIG_BOOTDELAY			0
 #define CONFIG_ZERO_BOOTDELAY_CHECK
-
 /*-----------------------------------------------------------------------
  * Miscellaneous configurable options
  */
@@ -274,6 +273,15 @@
 
 #define CONFIG_FIT_BEST_MATCH
 #define CONFIG_OF_LIBFDT
+
+/*-----------------------------------------------------------------------
+ * VIDEO
+ */
+#define CONFIG_VIDEO
+#define CONFIG_CFB_CONSOLE
+#define CONFIG_VGA_AS_SINGLE_DEVICE
+#define CONFIG_SYS_CONSOLE_IS_IN_ENV
+
 
 /*-----------------------------------------------------------------------
  * ENV

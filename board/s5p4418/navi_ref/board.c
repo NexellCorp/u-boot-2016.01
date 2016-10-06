@@ -129,17 +129,17 @@ int board_late_init(void)
 
 #if defined CONFIG_VIDEO
 	/* set lcd enable */
+	nx_gpio_set_pad_function(gpio_c, 11, 1);
 	nx_gpio_set_pad_function(gpio_b, 25, 1);
 	nx_gpio_set_pad_function(gpio_b, 27, 1);
-	nx_gpio_set_pad_function(gpio_c, 11, 1);
 
+	nx_gpio_set_output_value(gpio_c, 11, 1);
 	nx_gpio_set_output_value(gpio_b, 25, 1);
 	nx_gpio_set_output_value(gpio_b, 27, 1);
-	nx_gpio_set_output_value(gpio_c, 11, 1);
 
+	nx_gpio_set_output_enable(gpio_c, 11, 1);
 	nx_gpio_set_output_enable(gpio_b, 25, 1);
 	nx_gpio_set_output_enable(gpio_b, 27, 1);
-	nx_gpio_set_output_enable(gpio_c, 11, 1);
 #endif
 
 	return 0;

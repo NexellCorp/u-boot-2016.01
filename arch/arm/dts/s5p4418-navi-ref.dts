@@ -210,7 +210,7 @@
 			};
 
 			layer_0 {
-				fb_base = <0x41000000>;
+				fb_base = <0x50000000>;
 				width = <1024>;
 				height = <600>;
 				format = <0x06530000>;
