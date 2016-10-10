@@ -197,7 +197,7 @@ static void nx_dw_mmc_clk_delay(struct dwmci_host *host)
 	writel(delay, (host->ioaddr + DWMCI_CLKCTRL));
 }
 
-#if defined(CONFIG_FIT)
+#if defined(CONFIG_OF_CONTROL)
 static int nx_dw_mmc_of_list(const void *blob, int *node_list, int lists)
 {
 	return fdtdec_find_aliases_for_id(blob, "mmc",
