@@ -85,8 +85,10 @@ static int splash_load_raw(struct splash_location *location, u32 bmp_load_addr)
 	int res;
 	size_t bmp_size, bmp_header_size = sizeof(struct bmp_header);
 
+#ifndef CONFIG_SPL_BUILD
 	if (bmp_load_addr + bmp_header_size >= gd->start_addr_sp)
 		goto splash_address_too_high;
+#endif
 
 	res = splash_storage_read_raw(location, bmp_load_addr, bmp_header_size);
 	if (res < 0)
@@ -95,13 +97,17 @@ static int splash_load_raw(struct splash_location *location, u32 bmp_load_addr)
 	bmp_hdr = (struct bmp_header *)bmp_load_addr;
 	bmp_size = le32_to_cpu(bmp_hdr->file_size);
 
+#ifndef CONFIG_SPL_BUILD
 	if (bmp_load_addr + bmp_size >= gd->start_addr_sp)
 		goto splash_address_too_high;
+#endif
 
 	return splash_storage_read_raw(location, bmp_load_addr, bmp_size);
 
+#ifndef CONFIG_SPL_BUILD
 splash_address_too_high:
 	printf("Error: splashimage address too high. Data overwrites U-Boot and/or placed beyond DRAM boundaries.\n");
+#endif
 
 	return -EFAULT;
 }
@@ -194,10 +200,12 @@ static int splash_load_fs(struct splash_location *location, u32 bmp_load_addr)
 		return res;
 	}
 
+#ifndef CONFIG_SPL_BUILD
 	if (bmp_load_addr + bmp_size >= gd->start_addr_sp) {
 		printf("Error: splashimage address too high. Data overwrites U-Boot and/or placed beyond DRAM boundaries.\n");
 		return -EFAULT;
 	}
+#endif
 
 	splash_select_fs_dev(location);
 	return fs_read(splash_file, bmp_load_addr, 0, 0, NULL);

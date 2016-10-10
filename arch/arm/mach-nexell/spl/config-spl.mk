@@ -49,3 +49,5 @@ obj-$(CONFIG_OF_LIBFDT) += $(U-BOOT_TOP)/common/fdt_support.o
 obj-$(CONFIG_USB_GADGET) += $(U-BOOT_TOP)/drivers/usb/gadget/
 obj-$(CONFIG_GENERIC_MMC) += $(U-BOOT_TOP)/drivers/mmc/mmc_write.o
 obj-$(CONFIG_VIDEO) += $(U-BOOT_TOP)/drivers/video/
+obj-$(CONFIG_CFB_CONSOLE) += $(U-BOOT_TOP)/common/cmd_version.o
+obj-$(CONFIG_SPLASH_SOURCE) += $(U-BOOT_TOP)/common/splash_source.o
