@@ -82,6 +82,8 @@
  * undefined
  */
 #ifdef CONFIG_SPL_BUILD
+#undef CONFIG_DM
+#undef CONFIG_OF_CONTROL
 #undef CONFIG_BOOTM_NETBSD
 #undef CONFIG_BOOTM_PLAN9
 #undef CONFIG_BOOTM_RTEMS
@@ -90,6 +92,13 @@
 #undef CONFIG_CMDLINE_EDITING			/* add command line history */
 #undef CONFIG_CMDLINE_TAG			/* use bootargs commandline */
 #undef CONFIG_CMD_FAT
+#undef CONFIG_FS_FAT
+#undef CONFIG_CMD_USB
+#undef CONFIG_DM_USB
+#endif
+
+#ifdef CONFIG_FIT
+#error "SPL not support FIT (Flattened Image Tree)"
 #endif
 
 #endif /* CONFIG_SPL */
