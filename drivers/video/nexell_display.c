@@ -15,6 +15,7 @@
 #include <fdtdec.h>
 #include <fdt_support.h>
 #include <video_fb.h>
+#include <lcd.h>
 #include <asm/global_data.h>
 #include <asm/io.h>
 #include <asm/arch/display.h>
@@ -23,7 +24,11 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 struct nx_display_dev {
+#ifdef CONFIG_VIDEO
 	GraphicDevice graphic_device;
+#elif defined CONFIG_LCD
+	vidinfo_t *panel_info;
+#endif
 	unsigned long base;
 	int module;
 	struct dp_sync_info sync;
@@ -477,6 +482,7 @@ err_setup:
 	return NULL;
 }
 
+#if defined CONFIG_VIDEO
 void *video_hw_init(void)
 {
 	static GraphicDevice *graphic_device;
@@ -512,8 +518,59 @@ void *video_hw_init(void)
 	graphic_device->plnSizeX =
 	    graphic_device->winSizeX * graphic_device->gdfBytesPP;
 
+	/* change fb base address */
+	gd->fb_base = dp->fb_addr;
+
 	return graphic_device;
 }
+#elif defined CONFIG_LCD
+/* default lcd */
+struct vidinfo panel_info = {
+	.vl_col = 320, .vl_row = 240, .vl_bpix = 32,
+};
+
+void lcd_ctrl_init(void *lcdbase)
+{
+	vidinfo_t *pi = &panel_info;
+	struct nx_display_dev *dp;
+	int bpix;
+
+	dp = nx_display_setup();
+	if (!dp)
+		return NULL;
+
+	switch (dp->depth) {
+	case 2:
+		bpix = LCD_COLOR16;
+		break;
+	case 3:
+	case 4:
+		bpix = LCD_COLOR32;
+		break;
+	default:
+		printf("fail : not support LCD bit per pixel %d\n",
+		       dp->depth * 8);
+		return NULL;
+	}
+
+	dp->panel_info = pi;
+
+	/* set resolution with config */
+	pi->vl_bpix = bpix;
+	pi->vl_col = dp->fb_plane->width;
+	pi->vl_row = dp->fb_plane->height;
+	pi->priv = dp;
+	gd->fb_base = dp->fb_addr;
+}
+
+void lcd_setcolreg(ushort regno, ushort red, ushort green, ushort blue)
+{
+}
+
+__weak void lcd_enable(void)
+{
+}
+#endif
 
 #if defined CONFIG_SPL_BUILD || defined CONFIG_DM || !defined CONFIG_OF_CONTROL
 static int nx_display_dev_probe(struct nx_display_platdata *plat,
