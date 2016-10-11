@@ -363,6 +363,7 @@
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
 		"fi; \0"						\
+	"bootdelay=" __stringify(CONFIG_BOOTDELAY) "\0"			\
 	"console=" CONFIG_DEFAULT_CONSOLE				\
 	"consoleon=setenv console=" CONFIG_DEFAULT_CONSOLE		\
 		"; saveenv; reset\0"					\
@@ -404,7 +405,7 @@
 	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
 	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
 	"hwtestboot=setenv rootdev 1;"					\
-		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
+		"setenv opts rootfstype=ext4 rootwait loglevel=4;"	\
 		"setenv fdtfile s5p4418-artik530-explorer.dtb;"		\
 		"run mmcboot\0"						\
 	"hwtest_recoveryboot=run recovery_cmd; run hwtestboot\0"        \
