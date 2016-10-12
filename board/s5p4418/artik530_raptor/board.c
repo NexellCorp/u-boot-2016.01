@@ -237,6 +237,16 @@ void pmic_init(void)
 	ret = pmic_write(dev, NXE2000_REG_DC4CTL2, &bit_mask, 1);
 	if (ret)
 		printf("Can't write PMIC register: %d!\n", NXE2000_REG_DC4CTL2);
+
+	bit_mask = ((1 << NXE2000_POS_LDOEN1_LDO1EN) |
+			(1 << NXE2000_POS_LDOEN1_LDO2EN) |
+			(1 << NXE2000_POS_LDOEN1_LDO3EN) |
+			(0 << NXE2000_POS_LDOEN1_LDO4EN) |
+			(0 << NXE2000_POS_LDOEN1_LDO5EN));
+	ret = pmic_write(dev, NXE2000_REG_LDOEN1, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_LDOEN1);
+
 }
 #endif
 
