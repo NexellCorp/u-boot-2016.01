@@ -76,7 +76,7 @@
 /* board_init_f->init_sequence, call arch_cpu_init */
 #define CONFIG_ARCH_CPU_INIT
 /* board_init_f->init_sequence, call board_early_init_f */
-#define	CONFIG_BOARD_EARLY_INIT_F
+/* #define	CONFIG_BOARD_EARLY_INIT_F  */
 /* board_init_r, call board_early_init_f */
 #define	CONFIG_BOARD_LATE_INIT
 /* board_init_f->init_sequence, call print_cpuinfo */
@@ -96,8 +96,8 @@
  *	U-Boot Environments
  */
 /* refer to common/env_common.c	*/
-#define CONFIG_BOOTDELAY			3
-
+#define CONFIG_BOOTDELAY			0
+#define CONFIG_ZERO_BOOTDELAY_CHECK
 /*-----------------------------------------------------------------------
  * Miscellaneous configurable options
  */
@@ -193,6 +193,7 @@
 #define CONFIG_NEXELL_DWMMC
 #define CONFIG_BOUNCE_BUFFER
 #define CONFIG_CMD_MMC
+#define CONFIG_CMD_BOOTZ
 
 #if defined(CONFIG_MMC)
 #define CONFIG_2NDBOOT_OFFSET		512
@@ -274,9 +275,25 @@
 #define CONFIG_OF_LIBFDT
 
 /*-----------------------------------------------------------------------
+ * VIDEO
+ */
+#define CONFIG_VIDEO
+#define CONFIG_CFB_CONSOLE
+#define CONFIG_VGA_AS_SINGLE_DEVICE
+#define CONFIG_SYS_CONSOLE_IS_IN_ENV
+
+
+/*-----------------------------------------------------------------------
  * ENV
  */
 #define CONFIG_EXTRA_ENV_SETTINGS	\
-			"fdt_high=0xffffffff"
+			"fdt_high=0xffffffff\0" \
+                        "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+                                    "printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
+                        "boot_cmd_mmcboot="   \
+                                   "ext4load mmc 0:1 0x40008000 zImage;ext4load mmc 0:1 49000000 s5p4418-avn_ref-rev00.dtb;" \
+                                   "bootz 0x40008000 - 49000000\0" \
+                        "mmcboot=run boot_cmd_mmcboot\0"           \
+                        "bootcmd=run mmcboot\0"
 
 #endif /* __CONFIG_H__ */
