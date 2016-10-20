@@ -7,9 +7,6 @@
 
 #include <config.h>
 #include <common.h>
-#ifdef CONFIG_PWM_NX
-#include <pwm.h>
-#endif
 #include <asm/io.h>
 
 #include <asm/arch/nexell.h>
@@ -17,78 +14,69 @@
 #include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
 
+#include <usb/dwc2_udc.h>
+
 DECLARE_GLOBAL_DATA_PTR;
 
-/*------------------------------------------------------------------------------
- * intialize nexell soc and board status.
- */
-
-void serial_clock_init(void)
-{
-	char dev[10];
-	int id;
-
-	sprintf(dev, "nx-uart.%d", CONFIG_CONS_INDEX);
-	id = RESET_ID_UART0 + CONFIG_CONS_INDEX;
-
-	struct clk *clk = clk_get((const char *)dev);
-
-	/* reset control: Low active ___|---   */
-	nx_rstcon_setrst(id, RSTCON_ASSERT);
-	udelay(10);
-	nx_rstcon_setrst(id, RSTCON_NEGATE);
-	udelay(10);
-
-	/* set clock   */
-	clk_disable(clk);
-	clk_set_rate(clk, CONFIG_PL011_CLOCK);
-	clk_enable(clk);
-}
-
-/* call from u-boot */
-int board_early_init_f(void)
-{
-	serial_clock_init();
-	return 0;
-}
-
-void board_gpio_init(void)
-{
-	nx_gpio_initialize();
-	nx_gpio_set_base_address(0, (void *)PHY_BASEADDR_GPIOA);
-	nx_gpio_set_base_address(1, (void *)PHY_BASEADDR_GPIOB);
-	nx_gpio_set_base_address(2, (void *)PHY_BASEADDR_GPIOC);
-	nx_gpio_set_base_address(3, (void *)PHY_BASEADDR_GPIOD);
-	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
-}
-
-#ifdef CONFIG_PWM_NX
-void board_backlight_init(void)
-{
-	nx_gpio_set_pad_function(1, 27, 1);
-	nx_gpio_set_output_enable(1, 27, 1);
-	nx_gpio_set_output_value(1, 27, 1);
-	pwm_init(CONFIG_BACKLIGHT_CH, CONFIG_BACKLIGHT_DIV,
-		 CONFIG_BACKLIGHT_INV);
-	pwm_config(CONFIG_BACKLIGHT_CH, TO_DUTY_NS(CONFIG_BACKLIGHT_DUTY,
-						   CONFIG_BACKLIGHT_HZ),
-		   TO_PERIOD_NS(CONFIG_BACKLIGHT_HZ));
-}
-#endif
-
-int mmc_get_env_dev(void)
-{
-	return 0;
-}
+enum gpio_group {
+	gpio_a,	gpio_b, gpio_c, gpio_d, gpio_e,
+};
 
 int board_init(void)
 {
-	board_gpio_init();
-#ifdef CONFIG_PWM_NX
-	board_backlight_init();
+	/* set pwm0 output off: 1 */
+	nx_gpio_set_pad_function(gpio_d,  1, 0);
+	nx_gpio_set_output_value(gpio_d,  1, 1);
+	nx_gpio_set_output_enable(gpio_d,  1, 1);
+
+#ifdef CONFIG_SILENT_CONSOLE
+	gd->flags |= GD_FLG_SILENT;
 #endif
+
 	return 0;
 }
+
+#ifdef CONFIG_BOARD_LATE_INIT
+int board_late_init(void)
+{
+#ifdef CONFIG_SILENT_CONSOLE
+	gd->flags &= ~GD_FLG_SILENT;
+#endif
+
+	/* set lcd enable */
+	nx_gpio_set_pad_function(gpio_c, 11, 1);
+	nx_gpio_set_pad_function(gpio_b, 25, 1);
+	nx_gpio_set_pad_function(gpio_b, 27, 1);
+
+	nx_gpio_set_output_value(gpio_c, 11, 1);
+	nx_gpio_set_output_value(gpio_b, 25, 1);
+	nx_gpio_set_output_value(gpio_b, 27, 1);
+
+	nx_gpio_set_output_enable(gpio_c, 11, 1);
+	nx_gpio_set_output_enable(gpio_b, 25, 1);
+	nx_gpio_set_output_enable(gpio_b, 27, 1);
+
+	return 0;
+}
+#endif
+
+#ifdef CONFIG_SPLASH_SOURCE
+#include <splash.h>
+struct splash_location splash_locations[] = {
+	{
+	.name = "mmc_fs",
+	.storage = SPLASH_STORAGE_MMC,
+	.flags = SPLASH_STORAGE_FS,
+	.devpart = "0:1",
+	},
+};
+
+int splash_screen_prepare(void)
+{
+	return splash_source_load(splash_locations,
+				ARRAY_SIZE(splash_locations));
+}
+#endif
 
 /* u-boot dram initialize  */
 int dram_init(void)
@@ -106,10 +94,5 @@ void dram_init_banksize(void)
 
 	gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE;
 	gd->bd->bi_dram[0].size  = CONFIG_SYS_SDRAM_SIZE;
-}
-
-int board_late_init(void)
-{
-	return 0;
 }
 
