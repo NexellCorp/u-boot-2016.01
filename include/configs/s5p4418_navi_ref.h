@@ -286,14 +286,42 @@
 /*-----------------------------------------------------------------------
  * ENV
  */
+
+#define CONFIG_ROOT_DEV		0
+#define CONFIG_BOOT_PART	1
+
 #define CONFIG_EXTRA_ENV_SETTINGS	\
-			"fdt_high=0xffffffff\0" \
-                        "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
-                                    "printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
-                        "boot_cmd_mmcboot="   \
-                                   "ext4load mmc 0:1 0x40008000 zImage;ext4load mmc 0:1 49000000 s5p4418-navi_ref-rev00.dtb;" \
-                                   "bootz 0x40008000 - 49000000\0" \
-                        "mmcboot=run boot_cmd_mmcboot\0"           \
-                        "bootcmd=run mmcboot\0"
+	"fdt_high=0xffffffff\0"		\
+	"kerneladdr=0x40008000\0"	\
+	"kernel_file=zImage\0"		\
+	"fdtaddr=0x49000000\0"		\
+	"load_fdt="			\
+		"if test -z \"$fdtfile\"; then "                        \
+		"loop=$board_rev; "					\
+		"number=$board_rev: "					\
+		"success=0; "						\
+		"until test $loop -eq 0 || test $success -ne 0; do "	\
+			"if test $loop -lt 10; then "			\
+				"number=0$loop; "			\
+			"else number=$loop; "				\
+			"fi; "						\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-navi_ref-rev${number}.dtb && setexpr success 1; " \
+			"setexpr loop $loop - 1; "			\
+			"done; "					\
+		"if test $success -eq 0; then "				\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-navi_ref-rev00.dtb;"	\
+		"fi; "							\
+		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
+		"fi; \0"						\
+	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
+	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
+	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+		"printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
+	"boot_cmd_mmcboot="   \
+		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
+		"bootz $kerneladdr - $fdtaddr\0" \
+	"mmcboot=run boot_cmd_mmcboot\0"           \
+	"bootcmd=run mmcboot\0"
 
 #endif /* __CONFIG_H__ */
