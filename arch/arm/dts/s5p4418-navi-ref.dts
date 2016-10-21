@@ -218,4 +218,16 @@
 			};
 		};
 	};
+
+	board_rev:rev@0 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = < &gpio_a 21 0 >,
+		      < &gpio_a 22 0 >,
+		      < &gpio_a 23 0 >,
+		      < &gpio_a 24 0 >;
+		maps = < 0 0 >,
+		     < 10 1 >;
+		compatible = "nexell,board_rev";
+	};
 };
