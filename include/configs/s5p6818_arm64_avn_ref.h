@@ -80,7 +80,7 @@
 /* board_init_f->init_sequence, call arch_cpu_init */
 #define CONFIG_ARCH_CPU_INIT
 /* board_init_f->init_sequence, call board_early_init_f */
-#define	CONFIG_BOARD_EARLY_INIT_F
+/* #define	CONFIG_BOARD_EARLY_INIT_F */
 /* board_init_r, call board_early_init_f */
 #define	CONFIG_BOARD_LATE_INIT
 /* board_init_f->init_sequence, call print_cpuinfo */
@@ -137,12 +137,10 @@
 #define	CONFIG_CMD_IMI				/* image info	*/
 #define CONFIG_CMDLINE_EDITING			/* add command line history */
 #define	CONFIG_CMDLINE_TAG			/* use bootargs commandline */
+#define CONFIG_INITRD_TAG
 #undef	CONFIG_BOOTM_NETBSD
 #undef	CONFIG_BOOTM_RTEMS
 
-/*-----------------------------------------------------------------------
- * serial console configuration
- */
 /*-----------------------------------------------------------------------
  * serial console configuration
  */
@@ -176,38 +174,22 @@
 #define CONFIG_TIMER_SYS_TICK_CH		0
 
 /*-----------------------------------------------------------------------
- * GPT
+ * PWM
  */
-#define CONFIG_CMD_GPT
-#define CONFIG_EFI_PARTITION
-#define CONFIG_PARTITION_UUIDS
-#define CONFIG_RANDOM_UUID
+#define CONFIG_PWM_NX
 
 /*-----------------------------------------------------------------------
- * Fastboot and USB OTG
+ * BACKLIGHT
  */
-
-#define CONFIG_USB_FUNCTION_FASTBOOT
-#define CONFIG_CMD_FASTBOOT
-#define CONFIG_FASTBOOT_FLASH
-#define CONFIG_FASTBOOT_FLASH_MMC_DEV   0
-#define CONFIG_FASTBOOT_BUF_SIZE        (CONFIG_SYS_SDRAM_SIZE - SZ_1M)
-#define CONFIG_FASTBOOT_BUF_ADDR        CONFIG_SYS_SDRAM_BASE
-#define CONFIG_USB_GADGET
-#define CONFIG_USB_GADGET_DUALSPEED
-#define CONFIG_USB_GADGET_VBUS_DRAW     0
-#define CONFIG_USB_GADGET_DWC2_OTG
-#define CONFIG_USB_GADGET_NX_UDC_OTG_PHY
-#define CONFIG_USB_GADGET_DOWNLOAD
-#define CONFIG_SYS_CACHELINE_SIZE       64
-#define CONFIG_G_DNL_VENDOR_NUM         0x18d1  /* google */
-#define CONFIG_G_DNL_PRODUCT_NUM        0x0002  /* nexus one */
-#define CONFIG_G_DNL_MANUFACTURER       "Nexell Corporation"
+#define CONFIG_BACKLIGHT_CH                     0
+#define CONFIG_BACKLIGHT_DIV                    0
+#define CONFIG_BACKLIGHT_INV                    0
+#define CONFIG_BACKLIGHT_DUTY                   50
+#define CONFIG_BACKLIGHT_HZ                     1000
 
 /*-----------------------------------------------------------------------
  * SD/MMC
  */
-
 #define CONFIG_GENERIC_MMC
 #define CONFIG_MMC
 #define CONFIG_DWMMC
@@ -220,15 +202,13 @@
 #define CONFIG_2NDBOOT_SIZE		(64*1024)
 #define CONFIG_FIP_OFFSET		(CONFIG_2NDBOOT_OFFSET +\
 					 CONFIG_2NDBOOT_SIZE)
-#define CONFIG_FIP_SIZE			(3*1024*1024)
+#define CONFIG_FIP_SIZE			(2880*1024)
 #define CONFIG_ENV_IS_IN_MMC
 #define CONFIG_SYS_MMC_ENV_DEV		0
 #define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
 					 CONFIG_FIP_SIZE)
-#define CONFIG_ENV_SIZE			(4*1024)	/* env size */
-#endif
+#define CONFIG_ENV_SIZE			(16*1024)	/* env size */
 
-#if defined(CONFIG_MMC)
 #define CONFIG_DOS_PARTITION
 #define CONFIG_CMD_FAT
 #define CONFIG_FS_FAT
@@ -248,10 +228,38 @@
 	/* default: CONFIG_ENV_IS_NOWHERE */
 	#define CONFIG_ENV_IS_NOWHERE
 	#define	CONFIG_ENV_OFFSET		1024
-	#define CONFIG_ENV_SIZE			4*1024		/* env size */
+	#define CONFIG_ENV_SIZE			(4*1024)	/* env size */
 	/* imls - list all images found in flash, default enable so disable */
 	#undef	CONFIG_CMD_IMLS
 #endif
+
+/*-----------------------------------------------------------------------
+ * GPT
+ */
+#define CONFIG_CMD_GPT
+#define CONFIG_EFI_PARTITION
+#define CONFIG_PARTITION_UUIDS
+#define CONFIG_RANDOM_UUID
+
+/*-----------------------------------------------------------------------
+ * Fastboot and USB OTG
+ */
+#define CONFIG_USB_FUNCTION_FASTBOOT
+#define CONFIG_CMD_FASTBOOT
+#define CONFIG_FASTBOOT_FLASH
+#define CONFIG_FASTBOOT_FLASH_MMC_DEV   0
+#define CONFIG_FASTBOOT_BUF_SIZE        (CONFIG_SYS_SDRAM_SIZE - SZ_1M)
+#define CONFIG_FASTBOOT_BUF_ADDR        CONFIG_SYS_SDRAM_BASE
+#define CONFIG_USB_GADGET
+#define CONFIG_USB_GADGET_DUALSPEED
+#define CONFIG_USB_GADGET_VBUS_DRAW     0
+#define CONFIG_USB_GADGET_DWC2_OTG
+#define CONFIG_USB_GADGET_NX_UDC_OTG_PHY
+#define CONFIG_USB_GADGET_DOWNLOAD
+#define CONFIG_SYS_CACHELINE_SIZE       64
+#define CONFIG_G_DNL_VENDOR_NUM         0x18d1  /* google */
+#define CONFIG_G_DNL_PRODUCT_NUM        0x0002  /* nexus one */
+#define CONFIG_G_DNL_MANUFACTURER       "Nexell Corporation"
 
 /*-----------------------------------------------------------------------
  * Nexell USB Downloader
@@ -259,36 +267,32 @@
 #define CONFIG_NX_USBDOWN
 
 /*-----------------------------------------------------------------------
- * PWM
- */
-#define CONFIG_PWM_NX
-
-/*-----------------------------------------------------------------------
- * BACKLIGHT
- */
-#define CONFIG_BACKLIGHT_CH			0
-#define CONFIG_BACKLIGHT_DIV			0
-#define CONFIG_BACKLIGHT_INV			1
-#define CONFIG_BACKLIGHT_DUTY			50
-#define CONFIG_BACKLIGHT_HZ			10000
-
-/*-----------------------------------------------------------------------
  * OF_CONTROL
  */
-
 #define CONFIG_FIT_BEST_MATCH
 #define CONFIG_OF_LIBFDT
 
 /*-----------------------------------------------------------------------
+ * VIDEO
+ */
+#define CONFIG_VIDEO
+#define CONFIG_CFB_CONSOLE
+#define CONFIG_VGA_AS_SINGLE_DEVICE
+#define CONFIG_SYS_CONSOLE_IS_IN_ENV
+
+/*-----------------------------------------------------------------------
  * ENV
  */
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-			"fdt_high=0xffffffffffffffff"
-
-#define CONFIG_BOOTCOMMAND	\
-	"ext4load mmc 0:1 0x48000000 uImage; " \
-	"ext4load mmc 0:1 0x49000000 ramdisk.gz; " \
-	"ext4load mmc 0:1 0x4a000000 s5p6818-avn-ref.dtb; " \
-	"bootm 0x48000000 - 0x4a000000"
+#define CONFIG_EXTRA_ENV_SETTINGS					\
+	"fdt_high=0xffffffffffffffff\0"					\
+	"bootargs=console=ttySAC3,115200n8 "				\
+		"root=/dev/mmcblk0p3 rw rootfstype=ext4 rootwait "	\
+		"loglevel=4 quiet printk.time=1 consoleblank=0 "	\
+		"systemd.log_level=info systemd.show_status=false\0"	\
+	"boot_cmd_mmcboot=ext4load mmc 0:1 0x40008000 Image;"		\
+		"ext4load mmc 0:1 0x49000000 s5p6818-avn-ref-rev01.dtb;" \
+		"booti 0x40008000 - 0x49000000\0"			\
+	"mmcboot=run boot_cmd_mmcboot\0"				\
+	"bootcmd=run mmcboot\0"
 
 #endif /* __CONFIG_H__ */
