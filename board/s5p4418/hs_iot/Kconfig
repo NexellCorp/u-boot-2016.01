@@ -1,0 +1,6 @@
+if TARGET_S5P4418_HS_IOT
+
+config SYS_BOARD
+	default "hs_iot"
+
+endif

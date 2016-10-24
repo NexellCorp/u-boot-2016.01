@@ -1,0 +1,6 @@
+S5P4418 HS_IOT BOARD
+M:  youngbok park <ybpark@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/hs_iot/
+F:  include/configs/s5p4418_hs_iot.h
+F:  configs/s5p4418_hs_iot_defconfig
