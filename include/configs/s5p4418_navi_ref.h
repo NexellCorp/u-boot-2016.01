@@ -314,7 +314,6 @@
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
 		"fi; \0"						\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
-	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
 	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
 		"printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
