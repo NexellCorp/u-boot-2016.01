@@ -174,12 +174,15 @@ enum dp_lvds_format {
 	DP_LVDS_FORMAT_LOC = 2,
 };
 
+#define	DEF_VOLTAGE_LEVEL	(0x20)
+
 struct dp_lvds_dev {
 	enum dp_lvds_format lvds_format; /* 0:VESA, 1:JEIDA, 2: Location */
 	int pol_inv_hs;		/* hsync polarity invert for VESA, JEIDA */
 	int pol_inv_vs;		/* bsync polarity invert for VESA, JEIDA */
 	int pol_inv_de;		/* de polarity invert for VESA, JEIDA */
 	int pol_inv_ck;		/* input clock(pixel clock) polarity invert */
+	int voltage_level;
 	/* Location settting */
 	unsigned int loc_map[9];	/* Location Setting */
 	unsigned int loc_mask[2];	/* Location Setting, 0 ~ 34 */

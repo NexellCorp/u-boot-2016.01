@@ -232,10 +232,12 @@ static int nx_display_parse_dp_lvds(const void *blob, int node,
 				    struct nx_display_dev *dp)
 {
 	struct dp_lvds_dev *dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+
 	if (!dev) {
 		printf("failed to allocate display LVDS object.\n");
 		return -ENOMEM;
 	}
+
 	dp->device = dev;
 
 	dev->lvds_format = fdtdec_get_int(blob, node, "format", 0);
@@ -243,10 +245,15 @@ static int nx_display_parse_dp_lvds(const void *blob, int node,
 	dev->pol_inv_vs = fdtdec_get_int(blob, node, "pol_inv_vs", 0);
 	dev->pol_inv_de = fdtdec_get_int(blob, node, "pol_inv_de", 0);
 	dev->pol_inv_ck = fdtdec_get_int(blob, node, "pol_inv_ck", 0);
+	dev->voltage_level = fdtdec_get_int(blob, node, "voltage_level", 0);
 
-	debug("DP: LVDS -> %s\n",
+	if (!dev->voltage_level)
+		dev->voltage_level = DEF_VOLTAGE_LEVEL;
+
+	debug("DP: LVDS -> %s, voltage LV:0x%x\n",
 	      dev->lvds_format == DP_LVDS_FORMAT_VESA ? "VESA" :
-	      dev->lvds_format == DP_LVDS_FORMAT_JEIDA ? "JEIDA" : "LOC");
+	      dev->lvds_format == DP_LVDS_FORMAT_JEIDA ? "JEIDA" : "LOC",
+	      dev->voltage_level);
 	debug("pol inv hs:%d, vs:%d, de:%d, ck:%d\n",
 	      dev->pol_inv_hs, dev->pol_inv_vs,
 	      dev->pol_inv_de, dev->pol_inv_ck);

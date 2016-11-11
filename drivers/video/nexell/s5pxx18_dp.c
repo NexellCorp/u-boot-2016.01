@@ -48,21 +48,37 @@ void dp_control_init(int module)
 int dp_control_setup(int module,
 		     struct dp_sync_info *sync, struct dp_ctrl_info *ctrl)
 {
-	enum nx_dpc_dither r_dither, g_dither, b_dither;
-	int rgb_mode = 0;
-	int emb_sync = (ctrl->out_format == DPC_FORMAT_CCIR656 ? 1 : 0);
-	int vck_invert = ctrl->clk_inv_lv0 | ctrl->clk_inv_lv1;
-	unsigned int delay_mask = ctrl->delay_mask;
+	unsigned int out_format;
+	unsigned int delay_mask;
 	int rgb_pvd = 0, hsync_cp1 = 7, vsync_fram = 7, de_cp2 = 7;
 	int v_vso = 1, v_veo = 1, e_vso = 1, e_veo = 1;
+
 	int interlace = 0;
+	int invert_field;
+	int swap_rb;
+	unsigned int yc_order;
+	int vck_select;
+	int vclk_invert;
+	int emb_sync;
+
+	enum nx_dpc_dither r_dither, g_dither, b_dither;
+	int rgb_mode = 0;
 
 	if (NULL == sync || NULL == ctrl) {
 		debug("error, dp.%d not set sync or pad clock info !!!\n",
 		      module);
 		return -EINVAL;
 	}
+
+	out_format = ctrl->out_format;
+	delay_mask = ctrl->delay_mask;
 	interlace = sync->interlace;
+	invert_field = ctrl->invert_field;
+	swap_rb = ctrl->swap_RB;
+	yc_order = ctrl->yc_order;
+	vck_select = ctrl->vck_select;
+	vclk_invert = ctrl->clk_inv_lv0 | ctrl->clk_inv_lv1;
+	emb_sync = (out_format == DPC_FORMAT_CCIR656 ? 1 : 0);
 
 	/* set delay mask */
 	if (delay_mask & DP_SYNC_DELAY_RGB_PVD)
@@ -83,20 +99,20 @@ int dp_control_setup(int module,
 		e_veo = ctrl->ev_end_offset;
 	}
 
-	if ((nx_dpc_format_rgb555 == ctrl->out_format) ||
-	    (nx_dpc_format_mrgb555a == ctrl->out_format) ||
-	    (nx_dpc_format_mrgb555b == ctrl->out_format)) {
+	if ((nx_dpc_format_rgb555 == out_format) ||
+	    (nx_dpc_format_mrgb555a == out_format) ||
+	    (nx_dpc_format_mrgb555b == out_format)) {
 		r_dither = nx_dpc_dither_5bit;
 		g_dither = nx_dpc_dither_5bit;
 		b_dither = nx_dpc_dither_5bit;
 		rgb_mode = 1;
-	} else if ((nx_dpc_format_rgb565 == ctrl->out_format) ||
-		   (nx_dpc_format_mrgb565 == ctrl->out_format)) {
+	} else if ((nx_dpc_format_rgb565 == out_format) ||
+		   (nx_dpc_format_mrgb565 == out_format)) {
 		r_dither = nx_dpc_dither_5bit;
 		b_dither = nx_dpc_dither_5bit;
 		g_dither = nx_dpc_dither_6bit, rgb_mode = 1;
-	} else if ((nx_dpc_format_rgb666 == ctrl->out_format) ||
-		   (nx_dpc_format_mrgb666 == ctrl->out_format)) {
+	} else if ((nx_dpc_format_rgb666 == out_format) ||
+		   (nx_dpc_format_mrgb666 == out_format)) {
 		r_dither = nx_dpc_dither_6bit;
 		g_dither = nx_dpc_dither_6bit;
 		b_dither = nx_dpc_dither_6bit;
@@ -114,14 +130,13 @@ int dp_control_setup(int module,
 	nx_dpc_set_clock_divisor(module, 0, ctrl->clk_div_lv0);
 	nx_dpc_set_clock_source(module, 1, ctrl->clk_src_lv1);
 	nx_dpc_set_clock_divisor(module, 1, ctrl->clk_div_lv1);
-
 	nx_dpc_set_clock_out_delay(module, 0, ctrl->clk_delay_lv0);
 	nx_dpc_set_clock_out_delay(module, 1, ctrl->clk_delay_lv1);
 
 	/* LCD out */
-	nx_dpc_set_mode(module, ctrl->out_format, interlace, ctrl->invert_field,
-			rgb_mode, ctrl->swap_RB, ctrl->yc_order, emb_sync,
-			emb_sync, ctrl->vck_select, vck_invert, 0);
+	nx_dpc_set_mode(module, out_format, interlace, invert_field,
+			rgb_mode, swap_rb, yc_order, emb_sync, emb_sync,
+			vck_select, vclk_invert, 0);
 	nx_dpc_set_hsync(module, sync->h_active_len, sync->h_sync_width,
 			 sync->h_front_porch, sync->h_back_porch,
 			 sync->h_sync_invert);
@@ -146,20 +161,21 @@ int dp_control_setup(int module,
 		nx_disp_top_set_padclock(padmux_secondary_mlc, padclk_clk);
 #endif
 
-	debug("%s: dp.%d x:%4d, hf:%3d, hb:%3d, hs:%3d\n",
+	debug("%s: dp.%d x:%4d, hf:%3d, hb:%3d, hs:%3d, hi=%d\n",
 	      __func__, module, sync->h_active_len, sync->h_front_porch,
-	      sync->h_back_porch, sync->h_sync_width);
-	debug("%s: dp.%d y:%4d, vf:%3d, vb:%3d, vs:%3d)\n",
+	      sync->h_back_porch, sync->h_sync_width, sync->h_sync_invert);
+	debug("%s: dp.%d y:%4d, vf:%3d, vb:%3d, vs:%3d, vi=%d\n",
 	      __func__, module, sync->v_active_len, sync->v_front_porch,
-	      sync->v_back_porch, sync->v_sync_width);
+	      sync->v_back_porch, sync->v_sync_width, sync->h_sync_invert);
 	debug("%s: dp.%d ck.0:%d:%d:%d, ck.1:%d:%d:%d\n",
 	      __func__, module,
 	      ctrl->clk_src_lv0, ctrl->clk_div_lv0, ctrl->clk_inv_lv0,
 	      ctrl->clk_src_lv1, ctrl->clk_div_lv1, ctrl->clk_inv_lv1);
 	debug("%s: dp.%d vs:%d, ve:%d, es:%d, ee:%d\n",
 	      __func__, module, v_vso, v_veo, e_vso, e_veo);
-	debug("%s: dp.%d delay RGB:%d, hs:%d, vs:%d, de:%d\n",
-	      __func__, module, rgb_pvd, hsync_cp1, vsync_fram, de_cp2);
+	debug("%s: dp.%d delay RGB:%d, hs:%d, vs:%d, de:%d, fmt:0x%x\n",
+	      __func__, module, rgb_pvd, hsync_cp1, vsync_fram, de_cp2,
+	      out_format);
 
 	return 0;
 }
