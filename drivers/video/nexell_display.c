@@ -223,10 +223,12 @@ static int nx_display_parse_dp_lvds(const void *blob, int node,
 				    struct nx_display_dev *dp)
 {
 	struct dp_lvds_dev *dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+
 	if (!dev) {
 		printf("failed to allocate display LVDS object.\n");
 		return -ENOMEM;
 	}
+
 	dp->device = dev;
 
 	dev->lvds_format = fdtdec_get_int(blob, node, "format", 0);
@@ -234,10 +236,15 @@ static int nx_display_parse_dp_lvds(const void *blob, int node,
 	dev->pol_inv_vs = fdtdec_get_int(blob, node, "pol_inv_vs", 0);
 	dev->pol_inv_de = fdtdec_get_int(blob, node, "pol_inv_de", 0);
 	dev->pol_inv_ck = fdtdec_get_int(blob, node, "pol_inv_ck", 0);
+	dev->voltage_level = fdtdec_get_int(blob, node, "voltage_level", 0);
 
-	debug("DP: LVDS -> %s\n",
+	if (!dev->voltage_level)
+		dev->voltage_level = DEF_VOLTAGE_LEVEL;
+
+	debug("DP: LVDS -> %s, voltage LV:0x%x\n",
 	      dev->lvds_format == DP_LVDS_FORMAT_VESA ? "VESA" :
-	      dev->lvds_format == DP_LVDS_FORMAT_JEIDA ? "JEIDA" : "LOC");
+	      dev->lvds_format == DP_LVDS_FORMAT_JEIDA ? "JEIDA" : "LOC",
+	      dev->voltage_level);
 	debug("pol inv hs:%d, vs:%d, de:%d, ck:%d\n",
 	      dev->pol_inv_hs, dev->pol_inv_vs,
 	      dev->pol_inv_de, dev->pol_inv_ck);
@@ -323,11 +330,17 @@ static int nx_display_parse_dp_lcds(const void *blob, int node,
 	return 0;
 }
 
+#define	DT_SYNC		(1<<0)
+#define	DT_CTRL		(1<<1)
+#define	DT_PLANES	(1<<2)
+#define	DT_DEVICE	(1<<3)
+
 static int nx_display_parse_dt(const void *blob,
 			struct nx_display_dev *dp, int node)
 {
 	const char *name, *dtype;
 	int ret = 0;
+	unsigned int dt_status = 0;
 
 	if (!node) {
 		node = fdtdec_next_compatible(blob, 0, COMPAT_NEXELL_DISPLAY);
@@ -347,17 +360,30 @@ static int nx_display_parse_dt(const void *blob,
 	     node > 0; node = fdt_next_subnode(blob, node)) {
 		name = fdt_get_name(blob, node, NULL);
 
-		if (0 == strcmp("dp-sync", name))
+		if (0 == strcmp("dp-sync", name)) {
+			dt_status |= DT_SYNC;
 			nx_display_parse_dp_sync(blob, node, &dp->sync);
+		}
 
-		if (0 == strcmp("dp-ctrl", name))
+		if (0 == strcmp("dp-ctrl", name)) {
+			dt_status |= DT_CTRL;
 			nx_display_parse_dp_ctrl(blob, node, &dp->ctrl);
+		}
 
-		if (0 == strcmp("dp-planes", name))
+		if (0 == strcmp("dp-planes", name)) {
+			dt_status |= DT_PLANES;
 			nx_display_parse_dp_planes(blob, node, dp);
+		}
 
-		if (0 == strcmp("dp-device", name))
+		if (0 == strcmp("dp-device", name)) {
+			dt_status |= DT_DEVICE;
 			ret = nx_display_parse_dp_lcds(blob, node, dtype, dp);
+		}
+	}
+
+	if (dt_status != (DT_SYNC | DT_CTRL | DT_PLANES | DT_DEVICE)) {
+		printf("Not enough DT config for display [0x%x]\n", dt_status);
+		return -ENODEV;
 	}
 
 	return ret;
