@@ -431,6 +431,10 @@ config ARCH_S5PC1XX
 config ARCH_NEXELL
 	bool "Nexell SoC"
 
+config ARCH_NXP5540
+	bool "Nexell nxp5540 SoC"
+	select NEXELL_ARMV8_COMMON
+
 config ARCH_HIGHBANK
 	bool "Calxeda Highbank"
 	select CPU_V7
@@ -733,6 +737,8 @@ source "arch/arm/mach-kirkwood/Kconfig"
 source "arch/arm/mach-mvebu/Kconfig"
 
 source "arch/arm/mach-nexell/Kconfig"
+
+source "arch/arm/mach-nxp5540/Kconfig"
 
 source "arch/arm/cpu/armv7/mx7/Kconfig"
 

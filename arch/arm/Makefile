@@ -60,6 +60,7 @@ machine-$(CONFIG_TEGRA)			+= tegra
 machine-$(CONFIG_ARCH_UNIPHIER)		+= uniphier
 machine-$(CONFIG_ARCH_ZYNQ)		+= zynq
 machine-$(CONFIG_ARCH_NEXELL)		+= nexell
+machine-$(CONFIG_ARCH_NXP5540)		+= nxp5540
 
 machdirs := $(patsubst %,arch/arm/mach-%/,$(machine-y))
 
