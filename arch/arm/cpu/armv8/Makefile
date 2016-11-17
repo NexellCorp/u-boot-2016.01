@@ -19,3 +19,4 @@ obj-$(CONFIG_FSL_LAYERSCAPE) += fsl-layerscape/
 obj-$(CONFIG_ARCH_ZYNQMP) += zynqmp/
 obj-$(CONFIG_TARGET_HIKEY) += hisilicon/
 obj-$(CONFIG_ARCH_S5P6818) += s5p6818/
+obj-$(CONFIG_ARCH_NXP5540) += nxp5540/
