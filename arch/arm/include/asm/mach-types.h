@@ -1109,6 +1109,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_OMAPL138_LCDK        2495
 #define MACH_TYPE_S5P4418	       4418
 #define MACH_TYPE_S5P6818	       6818
+#define MACH_TYPE_NXP5540	       5540
 
 #ifdef CONFIG_ARCH_EBSA110
 # ifdef machine_arch_type
@@ -14212,6 +14213,18 @@ extern unsigned int __machine_arch_type;
 # define machine_is_s5p6818()		(machine_arch_type == MACH_TYPE_S5P6818)
 #else
 # define machine_is_s5p6818()		(0)
+#endif
+
+#ifdef CONFIG_MACH_NXP5540
+# ifdef machine_arch_type
+#  undef  machine_arch_type
+#  define machine_arch_type	__machine_arch_type
+# else
+#  define machine_arch_type	MACH_TYPE_NXP5540
+# endif
+# define machine_is_nxp5540()		(machine_arch_type == MACH_TYPE_NXP5540)
+#else
+# define machine_is_nxp5540()		(0)
 #endif
 
 /*
