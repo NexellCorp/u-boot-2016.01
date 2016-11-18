@@ -20,7 +20,7 @@
 #define	UPDATE_SDCARD_NAND_MAX		1
 #define	UPDATE_SDCARD_MEM_MAX		1
 
-#define	DEV_PART_MAX	(10)	/* each device max partition max num */
+#define	DEV_PART_MAX	(16)	/* each device max partition max num */
 
 /* device types */
 #define	UPDATE_SDCARD_DEV_EEPROM	(1<<0)	/*  name "eeprom" */
