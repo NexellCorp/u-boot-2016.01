@@ -53,7 +53,6 @@ enum uclass_id {
 	UCLASS_PMIC,		/* PMIC I/O device */
 	UCLASS_PWM,		/* Pulse-width modulator */
 	UCLASS_REGULATOR,	/* Regulator device */
-	UCLASS_RESET,		/* Reset device */
 	UCLASS_REMOTEPROC,	/* Remote Processor device */
 	UCLASS_RTC,		/* Real time clock device */
 	UCLASS_SERIAL,		/* Serial UART */
@@ -61,6 +60,7 @@ enum uclass_id {
 	UCLASS_SPI_FLASH,	/* SPI flash */
 	UCLASS_SPI_GENERIC,	/* Generic SPI flash target */
 	UCLASS_SYSCON,		/* System configuration device */
+	UCLASS_SYSRESET,	/* System reset device */
 	UCLASS_THERMAL,		/* Thermal sensor */
 	UCLASS_TIMER,		/* Timer device */
 	UCLASS_TPM,		/* Trusted Platform Module TIS interface */
