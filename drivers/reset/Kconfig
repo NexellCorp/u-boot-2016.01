@@ -20,4 +20,11 @@ config SANDBOX_RESET
 	  simply accepts requests to reset various HW modules without actually
 	  doing anything beyond a little error checking.
 
+config RESET_NEXELL
+	bool "Enable Nexell reset driver"
+	depends on ARCH_NXP5540
+	default y
+	help
+	  Enable support for reset controller on Nexell SoC.
+
 endmenu
