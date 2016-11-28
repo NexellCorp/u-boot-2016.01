@@ -10,3 +10,4 @@ obj-$(CONFIG_PINCTRL_SANDBOX)	+= pinctrl-sandbox.o
 
 obj-$(CONFIG_ARCH_UNIPHIER)	+= uniphier/
 obj-$(CONFIG_ARCH_NEXELL)	+= nexell/
+obj-$(CONFIG_ARCH_NXP5540)	+= nexell/

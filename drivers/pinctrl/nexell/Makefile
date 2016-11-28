@@ -7,3 +7,4 @@
 
 obj-$(CONFIG_PINCTRL_NEXELL) += pinctrl-nexell.o
 obj-$(CONFIG_PINCTRL_NEXELL_S5PXX18) += pinctrl-s5pxx18.o
+obj-$(CONFIG_PINCTRL_NEXELL_NXP5540) += pinctrl-s5pxx18.o

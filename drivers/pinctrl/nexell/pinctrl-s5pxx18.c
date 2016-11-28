@@ -18,8 +18,6 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#define NUMBER_OF_GPIO_MODULE 5
-
 static void nx_gpio_set_bit(u32 *value, u32 bit, int enable)
 {
 	register u32 newvalue;
@@ -85,14 +83,12 @@ static void nx_alive_set_pullup(void *base, u32 pin, bool enable)
 static int s5pxx18_pinctrl_gpio_init(struct udevice *dev)
 {
 	struct nexell_pinctrl_priv *priv = dev_get_priv(dev);
-	unsigned long reg;
+	const struct nexell_pin_ctrl *ctrl = priv->pin_ctrl;
+	unsigned long reg = priv->base;
 	int i;
 
-	reg = priv->base + 0xA000;
-	for (i = 0; i < 5; i++) {
-		nx_gpio_open_module((void *)reg);
-		reg += 0x1000;
-	}
+	for (i = 0; i < ctrl->nr_banks-1; i++) /* except alive bank */
+		nx_gpio_open_module((void *)(reg + ctrl->pin_banks[i].offset));
 
 	return 0;
 }
@@ -100,7 +96,10 @@ static int s5pxx18_pinctrl_gpio_init(struct udevice *dev)
 static int s5pxx18_pinctrl_alive_init(struct udevice *dev)
 {
 	struct nexell_pinctrl_priv *priv = dev_get_priv(dev);
-	unsigned long reg = priv->base + 0x800;
+	const struct nexell_pin_ctrl *ctrl = priv->pin_ctrl;
+	unsigned long reg = priv->base;
+	reg += ctrl->pin_banks[ctrl->nr_banks-1].offset;
+
 	writel(1, reg + ALIVE_PWRGATE);
 	return 0;
 }
@@ -181,6 +180,8 @@ static struct pinctrl_ops s5pxx18_pinctrl_ops = {
 	.set_state	= s5pxx18_pinctrl_set_state,
 };
 
+
+#ifdef CONFIG_PINCTRL_NEXELL_S5PXX18
 /* pin banks of s5pxx18 pin-controller */
 static const struct nexell_pin_bank_data s5pxx18_pin_banks[] = {
 	NEXELL_PIN_BANK(32, 0xA000, "gpioa"),
@@ -214,3 +215,43 @@ U_BOOT_DRIVER(pinctrl_s5pxx18) = {
 	.probe		= nexell_pinctrl_probe,
 	.flags		= DM_FLAG_PRE_RELOC
 };
+#endif /* CONFIG_PINCTRL_NEXELL_S5PXX18 */
+
+#ifdef CONFIG_PINCTRL_NEXELL_NXP5540
+/* pin banks of nxp5540 pin-controller */
+static const struct nexell_pin_bank_data nxp5540_pin_banks[] = {
+	NEXELL_PIN_BANK(32, 0x1040000, "gpioa"),
+	NEXELL_PIN_BANK(32, 0x1041000, "gpiob"),
+	NEXELL_PIN_BANK(32, 0x1042000, "gpioc"),
+	NEXELL_PIN_BANK(32, 0x1043000, "gpiod"),
+	NEXELL_PIN_BANK(32, 0x1044000, "gpioe"),
+	NEXELL_PIN_BANK(32, 0x1045000, "gpiof"),
+	NEXELL_PIN_BANK(32, 0x1046000, "gpiog"),
+	NEXELL_PIN_BANK(2,  0x1047000, "gpioh"),
+	NEXELL_PIN_BANK(15, 0x800, "alive"),
+};
+
+const struct nexell_pin_ctrl nxp5540_pin_ctrl[] = {
+	{
+		/* pin-controller data */
+		.pin_banks	= nxp5540_pin_banks,
+		.nr_banks	= ARRAY_SIZE(nxp5540_pin_banks),
+	},
+};
+
+static const struct udevice_id nxp5540_pinctrl_ids[] = {
+	{ .compatible = "nexell,nxp5540-pinctrl",
+		.data = (ulong)nxp5540_pin_ctrl },
+	{ }
+};
+
+U_BOOT_DRIVER(pinctrl_nxp5540) = {
+	.name		= "pinctrl_nxp5540",
+	.id		= UCLASS_PINCTRL,
+	.of_match	= nxp5540_pinctrl_ids,
+	.priv_auto_alloc_size = sizeof(struct nexell_pinctrl_priv),
+	.ops		= &s5pxx18_pinctrl_ops,
+	.probe		= nexell_pinctrl_probe,
+	.flags		= DM_FLAG_PRE_RELOC
+};
+#endif /* CONFIG_PINCTRL_NEXELL_NXP5540 */

@@ -43,12 +43,10 @@ struct nexell_pin_ctrl {
  * struct nexell_pinctrl_priv: nexell pin controller driver private data
  * @pin_ctrl: pin controller bank information.
  * @base: base address of the pin controller instance.
- * @num_banks: number of pin banks included in the pin controller.
  */
 struct nexell_pinctrl_priv {
 	const struct nexell_pin_ctrl *pin_ctrl;
 	unsigned long base;
-	int num_banks;
 };
 
 /**
