@@ -9,6 +9,8 @@
 
 #include "skeleton.dtsi"
 / {
+	#include "nxp5540-pinctrl.dtsi"
+
 	nxp5540_rst: reset {
 		#reset-cells = <2>;
 		compatible = "nexell,nxp5540-reset";
@@ -25,5 +27,11 @@
 		       PHYS_BASE_WAVE420_RSTCON 0x800
 		       PHYS_BASE_CPU_RSTCON 0x800
 		       PHYS_BASE_PERICLK_RSTCON 0x800>;
+	};
+
+	pinctrl {
+		compatible = "nexell,nxp5540-pinctrl";
+		reg = <0x20010000 0xf000>;
+		u-boot,dm-pre-reloc;
 	};
 };
