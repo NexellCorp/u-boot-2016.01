@@ -21,21 +21,23 @@
  *  System memory Configuration
  */
 
+#ifndef CONFIG_SYS_TEXT_BASE
 #define	CONFIG_SYS_TEXT_BASE			0x43C00000
+#endif
 /* init and run stack pointer */
 #define	CONFIG_SYS_INIT_SP_ADDR			CONFIG_SYS_TEXT_BASE
 
 /* malloc() pool */
-#define	CONFIG_MEM_MALLOC_START			0x44000000
+#define	CONFIG_MEM_MALLOC_START			(CONFIG_SYS_TEXT_BASE+0x400000)
 #define CONFIG_MEM_MALLOC_LENGTH	(CONFIG_ENV_SIZE + (1 << 20) +	\
 					CONFIG_SYS_DFU_DATA_BUF_SIZE * 2 + \
 					(8 << 20))
 
 /* when CONFIG_LCD */
-#define CONFIG_FB_ADDR				0x46000000
+#define CONFIG_FB_ADDR				(CONFIG_SYS_TEXT_BASE+0x2400000)
 
 /* Download OFFSET */
-#define CONFIG_MEM_LOAD_ADDR			0x48000000
+#define CONFIG_MEM_LOAD_ADDR			(CONFIG_SYS_TEXT_BASE+0x4400000)
 
 #define CONFIG_SYS_BOOTM_LEN    (64 << 20)      /* Increase max gunzip size */
 
@@ -53,8 +55,13 @@
 #define CONFIG_SYS_HZ				1000
 
 /* board_init_f */
+#if defined(SDRAM_BASE) && (SDRAM_SIZE)
+#define CONFIG_SYS_SDRAM_BASE			SDRAM_BASE
+#define CONFIG_SYS_SDRAM_SIZE			SDRAM_SIZE
+#else
 #define	CONFIG_SYS_SDRAM_BASE			0x40000000
 #define	CONFIG_SYS_SDRAM_SIZE			0x20000000
+#endif
 
 /* dram 1 bank num */
 #define CONFIG_NR_DRAM_BANKS			1
@@ -306,7 +313,9 @@
 
 /* FACTORY_INFO */
 #define CONFIG_CMD_FACTORY_INFO
-#define CONFIG_FACTORY_INFO_BUF_ADDR		0x5c000000
+#define CONFIG_FACTORY_INFO_BUF_ADDR		(CONFIG_SYS_SDRAM_BASE + \
+						 CONFIG_SYS_SDRAM_SIZE - \
+						 0x4000000)
 #define CONFIG_FACTORY_INFO_START		0x1c00
 #define CONFIG_FACTORY_INFO_SIZE		0x100
 
@@ -345,11 +354,16 @@
 
 #define CONFIG_EXTRA_ENV_SETTINGS					\
 	"fdt_high=0xffffffff\0"						\
-	"kerneladdr=0x40080000\0"					\
 	"kernel_file=zImage\0"						\
-	"ramdiskaddr=0x49000000\0"					\
 	"ramdisk_file=uInitrd\0"					\
-	"fdtaddr=0x4a000000\0"						\
+	"sdram_base=" __stringify(CONFIG_SYS_SDRAM_BASE) "\0"		\
+	"kernel_offs=0x00080000\0"					\
+	"ramdisk_offs=0x09000000\0"					\
+	"fdt_offs=0x0a000000\0"						\
+	"gen_addr="							\
+		"setexpr kerneladdr $sdram_base + $kernel_offs; "	\
+		"setexpr ramdiskaddr $sdram_base + $ramdisk_offs; "	\
+		"setexpr fdtaddr $sdram_base + $fdt_offs\0"		\
 	"load_fdt="							\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
@@ -387,7 +401,7 @@
 	"lcd1_0=s6e8fa0\0"						\
 	"lcd2_0=gst7d0038\0"						\
 	"lcd_panel=s6e8fa0\0"						\
-	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
+	"sdrecovery=sd_recovery mmc 1:3 $sdrecaddr partmap_emmc.txt\0"	\
 	"factory_load=factory_info load mmc 0 "				\
 		__stringify(CONFIG_FACTORY_INFO_START) " "		\
 		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
@@ -409,8 +423,8 @@
 	"boot_cmd_mmcboot="						\
 		"run load_fdt; run load_kernel;"			\
 		"bootz $kerneladdr - $fdtaddr\0"			\
-	"ramfsboot=run load_args; run boot_cmd_initrd\0"		\
-	"mmcboot=run load_args; run boot_cmd_mmcboot\0"			\
+	"ramfsboot=run gen_addr; run load_args; run boot_cmd_initrd\0"	\
+	"mmcboot=run gen_addr; run load_args; run boot_cmd_mmcboot\0"	\
 	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
 	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
 	"hwtestboot=setenv rootdev 1;"					\
