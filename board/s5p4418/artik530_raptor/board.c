@@ -30,6 +30,17 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#ifdef CONFIG_CHECK_BONDING_ID
+int check_bonding_id(void)
+{
+	int bonding_id = 0;
+
+	bonding_id = readl(PHY_BASEADDR_ECID + ID_REG_EC0);
+
+	return bonding_id & WIRE0_MASK;
+}
+#endif
+
 #ifdef CONFIG_REVISION_TAG
 u32 board_rev;
 
@@ -65,7 +76,14 @@ static void set_board_rev(u32 revision)
 #ifdef CONFIG_DISPLAY_BOARDINFO
 int checkboard(void)
 {
-	printf("\nBoard: ARTIK530 Raptor\n");
+#ifdef CONFIG_CHECK_BONDING_ID
+	int is_dual = check_bonding_id();
+
+	if (is_dual)
+		printf("\nBoard: ARTIK532 Raptor\n");
+	else
+#endif
+		printf("\nBoard: ARTIK530 Raptor\n");
 
 	return 0;
 }
@@ -252,6 +270,16 @@ void pmic_init(void)
 
 int board_late_init(void)
 {
+#ifdef CONFIG_CHECK_BONDING_ID
+	int is_dual = check_bonding_id();
+	int nr_cpus = 4;
+
+	if (is_dual)
+		nr_cpus = 2;
+
+	setenv_ulong("nr_cpus", nr_cpus);
+#endif
+
 #ifdef CONFIG_DM_PMIC_NXE2000
 	pmic_init();
 #endif

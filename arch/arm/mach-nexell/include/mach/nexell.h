@@ -338,6 +338,8 @@
 					 (((x) >> 19 & 1) << 1))
 #define EMMC_PORT_NUM			2
 #define SD_PORT_NUM			0
+#define ID_REG_EC0				(0x54)
+#define WIRE0_MASK				(0x1)
 
 #ifndef __ASSEMBLY__
 
