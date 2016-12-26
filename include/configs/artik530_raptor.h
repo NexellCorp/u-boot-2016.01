@@ -329,9 +329,9 @@
 	"/zImage ext4 0 1;" \
 	"/uInitrd ext4 0 1;" \
 	"/ramdisk.gz ext4 0 1;" \
-	"/s5p6818-artik530-raptor-rev03.dtb ext4 0 1;" \
-	"/s5p6818-artik530-raptor-rev00.dtb ext4 0 1;" \
-	"/s5p6818-artik530-explorer.dtb ext4 0 1;" \
+	"/s5p4418-artik530-raptor-rev03.dtb ext4 0 1;" \
+	"/s5p4418-artik530-raptor-rev00.dtb ext4 0 1;" \
+	"/s5p4418-artik530-explorer.dtb ext4 0 1;" \
 	"boot part 0 1;" \
 	"modules part 0 2;" \
 	"rootfs part 0 3;" \
