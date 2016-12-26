@@ -355,13 +355,14 @@
 				"number=0$loop; "			\
 			"else number=$loop; "				\
 			"fi; "						\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik530-raptor-rev${number}.dtb && setexpr success 1; " \
+			"ext4size mmc $rootdev:$bootpart s5p4418-artik530-raptor-rev${number}.dtb && setexpr success 1; " \
 			"setexpr loop $loop - 1; "			\
-			"done; "					\
+		"done; "					\
 		"if test $success -eq 0; then "				\
 			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik530-raptor-rev00.dtb;"	\
+		"else "							\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik530-raptor-rev${number}.dtb; "	\
 		"fi; "							\
-		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
 		"fi; \0"						\
 	"bootdelay=" __stringify(CONFIG_BOOTDELAY) "\0"			\
 	"console=" CONFIG_DEFAULT_CONSOLE				\
