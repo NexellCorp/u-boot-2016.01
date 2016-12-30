@@ -185,13 +185,9 @@
 #if defined(CONFIG_MMC)
 #define CONFIG_2NDBOOT_OFFSET		512
 #define CONFIG_2NDBOOT_SIZE		(64*1024)
-#define CONFIG_FIP_OFFSET		(CONFIG_2NDBOOT_OFFSET +\
-					 CONFIG_2NDBOOT_SIZE)
-#define CONFIG_FIP_SIZE			(3*1024*1024)
 #define CONFIG_ENV_IS_IN_MMC
 #define CONFIG_SYS_MMC_ENV_DEV		0
-#define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
-					 CONFIG_FIP_SIZE)
+#define	CONFIG_ENV_OFFSET		0x2E0200
 #define CONFIG_ENV_SIZE			(16*1024)	/* env size */
 #endif
 
@@ -336,7 +332,9 @@
 
 #define CONFIG_DFU_ALT \
 	"bl1-emmcboot.img raw 0x1 0x80;" \
-	"bootloader.img raw 0x81 0x1800;" \
+	"loader-emmc.img raw 0x81 0x100;" \
+	"secureos.img raw 0x181 0x400;" \
+	"bootloader.img raw 0x780 0x1800;" \
 	"/uImage ext4 0 1;" \
 	"/zImage ext4 0 1;" \
 	"/uInitrd ext4 0 1;" \
@@ -360,10 +358,13 @@
 	"kernel_offs=0x00080000\0"					\
 	"ramdisk_offs=0x09000000\0"					\
 	"fdt_offs=0x0a000000\0"						\
+	"sd_offset=0x08000000\0"				\
 	"gen_addr="							\
 		"setexpr kerneladdr $sdram_base + $kernel_offs; "	\
 		"setexpr ramdiskaddr $sdram_base + $ramdisk_offs; "	\
 		"setexpr fdtaddr $sdram_base + $fdt_offs\0"		\
+	"gen_sdrecaddr="										\
+		"setexpr sdrecaddr $sdram_base + $sd_offset\0"	\
 	"load_fdt="							\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
@@ -426,7 +427,7 @@
 	"ramfsboot=run gen_addr; run load_args; run boot_cmd_initrd\0"	\
 	"mmcboot=run gen_addr; run load_args; run boot_cmd_mmcboot\0"	\
 	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
-	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
+	"recoveryboot=run gen_sdrecaddr; run recovery_cmd; run ramfsboot\0"		\
 	"hwtestboot=setenv rootdev 1;"					\
 		"setenv opts rootfstype=ext4 rootwait loglevel=4;"	\
 		"setenv fdtfile s5p4418-artik${model_id}-explorer.dtb;"		\
