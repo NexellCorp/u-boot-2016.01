@@ -1467,7 +1467,7 @@ _exit:
 
 int do_usbdown(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
-	int addr;
+	ulong addr;
 	struct nx_usbboot_status status;
 
 	usbboot_status = &status;
@@ -1476,7 +1476,7 @@ int do_usbdown(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	if (addr < 0x40000000)
 		goto usage;
 
-	printf("Download Address %x", addr);
+	printf("Download Address %lx", addr);
 	usbboot_status->rx_buf_addr = (u8 *)((ulong)addr);
 	iusbboot();
 	flush_dcache_all();
