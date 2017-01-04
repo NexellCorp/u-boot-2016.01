@@ -13,7 +13,7 @@ The u-boot of artik710 is based on 2016-01 version.
 ### 2.1 Install cross compiler
 + For artik710> You'll need an arm64 cross compiler
 ```
-sudo apt-get install gcc-aarch64-linux-gnu
+sudo apt-get install gcc-aarch64-linux-gnu device-tree-compiler
 ```
 If you can't install the above toolchain, you can use linaro toolchain.
 ```
