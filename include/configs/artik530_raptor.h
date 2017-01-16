@@ -374,6 +374,7 @@
 	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
 	"root_rw=rw\0"							\
+	"nr_cpus=4\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
 	"dfu_alt_info=" CONFIG_DFU_ALT					\
@@ -392,8 +393,8 @@
 		"run factory_save\0"					\
 	"load_args=run factory_load; setenv bootargs ${console} "	\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
-		"rootfstype=${rootfs_type} ${opts} ${recoverymode} "	\
-		"drm_panel=$lcd_panel\0"				\
+		"rootfstype=${rootfs_type} ${recoverymode} "	\
+		"drm_panel=$lcd_panel nr_cpus=${nr_cpus} ${opts} \0"	\
 	"load_kernel=ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file\0" \
 	"load_initrd=ext4load mmc ${rootdev}:${bootpart} $ramdiskaddr $ramdisk_file\0" \
 	"boot_cmd_initrd="						\
