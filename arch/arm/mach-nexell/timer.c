@@ -136,12 +136,6 @@ int timer_init(void)
 	TIMER_HZ = TIMER_FREQ / CONFIG_SYS_HZ;
 	tcnt = TIMER_COUNT == 0xFFFFFFFF ? TIMER_COUNT + 1 : tcnt;
 
-#if defined(CONFIG_ARCH_S5P4418)
-	/* reset control: Low active ___|--- */
-	nx_rstcon_setrst(RESET_ID_TIMER, RSTCON_ASSERT);
-	nx_rstcon_setrst(RESET_ID_TIMER, RSTCON_NEGATE);
-#endif
-
 	timer_stop(base, ch);
 	timer_clock(base, ch, tmux, tscl);
 	timer_count(base, ch, tcnt);
