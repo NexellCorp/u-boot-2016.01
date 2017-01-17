@@ -332,8 +332,10 @@
 	"/zImage ext4 0 1;" \
 	"/uInitrd ext4 0 1;" \
 	"/ramdisk.gz ext4 0 1;" \
+	"/s5p4418-artik532-raptor-rev03.dtb ext4 0 1;" \
 	"/s5p4418-artik530-raptor-rev03.dtb ext4 0 1;" \
 	"/s5p4418-artik530-raptor-rev00.dtb ext4 0 1;" \
+	"/s5p4418-artik532-explorer.dtb ext4 0 1;" \
 	"/s5p4418-artik530-explorer.dtb ext4 0 1;" \
 	"boot part 0 1;" \
 	"modules part 0 2;" \
@@ -358,13 +360,13 @@
 				"number=0$loop; "			\
 			"else number=$loop; "				\
 			"fi; "						\
-			"ext4size mmc $rootdev:$bootpart s5p4418-artik530-raptor-rev${number}.dtb && setexpr success 1; " \
+			"ext4size mmc $rootdev:$bootpart s5p4418-artik${model_id}-raptor-rev${number}.dtb && setexpr success 1; " \
 			"setexpr loop $loop - 1; "			\
 		"done; "					\
 		"if test $success -eq 0; then "				\
 			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik530-raptor-rev00.dtb;"	\
 		"else "							\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik530-raptor-rev${number}.dtb; "	\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik${model_id}-raptor-rev${number}.dtb; "	\
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; " \
 		"fi; \0"						\
@@ -377,6 +379,7 @@
 	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
 	"root_rw=rw\0"							\
+	"model_id=530\0"							\
 	"nr_cpus=4\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
@@ -412,7 +415,7 @@
 	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
 	"hwtestboot=setenv rootdev 1;"					\
 		"setenv opts rootfstype=ext4 rootwait loglevel=4;"	\
-		"setenv fdtfile s5p4418-artik530-explorer.dtb;"		\
+		"setenv fdtfile s5p4418-artik${model_id}-explorer.dtb;"		\
 		"run mmcboot\0"						\
 	"hwtest_recoveryboot=run recovery_cmd; run hwtestboot\0"        \
 	"bootcmd=run ramfsboot\0"
