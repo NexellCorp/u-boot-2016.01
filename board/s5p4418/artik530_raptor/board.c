@@ -274,8 +274,10 @@ int board_late_init(void)
 	int is_dual = check_bonding_id();
 	int nr_cpus = 4;
 
-	if (is_dual)
+	if (is_dual) {
 		nr_cpus = 2;
+		setenv_ulong("model_id", 532);
+	}
 
 	setenv_ulong("nr_cpus", nr_cpus);
 #endif
