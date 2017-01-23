@@ -151,6 +151,7 @@ obj-$(CONFIG_CMD_FDISK) += cmd_mmc_fdisk.o
 obj-$(CONFIG_CMD_EXT4_IMG_WRITE) += cmd_ext4_img_write.o
 obj-$(CONFIG_CMD_SD_RECOVERY) += cmd_sd_recovery.o
 obj-$(CONFIG_CMD_CHECK_HW) += cmd_checkhw.o
+obj-$(CONFIG_CMD_NXC100_DOWN) += cmd_nxc100_fusing.o
 
 ifdef CONFIG_PCI
 obj-$(CONFIG_CMD_PCI) += cmd_pci.o

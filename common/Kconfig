@@ -546,6 +546,12 @@ config CMD_CHECK_HW
 	  support check hw revision.
 	  Reading the gpio confirms the HW version.
 
+config CMD_NXC100_DOWN
+	bool nxc100
+	default n
+	help
+	  support nxc100 f/w download.
+
 endmenu
 
 menu "Boot timing"
