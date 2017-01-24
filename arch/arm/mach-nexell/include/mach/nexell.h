@@ -318,6 +318,7 @@
 
 #if defined(CONFIG_ARCH_S5P4418)
 #define	SCR_ARM_SECOND_BOOT		(0xC0010C1C)	/* PWR scratch */
+#define	SCR_ARM_SECOND_BOOT_REG1	(0xc0010234)	/* ToDo : Check Address */
 #elif defined(CONFIG_ARCH_S5P6818)
 #define	SCR_ARM_SECOND_BOOT		(0xc0010230)	/* PWR scratch */
 #define	SCR_ARM_SECOND_BOOT_REG1	(0xc0010234)	/* PWR scratch */

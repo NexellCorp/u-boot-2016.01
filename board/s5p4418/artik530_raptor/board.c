@@ -163,7 +163,8 @@ int mmc_get_env_dev(void)
 	int boot_mode = readl(PHY_BASEADDR_CLKPWR + SYSRSTCONFIG);
 
 	if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_SDMMC) {
-		port_num = readl(PHY_BASEADDR_SRAM + DEVICEBOOTINFO);
+		//port_num = readl(PHY_BASEADDR_SRAM + DEVICEBOOTINFO);
+		port_num = readl(SCR_ARM_SECOND_BOOT_REG1);
 		if (port_num == EMMC_PORT_NUM)
 			return 0;
 		else if (port_num == SD_PORT_NUM)
