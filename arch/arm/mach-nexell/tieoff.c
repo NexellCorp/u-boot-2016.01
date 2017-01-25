@@ -11,6 +11,7 @@
 #include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
 #include <asm/arch/tieoff.h>
+#include <asm/arch/sec_reg.h>
 
 #define	NX_PIN_FN_SIZE	4
 #define TIEOFF_REG_NUM 33
@@ -21,6 +22,23 @@ struct	nx_tieoff_registerset {
 
 static struct nx_tieoff_registerset *nx_tieoff = (void *)PHY_BASEADDR_TIEOFF;
 
+static int tieoff_readl(void __iomem *reg)
+{
+#ifdef CONFIG_ARCH_S5P4418
+		return read_sec_reg(reg);
+#else
+		return readl(reg);
+#endif
+}
+
+static int  tieoff_writetl(void __iomem *reg, int val)
+{
+#ifdef CONFIG_ARCH_S5P4418
+		return write_sec_reg(reg, val);
+#else
+		return writel(val, reg);
+#endif
+}
 
 void nx_tieoff_set(u32 tieoff_index, u32 tieoff_value)
 {
@@ -42,22 +60,21 @@ void nx_tieoff_set(u32 tieoff_index, u32 tieoff_value)
 	if (msb > 32) {
 		msb &= 0x1F;
 		mask   = ~(0xffffffff<<lsb);
-		regval = readl(&nx_tieoff->tieoffreg[regindex]) & mask;
+		regval = tieoff_readl(&nx_tieoff->tieoffreg[regindex]) & mask;
 		regval |= ((tieoff_value & ((1UL<<bitwidth)-1))<<lsb);
-		writel(regval, &nx_tieoff->tieoffreg[regindex]);
+		tieoff_writetl(&nx_tieoff->tieoffreg[regindex], regval);
 
 		mask   = (0xffffffff<<msb);
-		regval = readl(&nx_tieoff->tieoffreg[regindex+1]) & mask;
+		regval = tieoff_readl(&nx_tieoff->tieoffreg[regindex]) & mask;
 		regval |= ((tieoff_value & ((1UL<<bitwidth)-1))>>msb);
-		writel(regval, &nx_tieoff->tieoffreg[regindex+1]);
+		tieoff_writetl(&nx_tieoff->tieoffreg[regindex+1], regval);
 	} else	{
 		mask	= (0xffffffff<<msb) | (~(0xffffffff<<lsb));
-		regval	= readl(&nx_tieoff->tieoffreg[regindex]) & mask;
+		regval = tieoff_readl(&nx_tieoff->tieoffreg[regindex]) & mask;
 		regval	|= ((tieoff_value & ((1UL<<bitwidth)-1))<<lsb);
-		writel(regval, &nx_tieoff->tieoffreg[regindex]);
+		tieoff_writetl(&nx_tieoff->tieoffreg[regindex], regval);
 	}
 }
-
 u32 nx_tieoff_get(u32 tieoff_index)
 {
 	u32 regindex, mask;
@@ -77,15 +94,15 @@ u32 nx_tieoff_get(u32 tieoff_index)
 	if (msb > 32) {
 		msb &= 0x1F;
 		mask   = 0xffffffff<<lsb;
-		regval = readl(&nx_tieoff->tieoffreg[regindex]) & mask;
+		regval = tieoff_readl(&nx_tieoff->tieoffreg[regindex]) & mask;
 		regval >>= lsb;
 
 		mask   = ~(0xffffffff<<msb);
-		regval |= ((readl(&nx_tieoff->tieoffreg[regindex+1]) & mask)
-			  << (32-lsb));
+		regval |= ((tieoff_readl(&nx_tieoff->tieoffreg[regindex+1])
+					& mask) << (32-lsb));
 	} else	{
 		mask   = ~(0xffffffff<<msb) & (0xffffffff<<lsb);
-		regval = readl(&nx_tieoff->tieoffreg[regindex]) & mask;
+		regval = tieoff_readl(&nx_tieoff->tieoffreg[regindex]) & mask;
 		regval >>= lsb;
 	}
 	return regval;
