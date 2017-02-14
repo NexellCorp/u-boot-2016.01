@@ -18,6 +18,7 @@
 #include <asm/io.h>
 
 #include <asm/arch/nexell.h>
+#include <asm/arch/tieoff.h>
 #include <asm/arch/reset.h>
 
 #include "nexell_udc_otg_regs.h"
@@ -27,73 +28,64 @@
 
 void otg_phy_init(struct dwc2_udc *dev)
 {
-	void __iomem *phy = (void __iomem *)(uintptr_t)dev->pdata->regs_phy;
-	u32 reg;
-
 	/* USB PHY0 Enable */
 	debug("USB PHY0 Enable\n");
 
-	writel(readl(phy + NX_OTG_CON3) & ~NX_OTG_CON3_DET_N_CHG,
-	       phy + NX_OTG_CON3);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_ACAENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_DCDENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_VDATSRCENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_VDATDETENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_CHRGSEL, 0);
+
 
 	nx_rstcon_setrst(RESET_ID_USB20OTG, RSTCON_ASSERT);
 	udelay(10);
 	nx_rstcon_setrst(RESET_ID_USB20OTG, RSTCON_NEGATE);
 	udelay(10);
 
-	reg  = readl(phy + NX_OTG_CON2) & ~NX_OTG_CON2_OTGTUNE_MASK;
-	writel(reg, phy +  NX_OTG_CON2);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_OTGTUNE, 0);
 
-	writel(readl(phy + NX_OTG_CON0) & ~NX_OTG_CON0_SS_SCALEDOWN_MODE,
-	       phy + NX_OTG_CON0);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_ss_scaledown_mode, 0);
 
-	writel(readl(phy + NX_OTG_CON2) | NX_OTG_CON2_WORDINTERFACE_16,
-	       phy + NX_OTG_CON2);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_WORDINTERFACE, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_WORDINTERFACE_ENB, 1);
 
-	writel(readl(phy + NX_OTG_CON1) & NX_OTG_CON1_VBUS_INTERNAL,
-	       phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_VBUSVLDEXT, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_VBUSVLDEXTSEL, 0);
 	udelay(10);
 
-	reg = readl(phy + NX_OTG_CON1);
-	reg &= ~NX_OTG_CON1_POR_MASK;
-	reg |= NX_OTG_CON1_POR_ENB;
-	writel(reg, phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_POR, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_POR_ENB, 1);
 	udelay(10);
-	reg |= NX_OTG_CON1_POR_MASK;
-	writel(reg, phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_POR, 1);
 	udelay(10);
-	reg &= ~NX_OTG_CON1_POR;
-	writel(reg, phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_POR, 0);
 	udelay(40);
 
-	writel(readl(phy + NX_OTG_CON1) | NX_OTG_CON1_RST, phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_nResetSync, 1);
 	udelay(10);
 
-	writel(readl(phy + NX_OTG_CON1) | NX_OTG_CON1_UTMI_RST,
-	       phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_nUtmiResetSync, 1);
 	udelay(10);
 }
 
 void otg_phy_off(struct dwc2_udc *dev)
 {
-	void __iomem *phy = (void __iomem *)(uintptr_t)dev->pdata->regs_phy;
-
 	/* USB PHY0 Disable */
 	debug("USB PHY0 Disable\n");
 
-	writel(readl(phy + NX_OTG_CON1) | NX_OTG_CON1_VBUS_VLDEXT0,
-	       phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_VBUSVLDEXT, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_VBUSVLDEXTSEL, 1);
 	udelay(10);
 
-	writel(readl(phy + NX_OTG_CON1) & ~NX_OTG_CON1_RST, phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_nResetSync, 0);
 	udelay(10);
 
-	writel(readl(phy + NX_OTG_CON1) & ~NX_OTG_CON1_UTMI_RST,
-	       phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_nUtmiResetSync, 0);
 	udelay(10);
 
-	writel(readl(phy + NX_OTG_CON1) | NX_OTG_CON1_POR_MASK,
-	       phy + NX_OTG_CON1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_POR, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20OTG0_i_POR_ENB, 1);
 	udelay(10);
 
 	nx_rstcon_setrst(RESET_ID_USB20OTG, RSTCON_ASSERT);
