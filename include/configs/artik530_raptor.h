@@ -332,9 +332,10 @@
 
 #define CONFIG_DFU_ALT \
 	"bl1-emmcboot.img raw 0x1 0x80;" \
-	"loader-emmc.img raw 0x81 0x100;" \
-	"secureos.img raw 0x181 0x400;" \
-	"bootloader.img raw 0x780 0x1800;" \
+	"loader-emmc.img raw 0x81 0x180;" \
+	"bl_mon.img raw 0x201 0x100;" \
+	"secureos.img raw 0x301 0xc00;" \
+	"bootloader.img raw 0xf01 0x800;" \
 	"/uImage ext4 0 1;" \
 	"/zImage ext4 0 1;" \
 	"/uInitrd ext4 0 1;" \
@@ -347,7 +348,7 @@
 	"boot part 0 1;" \
 	"modules part 0 2;" \
 	"rootfs part 0 3;" \
-	"params.bin raw 0x1881 0x20;" \
+	"params.bin raw 0x1701 0x20;" \
 	"/Image.itb ext4 0 2\0"
 
 #define CONFIG_EXTRA_ENV_SETTINGS					\
