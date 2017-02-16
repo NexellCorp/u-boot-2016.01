@@ -22,7 +22,7 @@
  */
 
 #ifndef CONFIG_SYS_TEXT_BASE
-#define	CONFIG_SYS_TEXT_BASE			0x43C00000
+#define	CONFIG_SYS_TEXT_BASE			0x94C00000
 #endif
 /* init and run stack pointer */
 #define	CONFIG_SYS_INIT_SP_ADDR			CONFIG_SYS_TEXT_BASE
@@ -59,8 +59,8 @@
 #define CONFIG_SYS_SDRAM_BASE			SDRAM_BASE
 #define CONFIG_SYS_SDRAM_SIZE			SDRAM_SIZE
 #else
-#define	CONFIG_SYS_SDRAM_BASE			0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x20000000
+#define	CONFIG_SYS_SDRAM_BASE			0x91000000
+#define	CONFIG_SYS_SDRAM_SIZE			0x1f000000
 #endif
 
 /* dram 1 bank num */
