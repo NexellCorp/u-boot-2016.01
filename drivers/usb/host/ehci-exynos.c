@@ -22,6 +22,7 @@
 #else
 #include <asm/arch/reset.h>
 #include <asm/arch/nexell.h>
+#include <asm/arch/tieoff.h>
 #include <asm/io.h>
 #endif
 #include <asm-generic/errno.h>
@@ -90,80 +91,55 @@ static int ehci_usb_ofdata_to_platdata(struct udevice *dev)
 #if defined(CONFIG_ARCH_NEXELL)
 static void nx_setup_usb_phy(struct nx_usb_phy *usb)
 {
-	u32 reg;
-	u32 reg1, reg2, reg3;
-	u32 fladj_val, bit_num, bit_pos = NX_HOST_CON2_SS_FLADJ_VAL_0_OFFSET;
-
-	fladj_val = NX_HOST_CON2_SS_FLADJ_VAL_0_SEL;
-
-	reg = fladj_val;
-
-	for (bit_num = 0; bit_num < NX_HOST_CON2_SS_FLADJ_VAL_NUM; bit_num++) {
-		if (fladj_val & (1 << bit_num))
-			reg |= (NX_HOST_CON2_SS_FLADJ_VAL_MAX << bit_pos);
-		bit_pos -= NX_HOST_CON2_SS_FLADJ_VAL_OFFSET;
-	}
-	writel(reg, (void *)(&usb->usbhost_con[2]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_fladj_val_0_i, 0x7);
 
 	nx_rstcon_setrst(RESET_ID_USB20HOST, RSTCON_ASSERT);
 	nx_rstcon_setrst(RESET_ID_USB20HOST, RSTCON_NEGATE);
 
-	writel(readl((void *)(&usb->usbhost_con[0])) &
-	       ~NX_HOST_CON0_HSIC_CLK_MASK,
-	       (void *)(&usb->usbhost_con[0]));
-	writel(readl((void *)(&usb->usbhost_con[0])) |
-	       NX_HOST_CON0_HSIC_480M_FROM_OTG_PHY,
-	       (void *)(&usb->usbhost_con[0]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_FREE_CLOCK_ENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_480M_FROM_OTG_PHY, 0);
 
-	writel(readl((void *)(&usb->usbhost_con[0])) &
-	       ~NX_HOST_CON0_HSIC_EN_MASK,
-	       (void *)(&usb->usbhost_con[0]));
-	writel(readl((void *)(&usb->usbhost_con[0])) |
-	       NX_HOST_CON0_HSIC_EN_PORT1,
-	       (void *)(&usb->usbhost_con[0]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_480M_FROM_OTG_PHY, 1);
 
-	reg = readl((void *)(&usb->usbhost_con[2])) &
-		~NX_HOST_CON2_SS_DMA_BURST_MASK;
-	writel(reg | NX_HOST_CON2_EHCI_SS_ENABLE_DMA_BURST,
-	       (void *)(&usb->usbhost_con[2]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_hsic_en, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_hsic_en, 2);
 
-	reg1 = readl((void *)(&usb->usbhost_con[0])) |
-		NX_HOST_CON0_SS_WORD_IF_16;
-	reg2 = readl((void *)(&usb->usbhost_con[4])) |
-		NX_HOST_CON4_WORDINTERFACE_16;
-	reg3 = readl((void *)(&usb->usbhost_con[6])) |
-		NX_HOST_CON6_HSIC_WORDINTERFACE_16;
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_ena_incr16_i, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_ena_incr8_i, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_ena_incr4_i, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_ena_incrx_align_i, 1);
 
-	writel(reg1, (void *)(&usb->usbhost_con[0]));
-	writel(reg2, (void *)(&usb->usbhost_con[4]));
-	writel(reg3, (void *)(&usb->usbhost_con[6]));
 
-	reg   = readl((void *)(&usb->usbhost_con[3]));
-	reg  &= ~NX_HOST_CON3_POR_MASK;
-	reg  |=  NX_HOST_CON3_POR_ENB;
-	writel(reg, (void *)(&usb->usbhost_con[3]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_word_if_enb_i, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_word_if_i, 1);
+
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_WORDINTERFACE_ENB, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_WORDINTERFACE, 1);
+
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_WORDINTERFACE_ENB, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_WORDINTERFACE, 1);
+
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR_ENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR_ENB, 1);
 	udelay(10);
 
-	writel(readl((void *)(&usb->usbhost_con[0])) |
-	       NX_HOST_CON0_HSIC_CLK_MASK,
-	       (void *)(&usb->usbhost_con[0]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_FREE_CLOCK_ENB, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_480M_FROM_OTG_PHY, 1);
 
-	writel(readl((void *)(&usb->usbhost_con[5])) &
-	       ~NX_HOST_CON5_HSIC_POR_MASK,
-	       (void *)(&usb->usbhost_con[5]));
-	writel(readl((void *)(&usb->usbhost_con[5])) |
-	       NX_HOST_CON5_HSIC_POR_ENB,
-	       (void *)(&usb->usbhost_con[5]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_POR_ENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_POR, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_POR_ENB, 1);
 
 	udelay(100);
 
-	reg = readl((void *)(&usb->usbhost_con[0])) |
-		NX_HOST_CON0_UTMI_RESET_SYNC;
-	writel(reg, (void *)(&usb->usbhost_con[0]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nHostPhyResetSync, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nHostUtmiResetSync, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nHostHsicResetSync, 1);
 
-	writel(readl((void *)(&usb->usbhost_con[0])) |
-	       NX_HOST_CON0_AHB_RESET_SYNC,
-	       (void *)(&usb->usbhost_con[0]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nResetSync, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nResetSync_ohci, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nAuxWellResetSync, 1);
 }
 #else
 static void exynos5_setup_usb_phy(struct exynos_usb_phy *usb)
@@ -261,34 +237,30 @@ static void setup_usb_phy(struct exynos_usb_phy *usb)
 #if defined(CONFIG_ARCH_NEXELL)
 static void nx_reset_usb_phy(struct nx_usb_phy *usb)
 {
-	u32 reg;
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nResetSync, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nResetSync_ohci, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nAuxWellResetSync, 0);
 
-	writel(readl((void *)(&usb->usbhost_con[0])) &
-	       ~NX_HOST_CON0_AHB_RESET_SYNC,
-	       (void *)(&usb->usbhost_con[0]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nHostPhyResetSync, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nHostUtmiResetSync, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_nHostHsicResetSync, 1);
 
-	writel(readl((void *)(&usb->usbhost_con[0])) &
-	       ~NX_HOST_CON0_UTMI_RESET_SYNC,
-	       (void *)(&usb->usbhost_con[0]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR_ENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR_ENB, 1);
 
-	reg    = readl((void *)(&usb->usbhost_con[3]));
-	reg   &= ~NX_HOST_CON3_POR_MASK;
-	reg   |=  NX_HOST_CON3_POR_ENB;
-	writel(reg, (void *)(&usb->usbhost_con[3]));
 	udelay(1);
-	reg   |=  NX_HOST_CON3_POR_MASK;
-	writel(reg, (void *)(&usb->usbhost_con[3]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR_ENB, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR, 1);
+
 	udelay(1);
-	reg   &= ~(NX_HOST_CON3_POR);
-	writel(reg, (void *)(&usb->usbhost_con[3]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_POR, 0);
 
-	writel(readl((void *)(&usb->usbhost_con[0])) &
-	       ~NX_HOST_CON0_HSIC_CLK_MASK,
-	       (void *)(&usb->usbhost_con[0]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_FREE_CLOCK_ENB, 0);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_480M_FROM_OTG_PHY, 0);
 
-	writel(readl((void *)(&usb->usbhost_con[5])) |
-	       NX_HOST_CON5_HSIC_POR_MASK,
-	       (void *)(&usb->usbhost_con[5]));
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_POR_ENB, 1);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_i_HSIC_POR, 1);
 
 	udelay(10);
 }
