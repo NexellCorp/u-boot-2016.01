@@ -41,9 +41,19 @@ void pmic_init(void)
 	int ret = -ENODEV;
 	uint8_t bit_mask = 0;
 
-	ret = pmic_get("nxe2000_gpio@32", &dev);
-	if (ret)
-		printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
+#ifdef CONFIG_REVISION_TAG
+	if (get_board_rev() >= 3) {
+		ret = pmic_get("nxe2000_gpio@32", &dev);
+		if (ret)
+			printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
+	} else {
+#endif
+		ret = pmic_get("nxe2000@32", &dev);
+		if (ret)
+			printf("Can't get PMIC: %s!\n", "nxe2000@32");
+#ifdef CONFIG_REVISION_TAG
+	}
+#endif
 
 	bit_mask = pmic_reg_read(dev, NXE2000_REG_PWRONTIMSET);
 	bit_mask &= ~(0x1 << NXE2000_POS_PWRONTIMSET_OFF_JUDGE_PWRON);
@@ -148,8 +158,6 @@ int board_late_init(void)
 #ifdef CONFIG_DM_PMIC_NXE2000
 	pmic_init();
 #endif
-	run_command("ext4load mmc 0 0x49000000 nxc100_ver_01.bin", 0);
-	run_command("nxc100 0x49000000", 0);
 	return 0;
 }
 
