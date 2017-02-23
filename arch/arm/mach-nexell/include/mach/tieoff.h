@@ -115,7 +115,6 @@ u32 nx_tieoff_get(u32 tieoff_index);
 #define NX_TIEOFF_USB20HOST0_i_NX_RF1_EMAW		((2<<16) | 171)
 #define NX_TIEOFF_USB20HOST0_sys_interrupt_i		((1<<16) | 173)
 #define NX_TIEOFF_USB20HOST0_i_hsic_en			((3<<16) | 174)
-#if defined(CONFIG_ARCH_S5P4418)
 #define NX_TIEOFF_USB20HOST0_i_nResetSync		((1<<16) | 177)
 #define NX_TIEOFF_USB20HOST0_i_nResetSync_ohci		((1<<16) | 178)
 #define NX_TIEOFF_USB20HOST0_i_nAuxWellResetSync	((1<<16) | 179)
@@ -124,7 +123,6 @@ u32 nx_tieoff_get(u32 tieoff_index);
 #define NX_TIEOFF_USB20HOST0_i_nHostHsicResetSync	((1<<16) | 182)
 #define NX_TIEOFF_USB20HOST0_i_HSIC_FREE_CLOCK_ENB	((1<<16) | 183)
 #define NX_TIEOFF_USB20HOST0_i_HSIC_480M_FROM_OTG_PHY	((1<<16) | 184)
-#endif
 #define NX_TIEOFF_USB20HOST0_ss_word_if_enb_i		((1<<16) | 185)
 #define NX_TIEOFF_USB20HOST0_ss_word_if_i		((1<<16) | 186)
 #define NX_TIEOFF_USB20HOST0_ss_utmi_backward_enb_i	((1<<16) | 187)
