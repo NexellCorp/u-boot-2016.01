@@ -91,7 +91,8 @@ static int ehci_usb_ofdata_to_platdata(struct udevice *dev)
 #if defined(CONFIG_ARCH_NEXELL)
 static void nx_setup_usb_phy(struct nx_usb_phy *usb)
 {
-	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_fladj_val_0_i, 0x7);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_fladj_val_host_i, 0x20);
+	nx_tieoff_set(NX_TIEOFF_USB20HOST0_ss_fladj_val_5_i, 0x7);
 
 	nx_rstcon_setrst(RESET_ID_USB20HOST, RSTCON_ASSERT);
 	nx_rstcon_setrst(RESET_ID_USB20HOST, RSTCON_NEGATE);
