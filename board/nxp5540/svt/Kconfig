@@ -1,7 +1,0 @@
-if TARGET_NXP5540_SVT
-
-config SYS_BOARD
-	default "svt"
-
-endif
-

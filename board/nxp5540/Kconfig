@@ -1,10 +1,10 @@
 choice
 	prompt "Board select"
 
-config TARGET_NXP5540_SVT
-	bool "NXP5540_SVT"
+config TARGET_NXP5540_EVB
+	bool "NXP5540_EVB"
 	help
-	  Support for nxp5540 svt platform.
+	  Support for nxp5540 evb platform.
 endchoice
 
 config SYS_VENDOR
@@ -17,4 +17,4 @@ config SYS_CONFIG_NAME
 	  The header file include/configs/<CONFIG_SYS_CONFIG_NAME>.h
 	  should be included from include/config.h.
 
-source "board/nxp5540/svt/Kconfig"
+source "board/nxp5540/evb/Kconfig"

@@ -21,7 +21,7 @@ dtb-$(CONFIG_ARCH_S5P6818) += s5p6818-drone.dtb \
 	s5p6818-artik710-raptor.dtb \
 	s5p6818-avn-ref.dtb
 
-dtb-$(CONFIG_ARCH_NXP5540) += nxp5540-svt.dtb
+dtb-$(CONFIG_ARCH_NXP5540) += nxp5540-evb.dtb
 
 dtb-$(CONFIG_EXYNOS5) += exynos5250-arndale.dtb \
 	exynos5250-snow.dtb \
