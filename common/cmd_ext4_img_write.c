@@ -49,7 +49,6 @@ struct ext4_chunk_header {
 #define EXT4_CHUNK_TYPE_FILL		0xCAC2
 #define EXT4_CHUNK_TYPE_NONE		0xCAC3
 
-#define ALIGN_BUFFER_SIZE		0x4000000
 #define WRITE_SECTOR 65536					/* 32 MB */
 
 typedef int (*WRITE_RAW_CHUNK_CB)(char *data, unsigned int sector,
@@ -119,50 +118,57 @@ int check_compress_ext4(char *img_base, unsigned long long parti_size)
 
 int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 {
-	char run_cmd[64];
+	char run_cmd[128] = {0, };
 	unsigned char *tmp_align;
+	char *ptr;
+	int write_size;
+	int write_sector_size;
+	int remaining_sector_size;
+	unsigned int write_sector;
+	int ret;
+	bool big = false;
 
-	if (((unsigned long)data % 8) != 0) {
-		int offset = 0;
+	tmp_align = (unsigned char *)(CONFIG_FASTBOOT_BUF_ADDR +
+				      CONFIG_FASTBOOT_BUF_SIZE);
+	ptr = data;
+	remaining_sector_size = sector_size;
+	write_sector = sector;
 
-		/* align buffer start = malloc_start_address - ALIGN_BUFFER_SIZE */
-		tmp_align = (unsigned char *)(gd->relocaddr - TOTAL_MALLOC_LEN);
-		tmp_align -= ALIGN_BUFFER_SIZE;
-
-		do {
-			if (sector_size > WRITE_SECTOR) {
-				memcpy((unsigned char *)tmp_align,
-				       (unsigned char *)data+offset,
-				       WRITE_SECTOR*512);
-
-				snprintf(run_cmd, sizeof(run_cmd),
-					 "mmc write 0x%x 0x%x 0x%x",
-					(int)((ulong)tmp_align),
-					sector, WRITE_SECTOR);
-
-				sector_size -= WRITE_SECTOR;
-				sector += WRITE_SECTOR;
-			} else {
-				memcpy((unsigned char *)tmp_align,
-				       (unsigned char *)data+offset,
-				       sector_size * 512);
-				snprintf(run_cmd, sizeof(run_cmd),
-					 "mmc write 0x%x 0x%x 0x%x",
-					(int)((ulong)tmp_align),
-					sector, sector_size);
-
-				sector_size -= sector_size;
-			}
-			run_command(run_cmd, 0);
-
-		} while (sector_size > 0);
-
-		return 0;
+	if (sector_size > WRITE_SECTOR) {
+		big = true;
+		debug("sector size ===> %d\n", sector_size);
 	}
-	debug("write raw data in %d size %d\n", sector, sector_size);
-	snprintf(run_cmd, sizeof(run_cmd), "mmc write 0x%x 0x%x 0x%x",
-		 (int)((ulong)data), sector, sector_size);
-	run_command(run_cmd, 0);
+
+	while (remaining_sector_size > 0) {
+		if (remaining_sector_size >= WRITE_SECTOR) {
+			write_size = WRITE_SECTOR * MMC_BLOCK_SIZE;
+			write_sector_size = WRITE_SECTOR;
+		} else {
+			write_size = remaining_sector_size *
+				MMC_BLOCK_SIZE;
+			write_sector_size = remaining_sector_size;
+		}
+
+		if (big)
+			debug("ptr %p, write_sector %d, write_sector_size %d,\
+			      write_size 0x%x, remaining_sector_size %d\n",
+			      ptr, write_sector, write_sector_size,
+			      write_size, remaining_sector_size);
+
+		memcpy(tmp_align, ptr, write_size);
+		snprintf(run_cmd, sizeof(run_cmd), "mmc write 0x%x 0x%x 0x%x",
+			(int)((ulong)tmp_align),
+			write_sector, write_sector_size);
+		ret = run_command(run_cmd, 0);
+		if (ret != 0) {
+			printf("failed to run_command %s\n", run_cmd);
+			return ret;
+		}
+
+		remaining_sector_size -= write_sector_size;
+		write_sector += write_sector_size;
+		ptr += write_size;
+	}
 
 	return 0;
 }
