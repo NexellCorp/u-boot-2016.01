@@ -49,7 +49,7 @@ struct ext4_chunk_header {
 #define EXT4_CHUNK_TYPE_FILL		0xCAC2
 #define EXT4_CHUNK_TYPE_NONE		0xCAC3
 
-#define WRITE_SECTOR 65536					/* 32 MB */
+#define WRITE_SECTOR			65536	/* 32 MB */
 
 typedef int (*WRITE_RAW_CHUNK_CB)(char *data, unsigned int sector,
 				  unsigned int sector_size);
@@ -158,7 +158,7 @@ int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 			      write_size, remaining_sector_size);
 
 		memcpy(tmp_align, ptr, write_size);
-		sprintf(run_cmd, "mmc write 0x%x 0x%x 0x%x",
+		snprintf(run_cmd, sizeof(run_cmd), "mmc write 0x%x 0x%x 0x%x",
 			(int)((ulong)tmp_align),
 			write_sector, write_sector_size);
 		ret = run_command(run_cmd, 0);
