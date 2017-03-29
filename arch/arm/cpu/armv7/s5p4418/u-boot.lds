@@ -129,18 +129,16 @@ SECTIONS
  * __bss_base and __bss_limit are for linker only (overlay ordering)
  */
 
-	.bss_start __rel_dyn_start (OVERLAY) : {
+	.bss_start  : {
 		KEEP(*(.__bss_start));
-		__bss_base = .;
 	}
 
-	.bss __bss_base (OVERLAY) : {
+	.bss : {
 		*(.bss*)
 		 . = ALIGN(4);
-		 __bss_limit = .;
 	}
 
-	.bss_end __bss_limit (OVERLAY) : {
+	.bss_end : {
 		KEEP(*(.__bss_end));
 	}
 
