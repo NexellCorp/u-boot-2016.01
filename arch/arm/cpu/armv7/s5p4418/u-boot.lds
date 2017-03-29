@@ -113,17 +113,18 @@ SECTIONS
 		*(.__end)
 	}
 
-	_image_binary_end = .;
+	.dynsym : { *(.dynsym) }
+	.dynbss : { *(.dynbss) }
+	.dynstr : { *(.dynstr*) }
+	.dynamic : { *(.dynamic*) }
+	.plt : { *(.plt*) }
+	.interp : { *(.interp*) }
+	.gnu.hash : { *(.gnu.hash) }
+	.gnu : { *(.gnu*) }
+	.ARM.exidx : { *(.ARM.exidx*) }
+	.gnu.linkonce.armexidx : { *(.gnu.linkonce.armexidx.*) }
 
-	/*
-	 * Deprecated: this MMU section is used by pxa at present but
-	 * should not be used by new boards/CPUs.
-	 */
 	. = ALIGN(4096);
-	.mmutable : {
-		*(.mmutable)
-	}
-
 /*
  * Compiler-generated __bss_start and __bss_end, see arch/arm/lib/bss.c
  * __bss_base and __bss_limit are for linker only (overlay ordering)
@@ -141,15 +142,4 @@ SECTIONS
 	.bss_end : {
 		KEEP(*(.__bss_end));
 	}
-
-	.dynsym _image_binary_end : { *(.dynsym) }
-	.dynbss : { *(.dynbss) }
-	.dynstr : { *(.dynstr*) }
-	.dynamic : { *(.dynamic*) }
-	.plt : { *(.plt*) }
-	.interp : { *(.interp*) }
-	.gnu.hash : { *(.gnu.hash) }
-	.gnu : { *(.gnu*) }
-	.ARM.exidx : { *(.ARM.exidx*) }
-	.gnu.linkonce.armexidx : { *(.gnu.linkonce.armexidx.*) }
 }
