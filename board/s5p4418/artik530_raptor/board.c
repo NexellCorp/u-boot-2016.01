@@ -28,6 +28,10 @@
 #include <sensorid_artik.h>
 #endif
 
+#ifdef CONFIG_ARTIK_OTA
+#include <artik_ota.h>
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_CHECK_BONDING_ID
@@ -295,6 +299,9 @@ int board_late_init(void)
 #endif
 #ifdef CONFIG_SENSORID_ARTIK
 	get_sensorid(board_rev);
+#endif
+#ifdef CONFIG_ARTIK_OTA
+	check_ota_update();
 #endif
 	return 0;
 }
