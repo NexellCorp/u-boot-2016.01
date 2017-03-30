@@ -7,7 +7,7 @@ config SYS_VENDOR
 	default "s5p6818"
 
 config SYS_CONFIG_NAME
-	default "s5p6818_arm64_avn_ref"
+	default "s5p6818_avn_ref"
 
 config S5P6818_FEATURES
 	bool
