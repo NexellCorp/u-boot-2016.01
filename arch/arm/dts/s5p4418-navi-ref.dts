@@ -227,7 +227,9 @@
 		      < &gpio_a 23 0 >,
 		      < &gpio_a 24 0 >;
 		maps = < 0 0 >,
-		     < 10 1 >;
+		     < 10 1 >,
+		     < 11 1 >,
+		     < 15 0 >;
 		compatible = "nexell,board_rev";
 	};
 };
