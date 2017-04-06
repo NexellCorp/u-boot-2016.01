@@ -74,12 +74,6 @@ static unsigned long pwm_calc_tin(int pwm_id, unsigned long freq)
 {
 	unsigned long tin_parent_rate;
 	unsigned int div;
-#if defined(CONFIG_ARCH_NEXELL)
-	unsigned int pre_div;
-	const struct s5p_timer *pwm =
-		(struct s5p_timer *)PHY_BASEADDR_PWM;
-	unsigned int val;
-#endif
 
 #if defined(CONFIG_ARCH_NEXELL)
 	struct clk *clk = clk_get(CORECLK_NAME_PCLK);
@@ -88,31 +82,12 @@ static unsigned long pwm_calc_tin(int pwm_id, unsigned long freq)
 	tin_parent_rate = get_pwm_clk();
 #endif
 
-#if defined(CONFIG_ARCH_NEXELL)
-	writel(0, &pwm->tcfg0);
-	val = readl(&pwm->tcfg0);
-
-	if (pwm_id < 2)
-		div = ((val >> 0) & 0xff) + 1;
-	else
-		div = ((val >> 8) & 0xff) + 1;
-
-	writel(0, &pwm->tcfg1);
-	val = readl(&pwm->tcfg1);
-	val = (val >> MUX_DIV_SHIFT(pwm_id)) & 0xF;
-	pre_div = (1UL << val);
-
-	freq = tin_parent_rate / div / pre_div;
-
-	return freq;
-#else
 	for (div = 2; div <= 16; div *= 2) {
 		if ((tin_parent_rate / (div << 16)) < freq)
 			return tin_parent_rate / div;
 	}
 
 	return tin_parent_rate / 16;
-#endif
 }
 
 #define NS_IN_SEC 1000000000UL
@@ -121,9 +96,9 @@ int pwm_config(int pwm_id, int duty_ns, int period_ns)
 {
 	const struct s5p_timer *pwm =
 #if defined(CONFIG_ARCH_NEXELL)
-		(struct s5p_timer *)PHY_BASEADDR_PWM;
+			(struct s5p_timer *)PHY_BASEADDR_PWM;
 #else
-		(struct s5p_timer *)samsung_get_base_timer();
+			(struct s5p_timer *)samsung_get_base_timer();
 #endif
 	unsigned int offset;
 	unsigned long tin_rate;
@@ -150,12 +125,7 @@ int pwm_config(int pwm_id, int duty_ns, int period_ns)
 	tin_rate = pwm_calc_tin(pwm_id, frequency);
 
 	tin_ns = NS_IN_SEC / tin_rate;
-#if defined(CONFIG_ARCH_NEXELL)
-	/* The counter starts at zero. */
-	tcnt = (period_ns / tin_ns) - 1;
-#else
 	tcnt = period_ns / tin_ns;
-#endif
 
 	/* Note, counters count down */
 	tcmp = duty_ns / tin_ns;
