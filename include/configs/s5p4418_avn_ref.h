@@ -49,7 +49,7 @@
 
 /* board_init_f */
 #define	CONFIG_SYS_SDRAM_BASE			0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x40000000
+#define	CONFIG_SYS_SDRAM_SIZE			0x70000000
 
 /* dram 1 bank num */
 #define CONFIG_NR_DRAM_BANKS			1
