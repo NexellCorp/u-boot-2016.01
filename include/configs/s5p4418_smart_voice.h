@@ -21,20 +21,20 @@
  *  System memory Configuration
  */
 
-#define	CONFIG_SYS_TEXT_BASE			0x43C00000
+#define	CONFIG_SYS_TEXT_BASE			0x74C00000
 /* init and run stack pointer */
 #define	CONFIG_SYS_INIT_SP_ADDR			CONFIG_SYS_TEXT_BASE
 
 /* malloc() pool */
-#define	CONFIG_MEM_MALLOC_START			0x44000000
+#define	CONFIG_MEM_MALLOC_START			0x75000000
 /* more than 2M for ubifs: MAX 16M */
 #define CONFIG_MEM_MALLOC_LENGTH		(32*1024*1024)
 
 /* when CONFIG_LCD */
-#define CONFIG_FB_ADDR				0x46000000
+#define CONFIG_FB_ADDR				0x77000000
 
 /* Download OFFSET */
-#define CONFIG_MEM_LOAD_ADDR			0x48000000
+#define CONFIG_MEM_LOAD_ADDR			0x79000000
 
 #define CONFIG_SYS_BOOTM_LEN    (64 << 20)      /* Increase max gunzip size */
 
@@ -48,8 +48,8 @@
 #define CONFIG_SYS_HZ				1000
 
 /* board_init_f */
-#define	CONFIG_SYS_SDRAM_BASE			0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x10000000
+#define	CONFIG_SYS_SDRAM_BASE			0x71000000
+#define	CONFIG_SYS_SDRAM_SIZE			0x3E000000
 
 /* dram 1 bank num */
 #define CONFIG_NR_DRAM_BANKS			1
@@ -281,11 +281,12 @@
 #define CONFIG_BOOT_PART	1
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
-	"kerneladdr=0x40008000\0"	\
+	"kerneladdr=0x71008000\0"	\
 	"kernel_file=zImage\0"		\
-	"fdtaddr=0x49000000\0"		\
-	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
-	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
+	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"	\
+	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"	\
+	"fdtaddr=0x7A000000\0"		\
+	"fdt_high=0xffffffff\0"		\
 	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
 		"printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
 	"boot_cmd_mmcboot="   \
