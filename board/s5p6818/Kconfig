@@ -15,6 +15,12 @@ config TARGET_AVN_REF
 	bool "AVN_REF"
 	help
 	  Support for S5P6818 avn ref platform.
+
+config TARGET_KICK_ST
+	bool "KICK_ST"
+	help
+	  Support for S5P6818 kick st platform.
+
 endchoice
 
 config SYS_VENDOR
@@ -30,3 +36,4 @@ config SYS_CONFIG_NAME
 source "board/s5p6818/drone/Kconfig"
 source "board/s5p6818/avn_ref/Kconfig"
 source "board/s5p6818/artik710_raptor/Kconfig"
+source "board/s5p6818/kick_st/Kconfig"
