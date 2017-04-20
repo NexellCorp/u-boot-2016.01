@@ -22,21 +22,30 @@
  */
 
 #define	CONFIG_SYS_TEXT_BASE			0x43C00000
-/* init and run stack pointer */
 #define	CONFIG_SYS_INIT_SP_ADDR			CONFIG_SYS_TEXT_BASE
+#define CONFIG_SYS_MONITOR_BASE                 CONFIG_SYS_TEXT_BASE
 
-/* malloc() pool */
-#define	CONFIG_MEM_MALLOC_START			0x44000000
-/* more than 2M for ubifs: MAX 16M */
-#define CONFIG_MEM_MALLOC_LENGTH		(32*1024*1024)
+#define	CONFIG_SYS_SDRAM_BASE			0x40000000
+#define	CONFIG_SYS_SDRAM_SIZE			0x70000000
+
+#define CONFIG_SYS_MALLOC_LEN                   (32*1024*1024)
+
+/* fastboot buffer start, size */
+#define CONFIG_FASTBOOT_BUF_ADDR		CONFIG_SYS_SDRAM_BASE
+#define CONFIG_FASTBOOT_BUF_SIZE		0x38000000
+/* align buffer is used by ext4_mmc_write for unaligned data */
+#define CONFIG_ALIGNBUFFER_SIZE			0x02000000
 
 /* when CONFIG_LCD */
-#define CONFIG_FB_ADDR				0x46000000
+#define CONFIG_FB_ADDR				(CONFIG_FASTBOOT_BUF_ADDR + \
+						 CONFIG_FASTBOOT_BUF_SIZE + \
+						 CONFIG_ALIGNBUFFER_SIZE)
 
-/* Download OFFSET */
-#define CONFIG_MEM_LOAD_ADDR			0x48000000
+/* dram 1 bank num */
+#define CONFIG_NR_DRAM_BANKS			1
 
-#define CONFIG_SYS_BOOTM_LEN    (64 << 20)      /* Increase max gunzip size */
+/* kernel load address */
+#define CONFIG_SYS_LOAD_ADDR			0x48000000
 
 /*-----------------------------------------------------------------------
  *  High Level System Configuration
@@ -47,25 +56,8 @@
 /* decrementer freq: 1ms ticks */
 #define CONFIG_SYS_HZ				1000
 
-/* board_init_f */
-#define	CONFIG_SYS_SDRAM_BASE			0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x70000000
-
-/* dram 1 bank num */
-#define CONFIG_NR_DRAM_BANKS			1
-
-/* relocate_code and  board_init_r */
-#define	CONFIG_SYS_MALLOC_END			(CONFIG_MEM_MALLOC_START + \
-						 CONFIG_MEM_MALLOC_LENGTH)
-/* board_init_f, more than 2M for ubifs */
-#define CONFIG_SYS_MALLOC_LEN \
-	(CONFIG_MEM_MALLOC_LENGTH - 0x8000)
-
-/* kernel load address */
-#define CONFIG_SYS_LOAD_ADDR			CONFIG_MEM_LOAD_ADDR
-
 /* memtest works on */
-#define CONFIG_SYS_MEMTEST_START		CONFIG_SYS_MALLOC_END
+#define CONFIG_SYS_MEMTEST_START		CONFIG_SYS_SDRAM_BASE
 #define CONFIG_SYS_MEMTEST_END			((ulong)CONFIG_SYS_SDRAM_BASE \
 						 + (ulong)CONFIG_SYS_SDRAM_SIZE)
 
@@ -160,13 +152,11 @@
 /*-----------------------------------------------------------------------
  * PLL
  */
-
 #define CONFIG_SYS_PLLFIN			24000000UL
 
 /*-----------------------------------------------------------------------
  * Timer
  */
-
 #define CONFIG_TIMER_SYS_TICK_CH		0
 
 /*-----------------------------------------------------------------------
@@ -186,7 +176,6 @@
 /*-----------------------------------------------------------------------
  * SD/MMC
  */
-
 #define CONFIG_GENERIC_MMC
 #define CONFIG_MMC
 #define CONFIG_DWMMC
@@ -249,10 +238,6 @@
 #define CONFIG_CMD_FASTBOOT
 #define CONFIG_FASTBOOT_FLASH
 #define CONFIG_FASTBOOT_FLASH_MMC_DEV   0
-#define CONFIO_FASTBOOT_RESERVE_BUF_SIZE (64 * SZ_1M)
-#define CONFIG_FASTBOOT_BUF_SIZE        (CONFIG_SYS_SDRAM_SIZE -\
-					CONFIO_FASTBOOT_RESERVE_BUF_SIZE)
-#define CONFIG_FASTBOOT_BUF_ADDR        CONFIG_SYS_SDRAM_BASE
 #define CONFIG_USB_GADGET
 #define CONFIG_USB_GADGET_DUALSPEED
 #define CONFIG_USB_GADGET_VBUS_DRAW     0
@@ -272,7 +257,6 @@
 /*-----------------------------------------------------------------------
  * OF_CONTROL
  */
-
 #define CONFIG_FIT_BEST_MATCH
 #define CONFIG_OF_LIBFDT
 
@@ -288,9 +272,11 @@
 /*-----------------------------------------------------------------------
  * ENV
  */
-
 #define CONFIG_ROOT_DEV		0
 #define CONFIG_BOOT_PART	1
+
+/* need to relocate env address */
+#define CONFIG_SYS_EXTRA_ENV_RELOC
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"fdt_high=0xffffffff\0"		\
