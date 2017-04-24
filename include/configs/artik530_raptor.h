@@ -406,6 +406,7 @@
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
+	"modulespart=" __stringify(CONFIG_MODULES_PART) "\0"		\
 	"rescue=0\0"							\
 	"root_rw=rw\0"							\
 	"model_id=530\0"							\
@@ -453,6 +454,7 @@
 		"bootz $kerneladdr - $fdtaddr\0"			\
 	"boot_cmd_sdboot="						\
 		"setenv bootpart " __stringify(CONFIG_BOOT_PART_SD)"; "	\
+		"setenv modulespart " __stringify(CONFIG_MODULES_PART_SD)"; "	\
 		"setenv rootpart " __stringify(CONFIG_ROOT_PART_SD)";\0"	\
 	"ramfsboot=run gen_addr; run load_args; run boot_cmd_initrd\0"	\
 	"mmcboot=run gen_addr; run load_args; run boot_cmd_mmcboot\0"	\
