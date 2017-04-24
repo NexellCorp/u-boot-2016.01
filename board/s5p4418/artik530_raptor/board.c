@@ -11,6 +11,7 @@
 
 #include <asm/arch/nexell.h>
 #include <asm/arch/nx_gpio.h>
+#include <memalign.h>
 
 #ifdef CONFIG_DM_PMIC_NXE2000
 #include <dm.h>
@@ -139,6 +140,17 @@ static void get_sensorid(u32 revision)
 
 	if (!found_panel)
 		setenv("lcd_panel", "NONE");
+}
+#endif
+
+#ifdef CONFIG_SET_DFU_ALT_INFO
+void set_dfu_alt_info(char *interface, char *devstr)
+{
+	size_t buf_size = CONFIG_SET_DFU_ALT_BUF_LEN;
+	ALLOC_CACHE_ALIGN_BUFFER(char, buf, buf_size);
+
+	snprintf(buf, buf_size, "setenv dfu_alt_info \"%s\"", CONFIG_DFU_ALT);
+	run_command(buf, 0);
 }
 #endif
 
