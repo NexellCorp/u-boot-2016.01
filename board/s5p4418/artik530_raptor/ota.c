@@ -32,10 +32,13 @@ static struct boot_info *read_flag_partition(void)
 
 static inline void update_partition_env(enum boot_part part_num)
 {
-	if (part_num == PART0)
+	if (part_num == PART0) {
 		setenv("bootpart", __stringify(CONFIG_BOOT_PART));
-	else
+		setenv("modulespart", __stringify(CONFIG_MODULES_PART));
+	} else {
 		setenv("bootpart", __stringify(CONFIG_BOOT1_PART));
+		setenv("modulespart", __stringify(CONFIG_MODULES1_PART));
+	}
 }
 
 int check_ota_update(void)
