@@ -30,6 +30,14 @@ static struct boot_info *read_flag_partition(void)
 			CONFIG_FLAG_INFO_ADDR, sizeof(struct boot_info));
 }
 
+static inline void update_partition_env(enum boot_part part_num)
+{
+	if (part_num == PART0)
+		setenv("bootpart", __stringify(CONFIG_BOOT_PART));
+	else
+		setenv("bootpart", __stringify(CONFIG_BOOT1_PART));
+}
+
 int check_ota_update(void)
 {
 	struct boot_info *boot;
@@ -73,10 +81,7 @@ int check_ota_update(void)
 	switch (boot->state) {
 	case BOOT_SUCCESS:
 		printf("Booting State = Normal(%d)\n", boot->part_num);
-		if (boot->part_num == PART0)
-			setenv("bootpart", __stringify(CONFIG_BOOT_PART));
-		else
-			setenv("bootpart", __stringify(CONFIG_BOOT1_PART));
+		update_partition_env(boot->part_num);
 		setenv("rescue", "0");
 		break;
 	case BOOT_UPDATED:
@@ -103,16 +108,13 @@ int check_ota_update(void)
 			}
 		}
 
-		if (boot->part_num == PART0)
-			setenv("bootpart", __stringify(CONFIG_BOOT_PART));
-		else
-			setenv("bootpart", __stringify(CONFIG_BOOT1_PART));
+		update_partition_env(boot->part_num);
 		write_flag_partition();
 		break;
 	case BOOT_FAILED:
 	default:
 		printf("Booting State = Abnormal\n");
-		setenv("bootpart", __stringify(CONFIG_BOOT_PART));
+		update_partition_env(PART0);
 		return -1;
 	}
 
