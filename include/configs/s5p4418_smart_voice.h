@@ -194,9 +194,8 @@
 #define CONFIG_FIP_SIZE			(3*1024*1024)
 #define CONFIG_ENV_IS_IN_MMC
 #define CONFIG_SYS_MMC_ENV_DEV		0
-#define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
-					 CONFIG_FIP_SIZE)
-#define CONFIG_ENV_SIZE			(4*1024)	/* env size */
+#define	CONFIG_ENV_OFFSET		(0x2E0200)
+#define CONFIG_ENV_SIZE			(0x4000)	/* env size */
 #endif
 
 #if defined(CONFIG_MMC)
