@@ -347,7 +347,9 @@
 
 #define CONFIG_DFU_ALT \
 	"bl1-emmcboot.img raw 0x1 0x80;" \
+	"bl1-sdboot.img raw 0x1 0x80;" \
 	"loader-emmc.img raw 0x81 0x180;" \
+	"loader-sd.img raw 0x81 0x180;" \
 	"bl_mon.img raw 0x201 0x100;" \
 	"secureos.img raw 0x301 0xc00;" \
 	"bootloader.img raw 0xf01 0x800;" \
