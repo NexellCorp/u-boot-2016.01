@@ -311,6 +311,11 @@
 #define CONFIG_FACTORY_INFO_BUF_ADDR		0x70000000
 #define CONFIG_FACTORY_INFO_START		0x1c00
 #define CONFIG_FACTORY_INFO_SIZE		0x100
+
+/* OTA */
+#if !defined(CONFIG_ARTIK_OTA)
+#define CONFIG_FLAG_INFO_ADDR 0x49000000
+#endif
 /*-----------------------------------------------------------------------
  * BOOTCOMMAND
  */
@@ -319,9 +324,21 @@
 #define CONFIG_DEFAULT_CONSOLE		"console=ttySAC3,115200n8\0"
 
 #define CONFIG_ROOT_DEV		0
+#define CONFIG_BOOT_PART_SD	1
+#define CONFIG_MODULE_PART_SD	2
+#define CONFIG_ROOT_PART_SD	3
+
+#if !defined(CONFIG_ARTIK_OTA)
 #define CONFIG_BOOT_PART	1
-#define CONFIG_MODULE_PART	2
+#define CONFIG_MODULES_PART	2
 #define CONFIG_ROOT_PART	3
+#else
+#define CONFIG_BOOT_PART	2
+#define CONFIG_BOOT1_PART	3
+#define CONFIG_MODULES_PART	5
+#define CONFIG_MODULES1_PART	6
+#define CONFIG_ROOT_PART	7
+#endif
 
 #define CONFIG_DFU_ALT \
 	"bl1-emmcboot.img raw 0x1 0x80;" \
@@ -379,6 +396,7 @@
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
+	"rescue=0\0"							\
 	"root_rw=rw\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
@@ -386,7 +404,8 @@
 	"lcd1_0=s6e8fa0\0"						\
 	"lcd2_0=gst7d0038\0"						\
 	"lcd_panel=s6e8fa0\0"						\
-	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
+	"sdrecovery=run boot_cmd_sdboot;"				\
+		"sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
 	"factory_load=factory_info load mmc 0 "				\
 		__stringify(CONFIG_FACTORY_INFO_START) " "		\
 		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
@@ -399,15 +418,30 @@
 	"load_args=run factory_load; setenv bootargs ${console} "	\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
 		"rootfstype=${rootfs_type} ${opts} ${recoverymode} "	\
-		"drm_panel=$lcd_panel\0"				\
-	"load_kernel=ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file\0" \
+		"drm_panel=$lcd_panel "					\
+		"${ota} bootfrom=${bootpart} rescue=${rescue};\0"	\
+	"load_kernel="							\
+		"ret=0; "						\
+		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file && setexpr ret 1; " \
+		"if test $ret -eq 0; then "				\
+			"if test $bootpart -eq 2; then "		\
+				"setenv bootpart 3; "			\
+			"else setenv bootpart 2; "			\
+			"fi; "						\
+			"setenv rescue 1; "				\
+			"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file; " \
+			"run load_args; "				\
+		"fi;\0"							\
 	"load_initrd=ext4load mmc ${rootdev}:${bootpart} $ramdiskaddr $ramdisk_file\0" \
 	"boot_cmd_initrd="						\
-		"run load_fdt; run load_kernel; run load_initrd;"	\
+		"run load_kernel; run load_fdt; run load_initrd;"	\
 		"booti $kerneladdr $ramdiskaddr $fdtaddr\0"		\
 	"boot_cmd_mmcboot="						\
-		"run load_fdt; run load_kernel;"			\
+		"run load_kernel; run load_fdt;"			\
 		"booti $kerneladdr - $fdtaddr\0"			\
+	"boot_cmd_sdboot="						\
+		"setenv bootpart " __stringify(CONFIG_BOOT_PART_SD)"; "	\
+		"setenv rootpart " __stringify(CONFIG_ROOT_PART_SD)";\0"	\
 	"ramfsboot=run load_args; run boot_cmd_initrd\0"		\
 	"mmcboot=run load_args; run boot_cmd_mmcboot\0"			\
 	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
