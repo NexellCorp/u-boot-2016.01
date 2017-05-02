@@ -6,3 +6,4 @@
 #
 
 obj-y	:= board.o
+obj-$(CONFIG_ARTIK_OTA)	+= ota.o
