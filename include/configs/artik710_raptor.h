@@ -340,24 +340,27 @@
 #define CONFIG_ROOT_PART	7
 #endif
 
+#define CONFIG_SET_DFU_ALT_INFO
+#define CONFIG_SET_DFU_ALT_BUF_LEN	(SZ_1K)
+
 #define CONFIG_DFU_ALT \
 	"bl1-emmcboot.img raw 0x1 0x80;" \
 	"fip-loader-emmc.img raw 0x81 0x280;" \
 	"fip-secure.img raw 0x301 0x600;" \
 	"fip-nonsecure.img raw 0xf01 0x800;" \
-	"/uImage ext4 0 1;" \
-	"/Image ext4 0 1;" \
-	"/uInitrd ext4 0 1;" \
-	"/ramdisk.gz ext4 0 1;" \
-	"/s5p6818-artik710-raptor-rev03.dtb ext4 0 1;" \
-	"/s5p6818-artik710-raptor-rev02.dtb ext4 0 1;" \
-	"/s5p6818-artik710-raptor-rev01.dtb ext4 0 1;" \
-	"/s5p6818-artik710-explorer.dtb ext4 0 1;" \
-	"boot part 0 1;" \
-	"modules part 0 2;" \
-	"rootfs part 0 3;" \
+	"/uImage ext4 $rootdev $bootpart;" \
+	"/Image ext4 $rootdev $bootpart;" \
+	"/uInitrd ext4 $rootdev $bootpart;" \
+	"/ramdisk.gz ext4 $rootdev $bootpart;" \
+	"/s5p6818-artik710-raptor-rev03.dtb ext4 $rootdev $bootpart;" \
+	"/s5p6818-artik710-raptor-rev02.dtb ext4 $rootdev $bootpart;" \
+	"/s5p6818-artik710-raptor-rev01.dtb ext4 $rootdev $bootpart;" \
+	"/s5p6818-artik710-explorer.dtb ext4 $rootdev $bootpart;" \
+	"boot part $rootdev $bootpart;" \
+	"modules part $rootdev $modulespart;" \
+	"rootfs part $rootdev $rootpart;" \
 	"params.bin raw 0x1701 0x20;" \
-	"/Image.itb ext4 0 2\0"
+	"/Image.itb ext4 $rootdev $bootpart\0"
 
 #define CONFIG_EXTRA_ENV_SETTINGS					\
 	"fdt_high=0xffffffffffffffff\0"					\
@@ -400,7 +403,6 @@
 	"root_rw=rw\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
-	"dfu_alt_info=" CONFIG_DFU_ALT					\
 	"lcd1_0=s6e8fa0\0"						\
 	"lcd2_0=gst7d0038\0"						\
 	"lcd_panel=s6e8fa0\0"						\
