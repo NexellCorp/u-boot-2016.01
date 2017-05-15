@@ -345,7 +345,9 @@
 
 #define CONFIG_DFU_ALT \
 	"bl1-emmcboot.img raw 0x1 0x80;" \
+	"bl1-sdboot.img raw 0x1 0x80;" \
 	"fip-loader-emmc.img raw 0x81 0x280;" \
+	"fip-loader-sd.img raw 0x81 0x280;" \
 	"fip-secure.img raw 0x301 0x600;" \
 	"fip-nonsecure.img raw 0xf01 0x800;" \
 	"/uImage ext4 $rootdev $bootpart;" \
