@@ -5,6 +5,7 @@
  * SPDX-License-Identifier:      GPL-2.0+
  */
 
+#include <common.h>
 #include <linux/types.h>
 #include <asm/io.h>
 #include <asm/arch/nexell.h>
@@ -34,10 +35,10 @@ int write_sec_reg_by_id(void __iomem *reg, int val, int id)
 		case NEXELL_L2C_SEC_ID:
 		case NEXELL_MIPI_SEC_ID:
 		case NEXELL_TOFF_SEC_ID:
-			off = (u32)reg & SEC_4K_OFFSET;
+			off = (u32)(uintptr_t)reg & SEC_4K_OFFSET;
 			break;
 		case NEXELL_MALI_SEC_ID:
-			off = (u32)reg & SEC_64K_OFFSET;
+			off = (u32)(uintptr_t)reg & SEC_64K_OFFSET;
 			break;
 	}
 	ret = __invoke_nexell_fn_smc(NEXELL_SMC_SEC_REG_WRITE |
@@ -53,10 +54,10 @@ int read_sec_reg_by_id(void __iomem *reg, int id)
 		case NEXELL_L2C_SEC_ID:
 		case NEXELL_MIPI_SEC_ID:
 		case NEXELL_TOFF_SEC_ID:
-			off = (u32)reg & SEC_4K_OFFSET;
+			off = (u32)(uintptr_t)reg & SEC_4K_OFFSET;
 			break;
 		case NEXELL_MALI_SEC_ID:
-			off = (u32)reg & SEC_64K_OFFSET;
+			off = (u32)(uintptr_t)reg & SEC_64K_OFFSET;
 			break;
 	}
 	ret = __invoke_nexell_fn_smc(NEXELL_SMC_SEC_REG_READ |
@@ -68,13 +69,13 @@ int write_sec_reg(void __iomem *reg, int val)
 {
 	int ret = 0;
 	ret = __invoke_nexell_fn_smc(NEXELL_SMC_SEC_REG_WRITE,
-			(u32)reg, val, 0);
+			(u32)(uintptr_t)reg, val, 0);
 	return ret;
 }
 
 int read_sec_reg(void __iomem *reg)
 {
 	int ret = 0;
-	ret = __invoke_nexell_fn_smc(NEXELL_SMC_SEC_REG_READ, (u32)reg, 0, 0);
+	ret = __invoke_nexell_fn_smc(NEXELL_SMC_SEC_REG_READ, (u32)(uintptr_t)reg, 0, 0);
 	return ret;
 }
