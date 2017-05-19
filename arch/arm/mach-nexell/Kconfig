@@ -29,13 +29,13 @@ endchoice
 
 if ARCH_S5P4418
 menu "Board for S5P4418"
-source "board/s5p4418/Kconfig"
+source "board/nexell/s5p4418/Kconfig"
 endmenu
 endif
 
 if ARCH_S5P6818
 menu "Board for S5P6818"
-source "board/s5p6818/Kconfig"
+source "board/nexell/s5p6818/Kconfig"
 endmenu
 endif
 

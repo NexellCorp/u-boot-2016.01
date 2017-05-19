@@ -14,6 +14,9 @@ config TARGET_ARTIK710_RAPTOR
 endchoice
 
 config SYS_VENDOR
+	default "nexell"
+
+config SYS_BOARD
 	default "s5p6818"
 
 config SYS_CONFIG_NAME
@@ -23,5 +26,4 @@ config SYS_CONFIG_NAME
 	  The header file include/configs/<CONFIG_SYS_CONFIG_NAME>.h
 	  should be included from include/config.h.
 
-source "board/s5p6818/drone/Kconfig"
-source "board/s5p6818/artik710_raptor/Kconfig"
+source "board/nexell/common/Kconfig"
