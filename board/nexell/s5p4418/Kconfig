@@ -63,6 +63,9 @@ config TARGET_S5P4418_SVM_REF
 endchoice
 
 config SYS_VENDOR
+	default "nexell"
+
+config SYS_BOARD
 	default "s5p4418"
 
 config SYS_CONFIG_NAME
@@ -72,15 +75,4 @@ config SYS_CONFIG_NAME
 	  The header file include/configs/<CONFIG_SYS_CONFIG_NAME>.h
 	  should be included from include/config.h.
 
-source "board/s5p4418/drone/Kconfig"
-source "board/s5p4418/artik530_raptor/Kconfig"
-source "board/s5p4418/avn_ref/Kconfig"
-source "board/s5p4418/navi_ref/Kconfig"
-source "board/s5p4418/daudio_ref/Kconfig"
-source "board/s5p4418/smart_voice/Kconfig"
-source "board/s5p4418/ff_voice/Kconfig"
-source "board/s5p4418/zh_dragon/Kconfig"
-source "board/s5p4418/zh_blackdragon/Kconfig"
-source "board/s5p4418/daudio_covi/Kconfig"
-source "board/s5p4418/clova/Kconfig"
-source "board/s5p4418/svm_ref/Kconfig"
+source "board/nexell/common/Kconfig"
