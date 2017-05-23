@@ -316,6 +316,9 @@
 #if defined(CONFIG_ARTIK_OTA)
 #define CONFIG_FLAG_INFO_ADDR 0x49000000
 #endif
+
+/* MAC Generator */
+#define CONFIG_ARTIK_MAC
 /*-----------------------------------------------------------------------
  * BOOTCOMMAND
  */
