@@ -6,3 +6,4 @@
 #
 
 obj-$(CONFIG_ARTIK_OTA)		+= ota.o
+obj-$(CONFIG_ARTIK_MAC)		+= mac.o
