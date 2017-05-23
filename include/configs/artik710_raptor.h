@@ -313,7 +313,7 @@
 #define CONFIG_FACTORY_INFO_SIZE		0x100
 
 /* OTA */
-#if !defined(CONFIG_ARTIK_OTA)
+#if defined(CONFIG_ARTIK_OTA)
 #define CONFIG_FLAG_INFO_ADDR 0x49000000
 #endif
 /*-----------------------------------------------------------------------
