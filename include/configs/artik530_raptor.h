@@ -318,6 +318,11 @@
 /* Board specific feature */
 #define CONFIG_CHECK_BONDING_ID
 
+/* OTA */
+#if defined(CONFIG_ARTIK_OTA)
+#define CONFIG_FLAG_INFO_ADDR	0x9A000000
+#endif
+
 /*-----------------------------------------------------------------------
  * BOOTCOMMAND
  */
