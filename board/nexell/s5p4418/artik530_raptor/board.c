@@ -33,6 +33,10 @@
 #include <artik_ota.h>
 #endif
 
+#ifdef CONFIG_ARTIK_MAC
+#include <artik_mac.h>
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_CHECK_BONDING_ID
@@ -308,6 +312,9 @@ int board_late_init(void)
 #endif
 #ifdef CONFIG_CMD_FACTORY_INFO
 	run_command("run factory_load", 0);
+#endif
+#ifdef CONFIG_ARTIK_MAC
+	generate_mac();
 #endif
 #ifdef CONFIG_SENSORID_ARTIK
 	get_sensorid(board_rev);
