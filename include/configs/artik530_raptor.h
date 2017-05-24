@@ -323,6 +323,9 @@
 #define CONFIG_FLAG_INFO_ADDR	0x9A000000
 #endif
 
+/* MAC Generator */
+#define CONFIG_ARTIK_MAC
+
 /*-----------------------------------------------------------------------
  * BOOTCOMMAND
  */
