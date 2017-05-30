@@ -284,6 +284,7 @@
 #define CONFIG_SYS_EXTRA_ENV_RELOC
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
+			"initrd_high=0xffffffff\0"	\
 			"fdt_high=0xffffffff\0" \
                         "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
                                     "printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
