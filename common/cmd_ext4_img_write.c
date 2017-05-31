@@ -128,8 +128,8 @@ int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 	int ret;
 	bool big = false;
 
-	tmp_align = (unsigned char *)(CONFIG_FASTBOOT_BUF_ADDR +
-				      CONFIG_FASTBOOT_BUF_SIZE);
+	tmp_align = ((unsigned char *)((CONFIG_FASTBOOT_BUF_ADDR +
+				      CONFIG_FASTBOOT_BUF_SIZE) & 0xffffffff));
 	ptr = data;
 	remaining_sector_size = sector_size;
 	write_sector = sector;
