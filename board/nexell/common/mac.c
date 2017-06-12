@@ -12,6 +12,8 @@
 
 #define ARTIK_A710		"710"
 #define ARTIK_A530		"530"
+#define ARTIK_A533		"533"
+#define ARTIK_A305		"305"
 #define CMD_MAX			256
 #define GET_YEAR_FROM_SN(x)	(((x) - 'B') + 2016)
 
@@ -22,28 +24,42 @@ static const struct artik_info_t artik_info[] = {
 		.year_offset	= 2016,
 		.security	= '0',
 		.model_code	= 0,
-		.oui		= 0x00ABC1,	/* FIXME: Temporary OUI */
+		.oui		= 0x08152F,
 	}, {
 		/* Artik710s */
 		.board_name	= ARTIK_A710,
 		.year_offset	= 2016,
 		.security	= 'L',
 		.model_code	= 1,
-		.oui		= 0x00ABC2,	/* FIXME: Temporary OUI */
+		.oui		= 0x08152F,
 	}, {
 		/* Artik530 */
 		.board_name	= ARTIK_A530,
 		.year_offset	= 2016,
 		.security	= '0',
 		.model_code	= 2,
-		.oui		= 0x00ABC3,	/* FIXME: Temporary OUI */
+		.oui		= 0x08152F,
 	}, {
 		/* Artik530s */
 		.board_name	= ARTIK_A530,
-		.year_offset	= 2016,
+		.year_offset	= 2017,
 		.security	= 'L',
 		.model_code	= 3,
-		.oui		= 0x00ABC4,	/* FIXME: Temporary OUI */
+		.oui		= 0x08152F,
+	}, {
+		/* Artik305 */
+		.board_name	= ARTIK_A305,
+		.year_offset	= 2017,
+		.security	= '0',
+		.model_code	= 1,
+		.oui		= 0x448F17,
+	}, {
+		/* Artik533 */
+		.board_name	= ARTIK_A533,
+		.year_offset	= 2017,
+		.security	= '0',
+		.model_code	= 0,
+		.oui		= 0x448F17,
 	},
 	{ },
 };
