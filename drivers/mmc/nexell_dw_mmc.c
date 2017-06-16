@@ -97,12 +97,19 @@ static void nx_dw_mmc_set_pin(struct dwmci_host *host)
 {
 	switch (host->dev_index) {
 	case 0:
-		set_pin_stat(0, 29, 1);
-		set_pin_stat(0, 31, 1);
-		set_pin_stat(1, 1, 1);
-		set_pin_stat(1, 3, 1);
-		set_pin_stat(1, 5, 1);
-		set_pin_stat(1, 7, 1);
+		nx_gpio_set_pad_function(0, 29, 1);
+		nx_gpio_set_pad_function(0, 31, 1);
+		nx_gpio_set_pad_function(1, 1, 1);
+		nx_gpio_set_pad_function(1, 3, 1);
+		nx_gpio_set_pad_function(1, 5, 1);
+		nx_gpio_set_pad_function(1, 7, 1);
+
+		nx_gpio_set_drive_strength(0, 29, 2);
+		nx_gpio_set_drive_strength(0, 31, 1);
+		nx_gpio_set_drive_strength(1, 1, 1);
+		nx_gpio_set_drive_strength(1, 3, 1);
+		nx_gpio_set_drive_strength(1, 5, 1);
+		nx_gpio_set_drive_strength(1, 7, 1);
 		break;
 	case 1:
 		set_pin_stat(3, 22, 1);
@@ -113,17 +120,30 @@ static void nx_dw_mmc_set_pin(struct dwmci_host *host)
 		set_pin_stat(3, 27, 1);
 		break;
 	case 2:
-		set_pin_stat(2, 18, 2);
-		set_pin_stat(2, 19, 2);
-		set_pin_stat(2, 20, 2);
-		set_pin_stat(2, 21, 2);
-		set_pin_stat(2, 22, 2);
-		set_pin_stat(2, 23, 2);
+		nx_gpio_set_pad_function(2, 18, 2);
+		nx_gpio_set_pad_function(2, 19, 2);
+		nx_gpio_set_pad_function(2, 20, 2);
+		nx_gpio_set_pad_function(2, 21, 2);
+		nx_gpio_set_pad_function(2, 22, 2);
+		nx_gpio_set_pad_function(2, 23, 2);
+
+		nx_gpio_set_drive_strength(2, 18, 2);
+		nx_gpio_set_drive_strength(2, 19, 1);
+		nx_gpio_set_drive_strength(2, 20, 1);
+		nx_gpio_set_drive_strength(2, 21, 1);
+		nx_gpio_set_drive_strength(2, 22, 1);
+		nx_gpio_set_drive_strength(2, 23, 1);
+
 		if (host->buswidth == 8) {
-			set_pin_stat(4, 21, 2);
-			set_pin_stat(4, 22, 2);
-			set_pin_stat(4, 23, 2);
-			set_pin_stat(4, 24, 2);
+			nx_gpio_set_pad_function(4, 21, 2);
+			nx_gpio_set_pad_function(4, 22, 2);
+			nx_gpio_set_pad_function(4, 23, 2);
+			nx_gpio_set_pad_function(4, 24, 2);
+
+			nx_gpio_set_drive_strength(4, 21, 3);
+			nx_gpio_set_drive_strength(4, 22, 3);
+			nx_gpio_set_drive_strength(4, 23, 3);
+			nx_gpio_set_drive_strength(4, 24, 3);
 		}
 		break;
 	}
