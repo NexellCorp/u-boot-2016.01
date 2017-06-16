@@ -49,6 +49,13 @@ static void set_mmc_pad_func(struct dwmci_host *host)
 		nx_gpio_set_pad_function(1, 3, 1);
 		nx_gpio_set_pad_function(1, 5, 1);
 		nx_gpio_set_pad_function(1, 7, 1);
+
+		nx_gpio_set_drive_strength(0, 29, 2);
+		nx_gpio_set_drive_strength(0, 31, 1);
+		nx_gpio_set_drive_strength(1, 1, 1);
+		nx_gpio_set_drive_strength(1, 3, 1);
+		nx_gpio_set_drive_strength(1, 5, 1);
+		nx_gpio_set_drive_strength(1, 7, 1);
 		break;
 	case 1:
 		nx_gpio_set_pad_function(3, 22, 1);
@@ -65,11 +72,24 @@ static void set_mmc_pad_func(struct dwmci_host *host)
 		nx_gpio_set_pad_function(2, 21, 2);
 		nx_gpio_set_pad_function(2, 22, 2);
 		nx_gpio_set_pad_function(2, 23, 2);
+
+		nx_gpio_set_drive_strength(2, 18, 2);
+		nx_gpio_set_drive_strength(2, 19, 1);
+		nx_gpio_set_drive_strength(2, 20, 1);
+		nx_gpio_set_drive_strength(2, 21, 1);
+		nx_gpio_set_drive_strength(2, 22, 1);
+		nx_gpio_set_drive_strength(2, 23, 1);
+
 		if (host->buswidth == 8) {
 			nx_gpio_set_pad_function(4, 21, 2);
 			nx_gpio_set_pad_function(4, 22, 2);
 			nx_gpio_set_pad_function(4, 23, 2);
 			nx_gpio_set_pad_function(4, 24, 2);
+
+			nx_gpio_set_drive_strength(4, 21, 3);
+			nx_gpio_set_drive_strength(4, 22, 3);
+			nx_gpio_set_drive_strength(4, 23, 3);
+			nx_gpio_set_drive_strength(4, 24, 3);
 		}
 		break;
 	}
