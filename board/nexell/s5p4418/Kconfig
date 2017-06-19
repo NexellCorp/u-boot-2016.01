@@ -52,9 +52,9 @@ config TARGET_S5P4418_DAUDIO_COVI
 	  Support for s5p4418 daudio_covi platform.
 
 config TARGET_S5P4418_CLOVA
-    bool "S5P4418_CLOVA"
-    help
-      Support for s5p4418 clova platform
+	bool "S5P4418_CLOVA"
+	help
+	  Support for s5p4418 clova platform
 
 config TARGET_S5P4418_SVM_REF
 	bool "S5P4418_SVM_REF"
@@ -70,6 +70,10 @@ config TARGET_S5P4418_CLUSTER_REF
 	bool "S5P4418_CLUSTER_REF"
 	help
 		Support for s5p4418 cluster_ref platform.
+config TARGET_ARTIK305_RAPTOR
+        bool "ARTIK305_RAPTOR"
+	help
+	  Support for artik305_raptor platform.
 
 config TARGET_S5P4418_ALLO_DISPLAY
 	bool "S5P4418_ALLO_DISPLAY"
