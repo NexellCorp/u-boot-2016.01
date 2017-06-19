@@ -6,4 +6,5 @@
 #
 
 obj-$(CONFIG_TARGET_S5P4418_DRONE)	+= drone/
+obj-$(CONFIG_TARGET_ARTIK305_RAPTOR)	+= artik305_raptor/
 obj-$(CONFIG_TARGET_ARTIK530_RAPTOR)	+= artik530_raptor/

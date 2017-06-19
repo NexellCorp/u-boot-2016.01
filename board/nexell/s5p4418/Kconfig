@@ -11,6 +11,11 @@ config TARGET_ARTIK530_RAPTOR
 	help
 	  Support for artik530_raptor platform.
 
+config TARGET_ARTIK305_RAPTOR
+        bool "ARTIK305_RAPTOR"
+	help
+	  Support for artik305_raptor platform.
+
 endchoice
 
 config SYS_VENDOR
