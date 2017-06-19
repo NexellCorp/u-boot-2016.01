@@ -60,6 +60,12 @@ config TARGET_S5P4418_SVM_REF
 	bool "S5P4418_SVM_REF"
 	help
 	  Support for s5p4418 svm_ref platform.
+
+config TARGET_ARTIK305_RAPTOR
+        bool "ARTIK305_RAPTOR"
+	help
+	  Support for artik305_raptor platform.
+
 endchoice
 
 config SYS_VENDOR
