@@ -85,9 +85,7 @@ static void get_sensorid(u32 revision)
 {
 	static struct udevice *dev;
 	uint16_t buf[5] = {0, };
-	char panel_env[64], *panel_str;
-	bool found_panel = false;
-	int i, ret;
+	int ret;
 
 	ret = uclass_get_device_by_name(UCLASS_SENSOR_ID, "sensor_id@36", &dev);
 	if (ret < 0) {
