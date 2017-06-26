@@ -187,6 +187,9 @@ static void nx_display_parse_dp_layer(const void *blob, int node,
 	plane->tp_on = fdtdec_get_int(blob, node, "tp_on", 0);
 	plane->tp_color = fdtdec_get_int(blob, node, "tp_color", 0);
 
+	if (!plane->fb_base)
+		plane->fb_base = CONFIG_FB_ADDR;
+
 	/* enable layer */
 	if (plane->fb_base)
 		plane->enable = 1;

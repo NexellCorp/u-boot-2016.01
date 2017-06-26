@@ -66,7 +66,7 @@ static int lvds_setup(int module, int input,
 	}
 
 	printf("LVDS:");
-	printf("%s", format == DP_LVDS_FORMAT_VESA ? "VESA" :
+	printf("%s, ", format == DP_LVDS_FORMAT_VESA ? "VESA" :
 		format == DP_LVDS_FORMAT_JEIDA ? "JEIDA" : "LOC");
 	printf("voltage LV:0x%x\n", voltage);
 
