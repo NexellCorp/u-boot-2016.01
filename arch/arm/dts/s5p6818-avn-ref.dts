@@ -183,7 +183,7 @@
 	        lcd-type = "lvds";
 
 		dp-device {
-			format = <0>;
+			format = <0>;	/* 0:VESA, 1:JEIDA */
 		};
 
 	        dp-sync {
@@ -212,8 +212,7 @@
 				back_color = <0x0>;
 			};
 
-			layer_1 {
-				fb_base = <0x50000000>;
+			layer_0 {	/* RGB 0 */
 				width = <1024>;
 				height = <600>;
 				format = <0x06530000>;
