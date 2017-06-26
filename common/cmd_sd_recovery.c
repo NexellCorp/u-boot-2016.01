@@ -469,10 +469,6 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 			p += l;
 			cmd[p] = 0;
 		} else if (fs_type & UPDATE_SDCARD_FS_MASK) {
-			if (sdcard_mmc_check_part_table(desc, fp) > 0) {
-				if (make_mmc_partition(fp))
-					return -1;
-			}
 			p = sprintf(cmd, "ext4_img_write %d %x %d %x",
 				    dev, (unsigned int)addr, part_num,
 				    (unsigned int)length);
@@ -491,10 +487,8 @@ static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
 			 char *dev, int fs_type)
 {
 	unsigned long time;
-	int i = 0;
-	int len_read = 0;
+	int i = 0, len_read = 0, ret = 0, first_fs = 0;
 	loff_t len;
-	int ret = 0;
 
 	for (i = 0; i < DEV_PART_MAX; i++, fp++) {
 		if (!strcmp(fp->device, ""))
@@ -524,6 +518,11 @@ static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
 		      fp->dev_no, fp->partition_name,
 		      UPDATE_SDCARD_FS_MASK&fp->fs_type ? "fs" : "img",
 		      fp->start, fp->length, fp->file_name);
+
+		if (first_fs == 0 && (fp->fs_type & UPDATE_SDCARD_FS_MASK)) {
+			first_fs = 1;
+			make_mmc_partition(fp);
+		}
 
 		if (len <= 0 || len_read < 0)
 			continue;
