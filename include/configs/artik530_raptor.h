@@ -317,6 +317,7 @@
 
 /* Board specific feature */
 #define CONFIG_CHECK_BONDING_ID
+#define CONFIG_CHECK_BOARD_TYPE
 
 /* OTA */
 #if defined(CONFIG_ARTIK_OTA)
