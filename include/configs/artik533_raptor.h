@@ -312,9 +312,7 @@
 #define CONFIG_FACTORY_INFO_START		0x1c00
 #define CONFIG_FACTORY_INFO_SIZE		0x100
 
-/* Board specific feature */
-#define CONFIG_CHECK_BONDING_ID
-
+#define CONFIG_CHECK_BOARD_TYPE
 /* OTA */
 #if defined(CONFIG_ARTIK_OTA)
 #define CONFIG_FLAG_INFO_ADDR	0x9A000000
