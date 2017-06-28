@@ -50,6 +50,19 @@ int check_bonding_id(void)
 }
 #endif
 
+#ifdef CONFIG_CHECK_BOARD_TYPE
+int check_board_type(void)
+{	int val;
+
+	val = nx_gpio_get_input_value(1, 25);
+	val <<= 1;
+
+	val |= nx_gpio_get_input_value(1, 24);
+
+	return val;
+}
+#endif
+
 #ifdef CONFIG_REVISION_TAG
 u32 board_rev;
 
@@ -85,14 +98,22 @@ static void set_board_rev(u32 revision)
 #ifdef CONFIG_DISPLAY_BOARDINFO
 int checkboard(void)
 {
+	char board_type[20] = "ARTIK530 Raptor";
 #ifdef CONFIG_CHECK_BONDING_ID
 	int is_dual = check_bonding_id();
 
-	if (is_dual)
-		printf("\nBoard: ARTIK532 Raptor\n");
-	else
+	if (is_dual) {
+		memset(board_type, 0, 20);
+		strncpy(board_type, "ARTIK532 Raptor", 20);
+	}
 #endif
-		printf("\nBoard: ARTIK530 Raptor\n");
+#ifdef CONFIG_CHECK_BOARD_TYPE
+	if (check_board_type() == 1) {
+		memset(board_type, 0, 20);
+		strncpy(board_type, "ARTIK533 Raptor", 20);
+	}
+#endif
+	printf("\nBoard: %s\n", board_type);
 
 	return 0;
 }
@@ -301,6 +322,11 @@ int board_late_init(void)
 	}
 
 	setenv_ulong("nr_cpus", nr_cpus);
+#endif
+
+#ifdef CONFIG_CHECK_BOARD_TYPE
+	if (check_board_type() == 1)
+		setenv_ulong("model_id", 533);
 #endif
 
 #ifdef CONFIG_DM_PMIC_NXE2000
