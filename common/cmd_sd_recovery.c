@@ -80,34 +80,6 @@ struct update_sdcard_part {
 
 static struct update_sdcard_part f_sdcard_part[DEV_PART_MAX];
 
-
-static int sdcard_mmc_check_part_table(block_dev_desc_t *desc,
-					      struct update_sdcard_part *fpart)
-{
-	uint64_t parts[DEV_PART_MAX][2] = { {0, 0}, };
-	int i = 0, num = 0;
-	int ret = 1;
-
-	if (get_part_table(desc, parts, &num) < 0)
-		return -1;
-
-	for (i = 0; i < num; i++) {
-		if (parts[i][0] == fpart->start &&
-		    parts[i][1] == fpart->length)
-			return 0;
-		/* when last partition set value is zero,
-		   set avaliable length */
-		if ((num-1) == i &&
-		    parts[i][0] == fpart->start &&
-		    fpart->length == 0) {
-			fpart->length = parts[i][1];
-			ret = 0;
-			break;
-		}
-	}
-	return ret;
-}
-
 static inline void update_sdcard_parse_comment(const char *str,
 					       const char **ret)
 {
