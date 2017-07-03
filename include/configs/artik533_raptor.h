@@ -113,7 +113,7 @@
 #ifdef CONFIG_SYS_PROMPT
 #undef CONFIG_SYS_PROMPT
 /* Monitor Command Prompt   */
-#define CONFIG_SYS_PROMPT			"artik533# "
+#define CONFIG_SYS_PROMPT			"artik530# "
 #endif
 /* undef to save memory	   */
 #define CONFIG_SYS_LONGHELP
