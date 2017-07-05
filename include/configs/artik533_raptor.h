@@ -33,6 +33,9 @@
 					CONFIG_SYS_DFU_DATA_BUF_SIZE * 2 + \
 					(8 << 20))
 
+/* when CONFIG_LCD */
+#define CONFIG_FB_ADDR				(CONFIG_SYS_TEXT_BASE+0x2400000)
+
 /* Download OFFSET */
 #define CONFIG_MEM_LOAD_ADDR			(CONFIG_SYS_TEXT_BASE+0x4400000)
 
@@ -414,9 +417,12 @@
 	"rescue=0\0"							\
 	"root_rw=rw\0"							\
 	"model_id=533\0"						\
-	"nr_cpus=2\0"							\
+	"nr_cpus=4\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
+	"lcd1_0=s6e8fa0\0"						\
+	"lcd2_0=gst7d0038\0"						\
+	"lcd_panel=s6e8fa0\0"						\
 	"sdrecovery=run boot_cmd_sdboot;"				\
 		"sd_recovery mmc 1:3 $sdrecaddr partmap_emmc.txt\0"	\
 	"factory_load=factory_info load mmc 0 "				\
@@ -431,7 +437,7 @@
 	"load_args=run factory_load; setenv bootargs ${console} "	\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
 		"rootfstype=${rootfs_type} ${recoverymode} ${ota} "	\
-		"nr_cpus=${nr_cpus} ${opts} "	\
+		"drm_panel=$lcd_panel nr_cpus=${nr_cpus} ${opts} "	\
 		"bootfrom=${bootpart} rescue=${rescue};\0"		\
 	"load_kernel="							\
 		"ret=0; "						\
