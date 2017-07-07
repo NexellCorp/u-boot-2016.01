@@ -269,21 +269,67 @@
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
+#define CONFIG_VIDEO_LOGO
+#define CONFIG_SPLASH_SCREEN
+
+#ifdef CONFIG_VIDEO_LOGO
+#define CONFIG_CMD_BMP
+#ifdef CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SOURCE
+#endif
+#endif
+
 /*-----------------------------------------------------------------------
  * ENV
  */
 /* need to relocate env address */
+#define	CONFIG_KERNEL_DTB_ADDR	0x49000000
+#define	CONFIG_BMP_LOAD_ADDR	0x50000000
+
+#define CONFIG_EXTRA_ENV_BOOT_LOGO				\
+	"splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0"	\
+	"splashfile=logo.bmp\0"					\
+	"fb_addr=\0"						\
+	"dtb_reserve="						\
+	"if test -n \"$fb_addr\"; then "			\
+	"fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
+	"fdt resize;"						\
+	"fdt mk /reserved-memory display_reserved;"		\
+	"fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>;" \
+	"fi;\0"
+
+#define CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
+	"bootargs=console=ttySAC3,115200n8 "			\
+	"root=/dev/mmcblk0p3 rw rootfstype=ext4 rootwait "	\
+	"loglevel=4 quiet printk.time=1 consoleblank=0 "	\
+	"systemd.log_level=info systemd.show_status=false\0"
+
+#define CONFIG_EXTRA_ENV_KERNEL_LOAD				\
+	"ext4load mmc 0:1 0x40008000 Image;"
+
+#define CONFIG_EXTRA_ENV_DTB_LOAD	\
+	"ext4load mmc 0:1 " __stringify(CONFIG_KERNEL_DTB_ADDR)	\
+	" s5p6818-avn-ref-rev01.dtb;"				\
+	"run dtb_reserve;"
+
+#define CONFIG_EXTRA_ENV_RAMDISK_LOAD				\
+	"ext4load mmc 0:1 0x48000000 ramdisk.img;"
+
+#define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL				\
+	"booti 0x40008000 0x48000000 "				\
+	__stringify(CONFIG_KERNEL_DTB_ADDR)"\0"
+
 #define CONFIG_SYS_EXTRA_ENV_RELOC
-#define CONFIG_EXTRA_ENV_SETTINGS					\
-	"fdt_high=0xffffffffffffffff\0"					\
-	"bootargs=console=ttySAC3,115200n8 "				\
-		"root=/dev/mmcblk0p3 rw rootfstype=ext4 rootwait "	\
-		"loglevel=4 quiet printk.time=1 consoleblank=0 "	\
-		"systemd.log_level=info systemd.show_status=false\0"	\
-	"boot_cmd_mmcboot=ext4load mmc 0:1 0x40008000 Image;"		\
-		"ext4load mmc 0:1 0x49000000 s5p6818-avn-ref-rev01.dtb;" \
-		"booti 0x40008000 - 0x49000000\0"			\
-	"mmcboot=run boot_cmd_mmcboot\0"				\
-	"bootcmd=run mmcboot\0"
+#define CONFIG_EXTRA_ENV_SETTINGS				\
+	"fdt_high=0xffffffffffffffff\0"				\
+	CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
+	"boot_cmd_mmcboot="					\
+		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
+		CONFIG_EXTRA_ENV_RAMDISK_LOAD			\
+		CONFIG_EXTRA_ENV_DTB_LOAD			\
+		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL			\
+	"mmcboot=run boot_cmd_mmcboot\0"			\
+	"bootcmd=run mmcboot\0"					\
+	CONFIG_EXTRA_ENV_BOOT_LOGO
 
 #endif /* __CONFIG_H__ */
