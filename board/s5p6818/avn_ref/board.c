@@ -18,6 +18,10 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_PWM_NX
+enum gpio_group {
+	gpio_a, gpio_b, gpio_c, gpio_d, gpio_e,
+};
+
 struct pwm_device {
 	int grp;
 	int bit;
@@ -25,10 +29,10 @@ struct pwm_device {
 };
 
 static struct pwm_device pwm_dev[] = {
-	[0] = { .grp = 3, .bit = 1,  .io_fn = 0 },
-	[1] = { .grp = 2, .bit = 13, .io_fn = 1 },
-	[2] = { .grp = 2, .bit = 14, .io_fn = 1 },
-	[3] = { .grp = 3, .bit = 0,  .io_fn = 0 },
+	[0] = { .grp = gpio_d, .bit = 1,  .io_fn = 0 },
+	[1] = { .grp = gpio_c, .bit = 13, .io_fn = 1 },
+	[2] = { .grp = gpio_c, .bit = 14, .io_fn = 1 },
+	[3] = { .grp = gpio_d, .bit = 0,  .io_fn = 0 },
 };
 #endif
 
@@ -51,6 +55,24 @@ static void board_backlight_disable(void)
 static void board_backlight_enable(void)
 {
 #ifdef CONFIG_PWM_NX
+	/*
+	 * set lcd enable
+	 */
+	nx_gpio_set_pad_function(gpio_c, 11, 1);
+	nx_gpio_set_pad_function(gpio_b, 25, 1);
+	nx_gpio_set_pad_function(gpio_b, 27, 1);
+
+	nx_gpio_set_output_value(gpio_c, 11, 1);
+	nx_gpio_set_output_value(gpio_b, 25, 1);
+	nx_gpio_set_output_value(gpio_b, 27, 1);
+
+	nx_gpio_set_output_enable(gpio_c, 11, 1);
+	nx_gpio_set_output_enable(gpio_b, 25, 1);
+	nx_gpio_set_output_enable(gpio_b, 27, 1);
+
+	/*
+	 * pwm backlight ON: HIGH, ON: LOW
+	 */
 	pwm_init(
 		CONFIG_BACKLIGHT_CH,
 		CONFIG_BACKLIGHT_DIV, CONFIG_BACKLIGHT_INV
@@ -103,7 +125,7 @@ int splash_screen_prepare(void)
 	if (!err) {
 		char addr[64];
 
-		sprintf(addr, "0x%x", gd->fb_base);
+		sprintf(addr, "0x%lx", gd->fb_base);
 		setenv("fb_addr", addr);
 	}
 
