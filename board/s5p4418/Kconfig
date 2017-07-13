@@ -31,6 +31,11 @@ config TARGET_S5P4418_SMART_VOICE
 	help
 	  Support for s5p4418 smart_voice platform.
 
+config TARGET_S5P4418_ZH_DRAGON
+	bool "S5P4418_ZH_DRAGON"
+	help
+	  Support for s5p4418 zonghong dragon platform.
+
 endchoice
 
 config SYS_VENDOR
@@ -49,3 +54,4 @@ source "board/s5p4418/avn_ref/Kconfig"
 source "board/s5p4418/navi_ref/Kconfig"
 source "board/s5p4418/daudio_ref/Kconfig"
 source "board/s5p4418/smart_voice/Kconfig"
+source "board/s5p4418/zh_dragon/Kconfig"
