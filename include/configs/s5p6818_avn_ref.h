@@ -313,7 +313,7 @@
 	"run dtb_reserve;"
 
 #define CONFIG_EXTRA_ENV_RAMDISK_LOAD				\
-	"ext4load mmc 0:1 0x48000000 ramdisk.img;"
+	"ext4load mmc 0:1 0x48000000 uInitrd;"
 
 #define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL				\
 	"booti 0x40008000 0x48000000 "				\
