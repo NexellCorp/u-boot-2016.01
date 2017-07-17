@@ -7,14 +7,6 @@
 
 #include <config.h>
 #include <common.h>
-#include <asm/io.h>
-
-#include <asm/arch/nexell.h>
-#include <asm/arch/clk.h>
-#include <asm/arch/reset.h>
-#include <asm/arch/nx_gpio.h>
-
-#include <usb/dwc2_udc.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -47,12 +39,26 @@ struct splash_location splash_locations[] = {
 	.flags = SPLASH_STORAGE_FS,
 	.devpart = "0:1",
 	},
+	{
+	.name = "mmc",
+	.storage = SPLASH_STORAGE_MMC,
+	.flags = SPLASH_STORAGE_RAW,
+	.offset = CONFIG_SPLASH_MMC_OFFSET,
+	},
 };
 
 int splash_screen_prepare(void)
 {
-	return splash_source_load(splash_locations,
-				ARRAY_SIZE(splash_locations));
+	int err = splash_source_load(splash_locations,
+					sizeof(splash_locations)/sizeof(struct splash_location));
+	if (!err) {
+		char addr[64];
+
+		sprintf(addr, "0x%lx", gd->fb_base);
+		setenv("fb_addr", addr);
+	}
+
+	return err;
 }
 #endif
 

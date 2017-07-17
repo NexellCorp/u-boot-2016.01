@@ -23,12 +23,12 @@
 
 #define	CONFIG_SYS_TEXT_BASE			0x43C00000
 #define	CONFIG_SYS_INIT_SP_ADDR			CONFIG_SYS_TEXT_BASE
-#define CONFIG_SYS_MONITOR_BASE                 CONFIG_SYS_TEXT_BASE
+#define CONFIG_SYS_MONITOR_BASE         CONFIG_SYS_TEXT_BASE
 
 #define	CONFIG_SYS_SDRAM_BASE			0x40000000
 #define	CONFIG_SYS_SDRAM_SIZE			0x70000000
 
-#define CONFIG_SYS_MALLOC_LEN                   (32*1024*1024)
+#define CONFIG_SYS_MALLOC_LEN           (32*1024*1024)
 
 /* fastboot buffer start, size */
 #define CONFIG_FASTBOOT_BUF_ADDR		CONFIG_SYS_SDRAM_BASE
@@ -37,9 +37,9 @@
 #define CONFIG_ALIGNBUFFER_SIZE			0x02000000
 
 /* when CONFIG_LCD */
-#define CONFIG_FB_ADDR				(CONFIG_FASTBOOT_BUF_ADDR + \
-						 CONFIG_FASTBOOT_BUF_SIZE + \
-						 CONFIG_ALIGNBUFFER_SIZE)
+#define CONFIG_FB_ADDR					(CONFIG_FASTBOOT_BUF_ADDR + \
+										 CONFIG_FASTBOOT_BUF_SIZE + \
+										 CONFIG_ALIGNBUFFER_SIZE)
 
 /* dram 1 bank num */
 #define CONFIG_NR_DRAM_BANKS			1
@@ -54,12 +54,12 @@
 /* Not used: not need IRQ/FIQ stuff	*/
 #undef  CONFIG_USE_IRQ
 /* decrementer freq: 1ms ticks */
-#define CONFIG_SYS_HZ				1000
+#define CONFIG_SYS_HZ					1000
 
 /* memtest works on */
 #define CONFIG_SYS_MEMTEST_START		CONFIG_SYS_SDRAM_BASE
 #define CONFIG_SYS_MEMTEST_END			((ulong)CONFIG_SYS_SDRAM_BASE \
-						 + (ulong)CONFIG_SYS_SDRAM_SIZE)
+										 + (ulong)CONFIG_SYS_SDRAM_SIZE)
 
 /*-----------------------------------------------------------------------
  *  System initialize options (board_init_f)
@@ -67,9 +67,7 @@
 
 /* board_init_f->init_sequence, call arch_cpu_init */
 #define CONFIG_ARCH_CPU_INIT
-/* board_init_f->init_sequence, call board_early_init_f */
-/* #define	CONFIG_BOARD_EARLY_INIT_F  */
-/* board_init_r, call board_early_init_f */
+
 #define	CONFIG_BOARD_LATE_INIT
 /* board_init_f->init_sequence, call print_cpuinfo */
 #define	CONFIG_DISPLAY_CPUINFO
@@ -135,9 +133,9 @@
 #define CONFIG_CONS_INDEX			3
 #define CONFIG_PL011_CLOCK			50000000
 #define CONFIG_PL01x_PORTS			{(void *)PHY_BASEADDR_UART0, \
-						(void *)PHY_BASEADDR_UART1, \
-						(void *)PHY_BASEADDR_UART2, \
-						(void *)PHY_BASEADDR_UART3}
+									 (void *)PHY_BASEADDR_UART1, \
+									 (void *)PHY_BASEADDR_UART2, \
+									 (void *)PHY_BASEADDR_UART3}
 
 #define CONFIG_BAUDRATE				115200
 #define CONFIG_SYS_BAUDRATE_TABLE \
@@ -157,7 +155,7 @@
 /*-----------------------------------------------------------------------
  * Timer
  */
-#define CONFIG_TIMER_SYS_TICK_CH		0
+#define CONFIG_TIMER_SYS_TICK_CH	0
 
 /*-----------------------------------------------------------------------
  * PWM
@@ -168,9 +166,9 @@
  * BACKLIGHT
  */
 #define CONFIG_BACKLIGHT_CH			0
-#define CONFIG_BACKLIGHT_DIV			0
-#define CONFIG_BACKLIGHT_INV			0
-#define CONFIG_BACKLIGHT_DUTY			50
+#define CONFIG_BACKLIGHT_DIV		0
+#define CONFIG_BACKLIGHT_INV		0
+#define CONFIG_BACKLIGHT_DUTY		50
 #define CONFIG_BACKLIGHT_HZ			1000
 
 /*-----------------------------------------------------------------------
@@ -186,14 +184,14 @@
 
 #if defined(CONFIG_MMC)
 #define CONFIG_2NDBOOT_OFFSET		512
-#define CONFIG_2NDBOOT_SIZE		(64*1024)
-#define CONFIG_FIP_OFFSET		(CONFIG_2NDBOOT_OFFSET +\
-					 CONFIG_2NDBOOT_SIZE)
-#define CONFIG_FIP_SIZE			(3*1024*1024)
+#define CONFIG_2NDBOOT_SIZE			(64*1024)
+#define CONFIG_FIP_OFFSET			(CONFIG_2NDBOOT_OFFSET +\
+									 CONFIG_2NDBOOT_SIZE)
+#define CONFIG_FIP_SIZE				(3*1024*1024)
 #define CONFIG_ENV_IS_IN_MMC
 #define CONFIG_SYS_MMC_ENV_DEV		0
-#define	CONFIG_ENV_OFFSET		(0x2E0200)
-#define CONFIG_ENV_SIZE			(0x4000)	/* env size */
+#define	CONFIG_ENV_OFFSET			(0x2E0200)
+#define CONFIG_ENV_SIZE				(0x4000)	/* env size */
 #endif
 
 #if defined(CONFIG_MMC)
@@ -267,6 +265,17 @@
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
+#define CONFIG_VIDEO_LOGO
+#define CONFIG_SPLASH_SCREEN
+
+#ifdef CONFIG_VIDEO_LOGO
+#define CONFIG_CMD_BMP
+#ifdef CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SOURCE
+#define CONFIG_SPLASH_MMC_OFFSET	0x2e4200
+#endif
+#endif
+
 
 /*-----------------------------------------------------------------------
  * ENV
@@ -276,6 +285,23 @@
 
 /* need to relocate env address */
 #define CONFIG_SYS_EXTRA_ENV_RELOC
+
+#define CONFIG_BMP_LOAD_ADDR	0x80000000
+#define CONFIG_KERNEL_DTB_ADDR	0x49000000
+
+#define CONFIG_EXTRA_ENV_BOOT_LOGO	\
+	"splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0"	\
+	"splashfile=logo.bmp\0"	\
+	"splashsource=mmc_fs\0"	\
+	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
+	"fb_addr=\0"	\
+	"dtb_reserve="	\
+		"if test -n \"$fb_addr\"; then "	\
+			"fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
+			"fdt resize;"	\
+			"fdt mk /reserved-memory display_reserved;"	\
+			"fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>;" \
+		"fi;\0"
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"fdt_high=0xffffffff\0"		\
@@ -309,6 +335,7 @@
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
 		"bootz $kerneladdr - $fdtaddr\0" \
 	"mmcboot=run boot_cmd_mmcboot\0"           \
-	"bootcmd=run mmcboot\0"
+	"bootcmd=run mmcboot\0"	\
+	CONFIG_EXTRA_ENV_BOOT_LOGO
 
 #endif /* __CONFIG_H__ */
