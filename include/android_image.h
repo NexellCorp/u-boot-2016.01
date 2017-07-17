@@ -16,6 +16,7 @@
 #define ANDR_BOOT_MAGIC_SIZE 8
 #define ANDR_BOOT_NAME_SIZE 16
 #define ANDR_BOOT_ARGS_SIZE 512
+#define ANDR_BOOT_EXTRA_ARGS_SIZE 1024
 
 struct andr_img_hdr {
 	char magic[ANDR_BOOT_MAGIC_SIZE];
@@ -38,7 +39,11 @@ struct andr_img_hdr {
 	char cmdline[ANDR_BOOT_ARGS_SIZE];
 
 	u32 id[8]; /* timestamp / checksum / sha1 / etc */
-};
+
+    /* Supplemental command line data; kept here to maintain
+     * binary compatibility with older versions of mkbootimg */
+    uint8_t extra_cmdline[ANDR_BOOT_EXTRA_ARGS_SIZE];
+} __attribute__((packed));
 
 /*
  * +-----------------+
