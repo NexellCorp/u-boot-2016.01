@@ -28,6 +28,7 @@ obj-$(CONFIG_DAVINCI_SPI) += davinci_spi.o
 obj-$(CONFIG_DESIGNWARE_SPI) += designware_spi.o
 obj-$(CONFIG_EP93XX_SPI) += ep93xx_spi.o
 obj-$(CONFIG_EXYNOS_SPI) += exynos_spi.o
+obj-$(CONFIG_S5P6818_SPI) += s5p6818_spi.o
 obj-$(CONFIG_FSL_DSPI) += fsl_dspi.o
 obj-$(CONFIG_FSL_ESPI) += fsl_espi.o
 obj-$(CONFIG_FSL_QSPI) += fsl_qspi.o
