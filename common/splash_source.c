@@ -58,20 +58,47 @@ static int splash_nand_read_raw(u32 bmp_load_addr, int offset, size_t read_size)
 }
 #endif
 
+#ifdef CONFIG_CMD_MMC
+static int splash_mmc_read_raw(u32 bmp_load_addr, int offset, size_t read_size)
+{
+	char command[256] = {0, };
+
+	int blk = offset/512;
+	int count = (read_size + 512 - 1) / 512;
+
+	sprintf(command, "mmc read 0x%x 0x%x 0x%x", bmp_load_addr, blk, count);
+	return run_command(command, 0);
+}
+#else
+static int splash_mmc_read_raw(u32 bmp_load_addr, int offset, size_t read_size)
+{
+	debug("%s: mmc support not available\n", __func__);
+	return -ENOSYS;
+}
+#endif
+
 static int splash_storage_read_raw(struct splash_location *location,
 			       u32 bmp_load_addr, size_t read_size)
 {
 	u32 offset;
+	char *offset_env;
 
 	if (!location)
 		return -EINVAL;
 
-	offset = location->offset;
+	offset_env = getenv("splashoffset");
+	if (offset_env)
+		offset = simple_strtoul(offset_env, 0, 16);
+	else
+		offset = location->offset;
+
 	switch (location->storage) {
 	case SPLASH_STORAGE_NAND:
 		return splash_nand_read_raw(bmp_load_addr, offset, read_size);
 	case SPLASH_STORAGE_SF:
 		return splash_sf_read_raw(bmp_load_addr, offset, read_size);
+	case SPLASH_STORAGE_MMC:
+		return splash_mmc_read_raw(bmp_load_addr, offset, read_size);
 	default:
 		printf("Unknown splash location\n");
 	}
@@ -284,9 +311,9 @@ int splash_source_load(struct splash_location *locations, uint size)
 	if (!splash_location)
 		return -EINVAL;
 
-	if (splash_location->flags & SPLASH_STORAGE_RAW)
+	if (splash_location->flags == SPLASH_STORAGE_RAW)
 		return splash_load_raw(splash_location, bmp_load_addr);
-	else if (splash_location->flags & SPLASH_STORAGE_FS)
+	else if (splash_location->flags == SPLASH_STORAGE_FS)
 		return splash_load_fs(splash_location, bmp_load_addr);
 
 	return -EINVAL;
