@@ -14,6 +14,9 @@
 		mmc1 = "/mmc1@c0068000";
 		mmc2 = "/mmc2@c0069000";
 		gmac = "/ethernet@c0060000";
+		spi0 = "/spi@c005b000";
+		spi1 = "/spi@c005c000";
+		spi2 = "/spi@c005f000";
 	};
 
 	mmc2:mmc@c0069000 {
@@ -77,6 +80,36 @@
 		reg = <0xC00A6000 0x1000>;
 		#address-cells = <1>;
 		#size-cells = <0>;
+		status = "disabled";
+	};
+
+	spi_0:spi@c005b000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,s5p6818-spi";
+		spi-max-frequency = <50000000>;
+		reg = <0xc005b000 0x100>;
+		id = <0>;
+		status = "disabled";
+	};
+
+	spi_1:spi@c005c000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,s5p6818-spi";
+		spi-max-frequency = <50000000>;
+		reg = <0xc005c000 0x30>;
+		id = <1>;
+		status = "disabled";
+	};
+
+	spi_2:spi@c005f000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,s5p6818-spi";
+		spi-max-frequency = <50000000>;
+		reg = <0xc005f000 0x30>;
+		id = <2>;
 		status = "disabled";
 	};
 
