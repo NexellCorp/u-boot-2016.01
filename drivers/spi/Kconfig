@@ -155,6 +155,13 @@ config ZYNQ_QSPI
 	  Zynq QSPI IP core. This IP is used to connect the flash in
 	  4-bit qspi, 8-bit dual stacked and shared 4-bit dual parallel.
 
+config S5P6818_SPI
+	bool "Nexell S5P6818 SPI driver"
+	help
+	  Enable the Nexell s5p6818 SPI driver. This driver can be used to
+	  access the SPI NOR flash on platforms embedding this Nexell
+	  IP core.
+
 endif # if DM_SPI
 
 config FSL_ESPI
