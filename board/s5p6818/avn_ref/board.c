@@ -49,12 +49,7 @@ static void board_backlight_disable(void)
 	nx_gpio_set_pad_function(gp, io, fn);
 	nx_gpio_set_output_value(gp, io, 1);
 	nx_gpio_set_output_enable(gp, io, 1);
-#endif
-}
 
-static void board_backlight_enable(void)
-{
-#ifdef CONFIG_PWM_NX
 	/*
 	 * set lcd enable
 	 */
@@ -69,7 +64,12 @@ static void board_backlight_enable(void)
 	nx_gpio_set_output_enable(gpio_c, 11, 1);
 	nx_gpio_set_output_enable(gpio_b, 25, 1);
 	nx_gpio_set_output_enable(gpio_b, 27, 1);
+#endif
+}
 
+static void board_backlight_enable(void)
+{
+#ifdef CONFIG_PWM_NX
 	/*
 	 * pwm backlight ON: HIGH, ON: LOW
 	 */
@@ -103,6 +103,19 @@ int board_late_init(void)
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
 	board_backlight_enable();
+
+#ifdef CONFIG_RECOVERY_BOOT
+#define ALIVE_SCRATCH1_READ_REGISTER	(0xc00108b4)
+#define ALIVE_SCRATCH1_RESET_REGISTER	(0xc00108ac)
+#define RECOVERY_SIGNATURE				(0x52455343)    /* (ASCII) : R.E.S.C */
+	printf("signature --> 0x%x\n", readl(ALIVE_SCRATCH1_READ_REGISTER));
+	if (readl(ALIVE_SCRATCH1_READ_REGISTER) == RECOVERY_SIGNATURE) {
+		printf("reboot recovery!!!!\n");
+		writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
+		setenv("bootcmd", "run recoveryboot");
+	}
+#endif
+
 	return 0;
 }
 #endif
@@ -116,12 +129,18 @@ struct splash_location splash_locations[] = {
 	.flags = SPLASH_STORAGE_FS,
 	.devpart = "0:1",
 	},
+	{
+	.name = "mmc",
+	.storage = SPLASH_STORAGE_MMC,
+	.flags = SPLASH_STORAGE_RAW,
+	.offset = CONFIG_SPLASH_MMC_OFFSET,
+	},
 };
 
 int splash_screen_prepare(void)
 {
 	int err = splash_source_load(splash_locations,
-				ARRAY_SIZE(splash_locations));
+					sizeof(splash_locations)/sizeof(struct splash_location));
 	if (!err) {
 		char addr[64];
 

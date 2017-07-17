@@ -276,8 +276,15 @@
 #define CONFIG_CMD_BMP
 #ifdef CONFIG_SPLASH_SCREEN
 #define CONFIG_SPLASH_SOURCE
+#define CONFIG_SPLASH_MMC_OFFSET	0x2e4200
 #endif
 #endif
+
+/*-----------------------------------------------------------------------
+ * Support Android Boot Image
+*/
+#define CONFIG_ANDROID_BOOT_IMAGE
+#define CONFIG_RECOVERY_BOOT
 
 /*-----------------------------------------------------------------------
  * ENV
@@ -288,10 +295,12 @@
 
 #define CONFIG_EXTRA_ENV_BOOT_LOGO				\
 	"splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0"	\
-	"splashfile=logo.bmp\0"					\
+	"splashfile=logo.bmp\0"				\
+	"splashsource=mmc_fs\0"				\
+	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
 	"fb_addr=\0"						\
 	"dtb_reserve="						\
-	"if test -n \"$fb_addr\"; then "			\
+	"if test -n \"$fb_addr\"; then "	\
 	"fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
 	"fdt resize;"						\
 	"fdt mk /reserved-memory display_reserved;"		\
@@ -316,8 +325,11 @@
 	"ext4load mmc 0:1 0x48000000 uInitrd;"
 
 #define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL				\
-	"booti 0x40008000 0x48000000 "				\
+	"booti 0x40080000 0x48000000 "				\
 	__stringify(CONFIG_KERNEL_DTB_ADDR)"\0"
+
+#define CONFIG_RECOVERY_BOOT_CMD	\
+	"recoveryboot=not supported\0"
 
 #define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_EXTRA_ENV_SETTINGS				\
@@ -328,6 +340,7 @@
 		CONFIG_EXTRA_ENV_RAMDISK_LOAD			\
 		CONFIG_EXTRA_ENV_DTB_LOAD			\
 		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL			\
+	CONFIG_RECOVERY_BOOT_CMD						\
 	"mmcboot=run boot_cmd_mmcboot\0"			\
 	"bootcmd=run mmcboot\0"					\
 	CONFIG_EXTRA_ENV_BOOT_LOGO
