@@ -22,7 +22,7 @@
  */
 
 #ifndef CONFIG_SYS_TEXT_BASE
-#define	CONFIG_SYS_TEXT_BASE			0x94C00000
+#define	CONFIG_SYS_TEXT_BASE			0x74C00000
 #endif
 /* init and run stack pointer */
 #define	CONFIG_SYS_INIT_SP_ADDR			CONFIG_SYS_TEXT_BASE
@@ -59,8 +59,8 @@
 #define CONFIG_SYS_SDRAM_BASE			SDRAM_BASE
 #define CONFIG_SYS_SDRAM_SIZE			SDRAM_SIZE
 #else
-#define	CONFIG_SYS_SDRAM_BASE			0x91000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x1f000000
+#define	CONFIG_SYS_SDRAM_BASE			0x71000000
+#define	CONFIG_SYS_SDRAM_SIZE			0x3E000000
 #endif
 
 /* dram 1 bank num */
@@ -385,6 +385,7 @@
 		"setexpr fdtaddr $sdram_base + $fdt_offs\0"		\
 	"gen_sdrecaddr="						\
 		"setexpr sdrecaddr $sdram_base + $sd_offset\0"	\
+	"initrd_high=0xFFFFFFFF\0"	\
 	"load_fdt="							\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
