@@ -276,6 +276,11 @@
 #endif
 #endif
 
+/*-----------------------------------------------------------------------
+ * Support Android Boot Image
+*/
+#define CONFIG_SUPPORT_RAW_INITRD
+#define CONFIG_RECOVERY_BOOT
 
 /*-----------------------------------------------------------------------
  * ENV
@@ -302,6 +307,9 @@
 			"fdt mk /reserved-memory display_reserved;"	\
 			"fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>;" \
 		"fi;\0"
+
+#define CONFIG_RECOVERY_BOOT_CMD	\
+	"recoveryboot=not supported\0"
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"fdt_high=0xffffffff\0"		\
@@ -336,6 +344,7 @@
 		"bootz $kerneladdr - $fdtaddr\0" \
 	"mmcboot=run boot_cmd_mmcboot\0"           \
 	"bootcmd=run mmcboot\0"	\
+	CONFIG_RECOVERY_BOOT_CMD \
 	CONFIG_EXTRA_ENV_BOOT_LOGO
 
 #endif /* __CONFIG_H__ */
