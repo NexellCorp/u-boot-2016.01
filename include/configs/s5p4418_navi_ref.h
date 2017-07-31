@@ -21,31 +21,31 @@
  *  System memory Configuration
  */
 
-#define	CONFIG_SYS_TEXT_BASE			0x43C00000
-#define	CONFIG_SYS_INIT_SP_ADDR			CONFIG_SYS_TEXT_BASE
-#define CONFIG_SYS_MONITOR_BASE                 CONFIG_SYS_TEXT_BASE
+#define	CONFIG_SYS_TEXT_BASE		    0x43C00000
+#define	CONFIG_SYS_INIT_SP_ADDR		    CONFIG_SYS_TEXT_BASE
+#define CONFIG_SYS_MONITOR_BASE             CONFIG_SYS_TEXT_BASE
 
-#define	CONFIG_SYS_SDRAM_BASE			0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x70000000
+#define	CONFIG_SYS_SDRAM_BASE		    0x40000000
+#define	CONFIG_SYS_SDRAM_SIZE		    0x70000000
 
-#define CONFIG_SYS_MALLOC_LEN                   (32*1024*1024)
+#define CONFIG_SYS_MALLOC_LEN               (32*1024*1024)
 
 /* fastboot buffer start, size */
-#define CONFIG_FASTBOOT_BUF_ADDR		CONFIG_SYS_SDRAM_BASE
-#define CONFIG_FASTBOOT_BUF_SIZE		0x38000000
+#define CONFIG_FASTBOOT_BUF_ADDR	    CONFIG_SYS_SDRAM_BASE
+#define CONFIG_FASTBOOT_BUF_SIZE	    0x38000000
 /* align buffer is used by ext4_mmc_write for unaligned data */
-#define CONFIG_ALIGNBUFFER_SIZE			0x02000000
+#define CONFIG_ALIGNBUFFER_SIZE		    0x02000000
 
 /* when CONFIG_LCD */
-#define CONFIG_FB_ADDR				(CONFIG_FASTBOOT_BUF_ADDR + \
-						 CONFIG_FASTBOOT_BUF_SIZE + \
-						 CONFIG_ALIGNBUFFER_SIZE)
+#define CONFIG_FB_ADDR			    (CONFIG_FASTBOOT_BUF_ADDR + \
+					     CONFIG_FASTBOOT_BUF_SIZE + \
+					     CONFIG_ALIGNBUFFER_SIZE)
 
 /* dram 1 bank num */
-#define CONFIG_NR_DRAM_BANKS			1
+#define CONFIG_NR_DRAM_BANKS		    1
 
 /* kernel load address */
-#define CONFIG_SYS_LOAD_ADDR			0x48000000
+#define CONFIG_SYS_LOAD_ADDR		    0x48000000
 
 /*-----------------------------------------------------------------------
  *  High Level System Configuration
@@ -54,12 +54,12 @@
 /* Not used: not need IRQ/FIQ stuff	*/
 #undef  CONFIG_USE_IRQ
 /* decrementer freq: 1ms ticks */
-#define CONFIG_SYS_HZ				1000
+#define CONFIG_SYS_HZ			    1000
 
 /* memtest works on */
-#define CONFIG_SYS_MEMTEST_START		CONFIG_SYS_SDRAM_BASE
-#define CONFIG_SYS_MEMTEST_END			((ulong)CONFIG_SYS_SDRAM_BASE \
-						 + (ulong)CONFIG_SYS_SDRAM_SIZE)
+#define CONFIG_SYS_MEMTEST_START	    CONFIG_SYS_SDRAM_BASE
+#define CONFIG_SYS_MEMTEST_END		    ((ulong)CONFIG_SYS_SDRAM_BASE \
+					     + (ulong)CONFIG_SYS_SDRAM_SIZE)
 
 /*-----------------------------------------------------------------------
  *  System initialize options (board_init_f)
@@ -232,7 +232,6 @@
 /*-----------------------------------------------------------------------
  * Fastboot and USB OTG
  */
-
 #define CONFIG_USB_FUNCTION_FASTBOOT
 #define CONFIG_CMD_FASTBOOT
 #define CONFIG_FASTBOOT_FLASH
@@ -267,6 +266,22 @@
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
+#define CONFIG_VIDEO_LOGO
+#define CONFIG_SPLASH_SCREEN
+
+#ifdef CONFIG_VIDEO_LOGO
+#define CONFIG_CMD_BMP
+#ifdef CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SOURCE
+#define CONFIG_SPLASH_MMC_OFFSET	0x2e4200
+#endif
+#endif
+
+/*-----------------------------------------------------------------------
+ * Support Android Boot Image
+*/
+#define CONFIG_SUPPORT_RAW_INITRD
+#define CONFIG_RECOVERY_BOOT
 
 /*-----------------------------------------------------------------------
  * ENV
@@ -274,8 +289,28 @@
 #define CONFIG_ROOT_DEV		0
 #define CONFIG_BOOT_PART	1
 
+#define	CONFIG_KERNEL_DTB_ADDR	0x49000000
+#define	CONFIG_BMP_LOAD_ADDR	0x80000000
+
 /* need to relocate env address */
 #define CONFIG_SYS_EXTRA_ENV_RELOC
+
+#define CONFIG_EXTRA_ENV_BOOT_LOGO				\
+	"splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0"	\
+	"splashfile=logo.bmp\0"				\
+	"splashsource=mmc_fs\0"				\
+	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
+	"fb_addr=\0"						\
+	"dtb_reserve="						\
+	"if test -n \"$fb_addr\"; then "	\
+	"fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
+	"fdt resize;"						\
+	"fdt mk /reserved-memory display_reserved;"		\
+	"fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>;" \
+	"fi;\0"
+
+#define CONFIG_RECOVERY_BOOT_CMD	\
+	"recoveryboot=not supported\0"
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"fdt_high=0xffffffff\0"		\
@@ -309,6 +344,8 @@
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
 		"bootz $kerneladdr - $fdtaddr\0" \
 	"mmcboot=run boot_cmd_mmcboot\0"           \
-	"bootcmd=run mmcboot\0"
+	"bootcmd=run mmcboot\0" \
+	CONFIG_RECOVERY_BOOT_CMD \
+	CONFIG_EXTRA_ENV_BOOT_LOGO
 
 #endif /* __CONFIG_H__ */
