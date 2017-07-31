@@ -21,31 +21,31 @@
  *  System memory Configuration
  */
 
-#define	CONFIG_SYS_TEXT_BASE			0x43C00000
-#define	CONFIG_SYS_INIT_SP_ADDR			CONFIG_SYS_TEXT_BASE
-#define CONFIG_SYS_MONITOR_BASE                 CONFIG_SYS_TEXT_BASE
+#define	CONFIG_SYS_TEXT_BASE		0x43C00000
+#define	CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_TEXT_BASE
+#define CONFIG_SYS_MONITOR_BASE		CONFIG_SYS_TEXT_BASE
 
-#define CONFIG_SYS_SDRAM_BASE                   0x40000000
-#define CONFIG_SYS_SDRAM_SIZE                   0x70000000
+#define CONFIG_SYS_SDRAM_BASE           0x40000000
+#define CONFIG_SYS_SDRAM_SIZE           0x70000000
 
-#define CONFIG_SYS_MALLOC_LEN                   (32*1024*1024)
+#define CONFIG_SYS_MALLOC_LEN           (32*1024*1024)
 
 /* fastboot buffer start, size */
-#define CONFIG_FASTBOOT_BUF_ADDR                CONFIG_SYS_SDRAM_BASE
-#define CONFIG_FASTBOOT_BUF_SIZE                0x38000000
+#define CONFIG_FASTBOOT_BUF_ADDR        CONFIG_SYS_SDRAM_BASE
+#define CONFIG_FASTBOOT_BUF_SIZE        0x38000000
 /* align buffer is used by ext4_mmc_write for unaligned data */
-#define CONFIG_ALIGNBUFFER_SIZE                 0x02000000
+#define CONFIG_ALIGNBUFFER_SIZE         0x02000000
 
 /* when CONFIG_LCD */
-#define CONFIG_FB_ADDR				(CONFIG_FASTBOOT_BUF_ADDR + \
-						 CONFIG_FASTBOOT_BUF_SIZE + \
-						 CONFIG_ALIGNBUFFER_SIZE)
+#define CONFIG_FB_ADDR			(CONFIG_FASTBOOT_BUF_ADDR + \
+					 CONFIG_FASTBOOT_BUF_SIZE + \
+					 CONFIG_ALIGNBUFFER_SIZE)
 
 /* dram 1 bank num */
-#define CONFIG_NR_DRAM_BANKS			1
+#define CONFIG_NR_DRAM_BANKS		1
 
 /* kernel load address */
-#define CONFIG_SYS_LOAD_ADDR			0x48000000
+#define CONFIG_SYS_LOAD_ADDR		0x48000000
 
 /*-----------------------------------------------------------------------
  *  High Level System Configuration
@@ -54,17 +54,12 @@
 /* Not used: not need IRQ/FIQ stuff	*/
 #undef  CONFIG_USE_IRQ
 /* decrementer freq: 1ms ticks */
-#define CONFIG_SYS_HZ				1000
-
-/* board_init_f */
-#define	CONFIG_SYS_SDRAM_BASE			0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x70000000
-
+#define CONFIG_SYS_HZ			1000
 
 /* memtest works on */
-#define CONFIG_SYS_MEMTEST_START		CONFIG_SYS_SDRAM_BASE
-#define CONFIG_SYS_MEMTEST_END			((ulong)CONFIG_SYS_SDRAM_BASE \
-						 + (ulong)CONFIG_SYS_SDRAM_SIZE)
+#define CONFIG_SYS_MEMTEST_START	CONFIG_SYS_SDRAM_BASE
+#define CONFIG_SYS_MEMTEST_END		((ulong)CONFIG_SYS_SDRAM_BASE \
+					+ (ulong)CONFIG_SYS_SDRAM_SIZE)
 
 /*-----------------------------------------------------------------------
  *  System initialize options (board_init_f)
@@ -93,7 +88,7 @@
  *	U-Boot Environments
  */
 /* refer to common/env_common.c	*/
-#define CONFIG_BOOTDELAY			0
+#define CONFIG_BOOTDELAY		0
 #define CONFIG_ZERO_BOOTDELAY_CHECK
 /*-----------------------------------------------------------------------
  * Miscellaneous configurable options
@@ -101,25 +96,25 @@
 #ifdef CONFIG_SYS_PROMPT
 #undef CONFIG_SYS_PROMPT
 /* Monitor Command Prompt   */
-#define CONFIG_SYS_PROMPT			"s5p4418_avn_ref# "
+#define CONFIG_SYS_PROMPT		"s5p4418_avn_ref# "
 #endif
 /* undef to save memory	   */
 #define CONFIG_SYS_LONGHELP
 /* Console I/O Buffer Size  */
-#define CONFIG_SYS_CBSIZE			1024
+#define CONFIG_SYS_CBSIZE		1024
 /* Print Buffer Size */
-#define CONFIG_SYS_PBSIZE			(CONFIG_SYS_CBSIZE + \
-						 sizeof(CONFIG_SYS_PROMPT)+16)
+#define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
+					sizeof(CONFIG_SYS_PROMPT)+16)
 /* max number of command args   */
-#define CONFIG_SYS_MAXARGS			16
+#define CONFIG_SYS_MAXARGS		16
 /* Boot Argument Buffer Size    */
-#define CONFIG_SYS_BARGSIZE			CONFIG_SYS_CBSIZE
+#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
 
 /*-----------------------------------------------------------------------
  * allow to overwrite serial and ethaddr
  */
 #define CONFIG_ENV_OVERWRITE
-#define CONFIG_SYS_HUSH_PARSER			/* use "hush" command parser */
+#define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser */
 #ifdef CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #endif
@@ -127,9 +122,9 @@
 /*-----------------------------------------------------------------------
  * Etc Command definition
  */
-#define	CONFIG_CMD_IMI				/* image info	*/
-#define CONFIG_CMDLINE_EDITING			/* add command line history */
-#define	CONFIG_CMDLINE_TAG			/* use bootargs commandline */
+#define	CONFIG_CMD_IMI			/* image info	*/
+#define CONFIG_CMDLINE_EDITING		/* add command line history */
+#define	CONFIG_CMDLINE_TAG		/* use bootargs commandline */
 #undef	CONFIG_BOOTM_NETBSD
 #undef	CONFIG_BOOTM_RTEMS
 
@@ -137,14 +132,14 @@
  * serial console configuration
  */
 #define CONFIG_PL011_SERIAL
-#define CONFIG_CONS_INDEX			3
-#define CONFIG_PL011_CLOCK			50000000
-#define CONFIG_PL01x_PORTS			{(void *)PHY_BASEADDR_UART0, \
-						(void *)PHY_BASEADDR_UART1, \
-						(void *)PHY_BASEADDR_UART2, \
-						(void *)PHY_BASEADDR_UART3}
+#define CONFIG_CONS_INDEX		3
+#define CONFIG_PL011_CLOCK		50000000
+#define CONFIG_PL01x_PORTS		{(void *)PHY_BASEADDR_UART0, \
+					(void *)PHY_BASEADDR_UART1, \
+					(void *)PHY_BASEADDR_UART2, \
+					(void *)PHY_BASEADDR_UART3}
 
-#define CONFIG_BAUDRATE				115200
+#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE \
 		{ 9600, 19200, 38400, 57600, 115200 }
 #define CONFIG_PL011_SERIAL_FLUSH_ON_INIT
@@ -158,13 +153,13 @@
  * PLL
  */
 
-#define CONFIG_SYS_PLLFIN			24000000UL
+#define CONFIG_SYS_PLLFIN		24000000UL
 
 /*-----------------------------------------------------------------------
  * Timer
  */
 
-#define CONFIG_TIMER_SYS_TICK_CH		0
+#define CONFIG_TIMER_SYS_TICK_CH	0
 
 /*-----------------------------------------------------------------------
  * PWM
@@ -174,16 +169,15 @@
 /*-----------------------------------------------------------------------
  * BACKLIGHT
  */
-#define CONFIG_BACKLIGHT_CH			0
-#define CONFIG_BACKLIGHT_DIV			0
-#define CONFIG_BACKLIGHT_INV			0
-#define CONFIG_BACKLIGHT_DUTY			50
-#define CONFIG_BACKLIGHT_HZ			1000
+#define CONFIG_BACKLIGHT_CH		0
+#define CONFIG_BACKLIGHT_DIV		0
+#define CONFIG_BACKLIGHT_INV		0
+#define CONFIG_BACKLIGHT_DUTY		50
+#define CONFIG_BACKLIGHT_HZ		1000
 
 /*-----------------------------------------------------------------------
  * SD/MMC
  */
-
 #define CONFIG_GENERIC_MMC
 #define CONFIG_MMC
 #define CONFIG_DWMMC
@@ -240,7 +234,6 @@
 /*-----------------------------------------------------------------------
  * Fastboot and USB OTG
  */
-
 #define CONFIG_USB_FUNCTION_FASTBOOT
 #define CONFIG_CMD_FASTBOOT
 #define CONFIG_FASTBOOT_FLASH
@@ -264,7 +257,6 @@
 /*-----------------------------------------------------------------------
  * OF_CONTROL
  */
-
 #define CONFIG_FIT_BEST_MATCH
 #define CONFIG_OF_LIBFDT
 
@@ -276,22 +268,60 @@
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
+#define CONFIG_VIDEO_LOGO
+#define CONFIG_SPLASH_SCREEN
+
+#ifdef CONFIG_VIDEO_LOGO
+#define CONFIG_CMD_BMP
+#ifdef CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SOURCE
+#define CONFIG_SPLASH_MMC_OFFSET	0x2e4200
+#endif
+#endif
+
+/*-----------------------------------------------------------------------
+ * Support Android Boot Image
+*/
+#define CONFIG_SUPPORT_RAW_INITRD
+#define CONFIG_RECOVERY_BOOT
 
 /*-----------------------------------------------------------------------
  * ENV
  */
+#define	CONFIG_KERNEL_DTB_ADDR	0x49000000
+#define	CONFIG_BMP_LOAD_ADDR	0x80000000
+
 /* need to relocate env address */
 #define CONFIG_SYS_EXTRA_ENV_RELOC
 
+#define CONFIG_EXTRA_ENV_BOOT_LOGO				\
+	"splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0"	\
+	"splashfile=logo.bmp\0"				\
+	"splashsource=mmc_fs\0"				\
+	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
+	"fb_addr=\0"						\
+	"dtb_reserve="						\
+	"if test -n \"$fb_addr\"; then "	\
+	"fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
+	"fdt resize;"						\
+	"fdt mk /reserved-memory display_reserved;"		\
+	"fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>;" \
+	"fi;\0"
+
+#define CONFIG_RECOVERY_BOOT_CMD	\
+	"recoveryboot=not supported\0"
+
 #define CONFIG_EXTRA_ENV_SETTINGS	\
-			"initrd_high=0xffffffff\0"	\
-			"fdt_high=0xffffffff\0" \
-                        "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
-                                    "printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
-                        "boot_cmd_mmcboot="   \
-                                   "ext4load mmc 0:1 0x40008000 zImage;ext4load mmc 0:1 49000000 s5p4418-avn_ref-rev00.dtb;" \
-                                   "bootz 0x40008000 - 49000000\0" \
-                        "mmcboot=run boot_cmd_mmcboot\0"           \
-                        "bootcmd=run mmcboot\0"
+	"initrd_high=0xffffffff\0"	\
+	"fdt_high=0xffffffff\0" \
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+		    "printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
+	"boot_cmd_mmcboot="   \
+		    "ext4load mmc 0:1 0x40008000 zImage;ext4load mmc 0:1 49000000 s5p4418-avn_ref-rev00.dtb;" \
+		    "bootz 0x40008000 - 49000000\0" \
+	"mmcboot=run boot_cmd_mmcboot\0"           \
+	"bootcmd=run mmcboot\0" \
+	CONFIG_RECOVERY_BOOT_CMD \
+	CONFIG_EXTRA_ENV_BOOT_LOGO
 
 #endif /* __CONFIG_H__ */
