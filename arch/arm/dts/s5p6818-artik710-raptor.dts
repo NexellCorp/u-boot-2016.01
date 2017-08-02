@@ -209,3 +209,6 @@
 	}; /* voltage-regulators */
 };
 
+&spi_2 {
+	status = "okay";
+};
