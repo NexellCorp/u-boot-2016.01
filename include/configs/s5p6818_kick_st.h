@@ -270,20 +270,52 @@
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
 /*-----------------------------------------------------------------------
+ * Support Android Boot Image
+*/
+#define CONFIG_ANDROID_BOOT_IMAGE
+
+/*-----------------------------------------------------------------------
  * ENV
  */
+#define CONFIG_ROOT_DEV		0
+#define CONFIG_BOOT_PART	1
+
 /* need to relocate env address */
 #define CONFIG_SYS_EXTRA_ENV_RELOC
-#define CONFIG_EXTRA_ENV_SETTINGS					\
-	"fdt_high=0xffffffffffffffff\0"					\
+#define CONFIG_EXTRA_ENV_SETTINGS	\
+	"fdt_high=0xffffffffffffffff\0"	\
+	"initrd_high=0xffffffff\0"	\
+	"kerneladdr=0x40080000\0"	\
+	"kernel_file=Image\0"		\
+	"fdtaddr=0x49000000\0"		\
+	"load_fdt="			\
+		"if test -z \"$fdtfile\"; then "                        \
+		"loop=$board_rev; "					\
+		"number=$board_rev: "					\
+		"success=0; "						\
+		"until test $loop -eq 0 || test $success -ne 0; do "	\
+			"if test $loop -lt 10; then "			\
+				"number=0$loop; "			\
+			"else number=$loop; "				\
+			"fi; "						\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-kick_st-rev${number}.dtb && setexpr success 1; " \
+			"setexpr loop $loop - 1; "			\
+			"done; "					\
+		"if test $success -eq 0; then "				\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-kick_st-rev00.dtb;"	\
+		"fi; "							\
+		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
+		"fi; \0"						\
+	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
+	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
 	"bootargs=console=ttySAC5,115200n8 "				\
 		"root=/dev/mmcblk0p3 rw rootfstype=ext4 rootwait "	\
 		"loglevel=4 quiet printk.time=1 consoleblank=0 "	\
 		"systemd.log_level=info systemd.show_status=false\0"	\
-	"boot_cmd_mmcboot=ext4load mmc 0:1 0x40008000 Image;"		\
-		"ext4load mmc 0:1 0x49000000 s5p6818-kick-st.dtb;"	\
-		"booti 0x40008000 - 0x49000000\0"			\
-	"mmcboot=run boot_cmd_mmcboot\0"				\
+	"boot_cmd_mmcboot="   \
+		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
+		"booti $kerneladdr - $fdtaddr\0"	\
+	"mmcboot=run boot_cmd_mmcboot\0"	\
 	"bootcmd=run mmcboot\0"
 
 #endif /* __CONFIG_H__ */
