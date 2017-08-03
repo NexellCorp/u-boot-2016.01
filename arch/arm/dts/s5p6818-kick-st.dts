@@ -175,4 +175,15 @@
 			regulator-boot-on = <1>;
 		};
 	}; /* voltage-regulators */
+
+	board_rev:rev@0 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = < &gpio_c 17 0 >,
+		      < &gpio_c 15 0 >,
+		      < &gpio_c 16 0 >;
+		maps = < 7 0 >;
+		compatible = "nexell,board_rev";
+	};
+
 };
