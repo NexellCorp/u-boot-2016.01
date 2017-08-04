@@ -343,7 +343,14 @@
 	"boot_cmd_mmcboot="   \
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
 		"bootz $kerneladdr - $fdtaddr\0" \
-	"mmcboot=run boot_cmd_mmcboot\0"           \
+	"mmcboot=run boot_cmd_mmcboot \0"           \
+        "boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
+                           "ext4load mmc 0:1 0x48000000 uInitrd; " \
+                           "ext4load mmc 0:1 0x49000000 s5p4418-navi_ref-rev${number}.dtb; " \
+                           "bootz 0x40008000 0x48000000 0x49000000\0" \
+        "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
+                  "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
+                  "run boot_cmd_ramfsboot \0" \
 	"bootcmd=run mmcboot\0" \
 	CONFIG_RECOVERY_BOOT_CMD \
 	CONFIG_EXTRA_ENV_BOOT_LOGO
