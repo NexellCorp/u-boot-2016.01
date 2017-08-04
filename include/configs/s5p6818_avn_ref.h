@@ -313,8 +313,13 @@
 	"loglevel=4 quiet printk.time=1 consoleblank=0 "	\
 	"systemd.log_level=info systemd.show_status=false\0"
 
+#define CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK			\
+        "setenv bootargs console=ttySAC3,115200n8 " \
+        "root=/dev/ram0 loglevel=4 quiet printk.time=1 consoleblank=0 " \
+        "nx_drm.fb_buffers=3; \0"
+
 #define CONFIG_EXTRA_ENV_KERNEL_LOAD				\
-	"ext4load mmc 0:1 0x40008000 Image;"
+	"ext4load mmc 0:1 0x40080000 Image;"
 
 #define CONFIG_EXTRA_ENV_DTB_LOAD	\
 	"ext4load mmc 0:1 " __stringify(CONFIG_KERNEL_DTB_ADDR)	\
@@ -325,7 +330,11 @@
 	"ext4load mmc 0:1 0x48000000 uInitrd;"
 
 #define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL				\
-	"booti 0x40080000 0x48000000 "				\
+	"booti 0x40080000 - 0x48000000 "		    	\
+	__stringify(CONFIG_KERNEL_DTB_ADDR)"\0"
+
+#define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL_FOR_INITRAMFS		\
+	"booti 0x40080000 0x48000000 "			  	\
 	__stringify(CONFIG_KERNEL_DTB_ADDR)"\0"
 
 #define CONFIG_RECOVERY_BOOT_CMD	\
@@ -337,12 +346,19 @@
 	CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
 	"boot_cmd_mmcboot="					\
 		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
-		CONFIG_EXTRA_ENV_RAMDISK_LOAD			\
 		CONFIG_EXTRA_ENV_DTB_LOAD			\
 		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL			\
-	CONFIG_RECOVERY_BOOT_CMD						\
+	CONFIG_RECOVERY_BOOT_CMD		    		\
 	"mmcboot=run boot_cmd_mmcboot\0"			\
 	"bootcmd=run mmcboot\0"					\
-	CONFIG_EXTRA_ENV_BOOT_LOGO
+	CONFIG_EXTRA_ENV_BOOT_LOGO				\
+        "boot_cmd_ramfsboot="					\
+		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
+		CONFIG_EXTRA_ENV_RAMDISK_LOAD			\
+		CONFIG_EXTRA_ENV_DTB_LOAD			\
+		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL_FOR_INITRAMFS	\
+        "ramfsboot=" \
+	        CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK		\
+                "run boot_cmd_ramfsboot \0"
 
 #endif /* __CONFIG_H__ */
