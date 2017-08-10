@@ -318,4 +318,11 @@
 	"mmcboot=run boot_cmd_mmcboot\0"	\
 	"bootcmd=run mmcboot\0"
 
+
+/*-----------------------------------------------------------------------
+ * PMIC
+ */
+#define CONFIG_SW_UBC_DETECT
+/* #define CONFIG_PMIC_REG_DUMP */
+
 #endif /* __CONFIG_H__ */
