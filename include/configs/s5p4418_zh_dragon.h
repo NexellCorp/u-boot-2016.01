@@ -347,4 +347,10 @@
 	CONFIG_RECOVERY_BOOT_CMD \
 	CONFIG_EXTRA_ENV_BOOT_LOGO
 
+/*-----------------------------------------------------------------------
+ * PMIC
+ */
+#define CONFIG_SW_UBC_DETECT
+/* #define CONFIG_PMIC_REG_DUMP */
+
 #endif /* __CONFIG_H__ */
