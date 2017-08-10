@@ -984,6 +984,7 @@ struct sec_voltage_desc {
 struct nxe2000_para {
 	enum nxe2000_regnum regnum;
 	u8 vol_addr;
+	u8 slp_vol_addr;
 	u8 vol_bitpos;
 	u8 vol_bitmask;
 	u8 reg_enaddr;
@@ -993,6 +994,11 @@ struct nxe2000_para {
 
 struct dm_nxe2000_platdata {
 	int off_press_time;
+
+	int chg_usb_vcontmask;
+	int chg_adp_vcontmask;
+	int chg_vbus_buck_ths;
+	int chg_vadp_buck_ths;
 
 	int vsys_vol;
 	int vsys_over_vol;
@@ -1053,8 +1059,52 @@ struct dm_nxe2000_ldo_platdata {
 	int on;
 };
 
+struct dm_nxe2000_chg_platdata {
+	unsigned int version;
+	unsigned int state_of_chrg;
+	unsigned int capacity;
+	unsigned int voltage_uV;
+	unsigned int state;
+
+	int limit_adp_amps;
+	int limit_usb_amps;
+	int limit_usbdata_amps;
+
+	int chg_adp_amps;
+	int chg_usb_amps;
+	int current_complete;
+
+	int cutoff_vol;
+	int lowbat_battery_vol;
+	int lowbat_adp_vol;
+	int lowbat_usb_vol;
+	int lowbat_usbdata_vol;
+
+	int priority;
+	int complete_dis;
+	int nobat_ovlim_en;
+	int otg_boost;
+	int suspend;
+	int jeitaen;
+	int usb_en;
+	int adp_en;
+
+	int rapid_ttim_80;
+	int rapid_ctime;
+	int rapid_rtime;
+
+	int power_on_vol;
+	int vbatov_set;
+	int vweak;
+	int vdead;
+	int vshort;
+
+	int vfchg;
+};
+
 /* Drivers name */
 #define NXE2000_BUCK_DRIVER "nxe2000_buck"
 #define NXE2000_LDO_DRIVER "nxe2000_ldo"
+#define NXE2000_CHG_DRIVER "nxe2000_chg"
 
 #endif /* __NXE2000_H_ */

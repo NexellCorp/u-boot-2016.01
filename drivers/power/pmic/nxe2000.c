@@ -23,9 +23,14 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-static const struct pmic_child_info pmic_children_info[] = {
+static const struct pmic_child_info pmic_reg_info[] = {
 	{ .prefix = "BUCK", .driver = NXE2000_BUCK_DRIVER },
 	{ .prefix = "LDO", .driver = NXE2000_LDO_DRIVER },
+	{ },
+};
+
+static const struct pmic_child_info pmic_chg_info[] = {
+	{ .prefix = "CHG", .driver = NXE2000_CHG_DRIVER },
 	{ },
 };
 
@@ -154,6 +159,12 @@ static int nxe2000_param_setup(struct udevice *dev, uint8_t *cache)
 		| (0 << NXE2000_POS_CHGCTL1_VUSBCHGEN)
 		| (0 << NXE2000_POS_CHGCTL1_VADPCHGEN));
 
+	cache[NXE2000_REG_CHGCTL2] =
+	((pdata->chg_usb_vcontmask << NXE2000_POS_CHGCTL2_USB_VCONTMASK)
+	| (pdata->chg_adp_vcontmask << NXE2000_POS_CHGCTL2_ADP_VCONTMASK)
+	| (pdata->chg_vbus_buck_ths << NXE2000_POS_CHGCTL2_VUSBBUCK_VTH)
+	| (pdata->chg_vadp_buck_ths << NXE2000_POS_CHGCTL2_VADPBUCK_VTH));
+
 	cache[NXE2000_REG_VSYSSET] =
 		((pdata->vsys_vol << NXE2000_POS_VSYSSET_VSYSSET)
 		| (pdata->vsys_over_vol << NXE2000_POS_VSYSSET_VSYSOVSET));
@@ -197,47 +208,73 @@ static int nxe2000_device_setup(struct udevice *dev, uint8_t *cache)
 		, &cache[NXE2000_REG_CHGCTL1], 1);
 
 	if (
+		(pdata->chg_usb_vcontmask != -ENODATA) &&
+		(pdata->chg_adp_vcontmask != -ENODATA) &&
+		(pdata->chg_vbus_buck_ths != -ENODATA) &&
+		(pdata->chg_vadp_buck_ths != -ENODATA))
+		dm_i2c_write(dev, NXE2000_REG_CHGCTL2
+			, &cache[NXE2000_REG_CHGCTL2], 1);
+
+	if (
 		(pdata->vsys_vol != -ENODATA) &&
-		(pdata->vsys_over_vol != -ENODATA)
-		)
+		(pdata->vsys_over_vol != -ENODATA))
 		dm_i2c_write(dev, NXE2000_REG_VSYSSET
 			, &cache[NXE2000_REG_VSYSSET], 1);
 
 	if (
-		(pdata->die_return_temp != ENODATA) &&
-		(pdata->die_error_temp != ENODATA) &&
-		(pdata->die_shutdown_temp != ENODATA))
+		(pdata->die_return_temp != -ENODATA) &&
+		(pdata->die_error_temp != -ENODATA) &&
+		(pdata->die_shutdown_temp != -ENODATA))
 		dm_i2c_write(dev, NXE2000_REG_DIESET, &cache[NXE2000_REG_DIESET]
 			, 1);
 
 	if (
-		(pdata->repcnt_off_reseto != ENODATA) &&
-		(pdata->repcnt_repwrtim != ENODATA) &&
-		(pdata->repcnt_repwron != ENODATA))
+		(pdata->repcnt_off_reseto != -ENODATA) &&
+		(pdata->repcnt_repwrtim != -ENODATA) &&
+		(pdata->repcnt_repwron != -ENODATA))
 		dm_i2c_write(dev, NXE2000_REG_REPCNT, &cache[NXE2000_REG_REPCNT]
 			, 1);
 
 	if (
-		(pdata->wdog_slpen != ENODATA) &&
-		(pdata->wdog_en != ENODATA) &&
-		(pdata->wdog_tim != ENODATA))
+		(pdata->wdog_slpen != -ENODATA) &&
+		(pdata->wdog_en != -ENODATA) &&
+		(pdata->wdog_tim != -ENODATA))
 		dm_i2c_write(dev, NXE2000_REG_WATCHDOG
 			, &cache[NXE2000_REG_WATCHDOG], 1);
 
 	if (
-		(pdata->pwrien_wdog != ENODATA) &&
-		(pdata->pwrien_noe_off != ENODATA) &&
-		(pdata->pwrien_pwron_off != ENODATA) &&
-		(pdata->pwrien_preot != ENODATA) &&
-		(pdata->pwrien_prvindt != ENODATA) &&
-		(pdata->pwrien_extin != ENODATA) &&
-		(pdata->pwrien_pwron != ENODATA))
+		(pdata->pwrien_wdog != -ENODATA) &&
+		(pdata->pwrien_noe_off != -ENODATA) &&
+		(pdata->pwrien_pwron_off != -ENODATA) &&
+		(pdata->pwrien_preot != -ENODATA) &&
+		(pdata->pwrien_prvindt != -ENODATA) &&
+		(pdata->pwrien_extin != -ENODATA) &&
+		(pdata->pwrien_pwron != -ENODATA))
 		dm_i2c_write(dev, NXE2000_REG_PWRIREN
 			, &cache[NXE2000_REG_PWRIREN], 1);
 
 	return 0;
 }
 
+static int nxe2000_probe(struct udevice *dev)
+{
+	uint8_t value = 0x0;
+	uint8_t cache[256] = {0x0,};
+
+	dm_i2c_write(dev, NXE2000_REG_BANKSEL, &value, 1);
+
+#if defined(CONFIG_PMIC_REG_DUMP)
+	nxe2000_reg_dump(dev, "PMIC Register Dump");
+#endif
+
+	nxe2000_param_setup(dev, cache);
+	nxe2000_device_setup(dev, cache);
+
+#if defined(CONFIG_PMIC_REG_DUMP)
+	nxe2000_reg_dump(dev, "PMIC Setup Register Dump");
+#endif
+	return 0;
+}
 
 static int nxe2000_ofdata_to_platdata(struct udevice *dev)
 {
@@ -250,6 +287,15 @@ static int nxe2000_ofdata_to_platdata(struct udevice *dev)
 
 	pdata->off_press_time = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,off_press_time", -ENODATA);
+
+	pdata->chg_usb_vcontmask = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,chg_usb_vcontmask", -ENODATA);
+	pdata->chg_adp_vcontmask = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,chg_adp_vcontmask", -ENODATA);
+	pdata->chg_vbus_buck_ths = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,chg_vbus_buck_ths", -ENODATA);
+	pdata->chg_vadp_buck_ths = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,chg_vadp_buck_ths", -ENODATA);
 
 	pdata->vsys_vol = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,vsys_vol", -ENODATA);
@@ -317,29 +363,10 @@ static int nxe2000_ofdata_to_platdata(struct udevice *dev)
 	return 0;
 }
 
-static int nxe2000_probe(struct udevice *dev)
-{
-	uint8_t value = 0x0;
-	uint8_t cache[256] = {0x0,};
-
-	dm_i2c_write(dev, NXE2000_REG_BANKSEL, &value, 1);
-
-#if defined(CONFIG_PMIC_REG_DUMP)
-	nxe2000_reg_dump(dev, "PMIC Register Dump");
-#endif
-
-	nxe2000_param_setup(dev, cache);
-	nxe2000_device_setup(dev, cache);
-
-#if defined(CONFIG_PMIC_REG_DUMP)
-	nxe2000_reg_dump(dev, "PMIC Setup Register Dump");
-#endif
-	return 0;
-}
-
 static int nxe2000_bind(struct udevice *dev)
 {
-	int regulators_node;
+	int reg_node = 0;
+	int chg_node = 0;
 	const void *blob = gd->fdt_blob;
 	int children;
 
@@ -354,24 +381,33 @@ static int nxe2000_bind(struct udevice *dev)
 #endif
 	debug("%s: dev->name:%s\n", __func__, dev->name);
 
-	if (!strncmp(dev->name, "nxe2000", 7))
-		regulators_node = fdt_subnode_offset(blob,
-				fdt_path_offset(blob, "/"),
+	if (!strncmp(dev->name, "nxe2000", 7)) {
+		reg_node = fdt_subnode_offset(blob, fdt_path_offset(blob, "/"),
 				"voltage-regulators");
-	else
-		regulators_node = fdt_subnode_offset(blob, dev->of_offset,
+		chg_node = fdt_subnode_offset(blob, fdt_path_offset(blob, "/"),
+				"init-charger");
+	} else {
+		reg_node = fdt_subnode_offset(blob, dev->of_offset,
 				"voltage-regulators");
-
-	if (regulators_node <= 0) {
-		printf("%s: regulators subnode not found!\n", __func__);
-		return 0;
 	}
 
-	debug("%s: found regulators subnode\n", __func__);
+	if (reg_node > 0) {
+		debug("%s: found regulators subnode\n", __func__);
+		children = pmic_bind_children(dev, reg_node, pmic_reg_info);
+		if (!children)
+			debug("%s: %s - no child found\n", __func__, dev->name);
+	} else {
+		debug("%s: regulators subnode not found!\n", __func__);
+	}
 
-	children = pmic_bind_children(dev, regulators_node, pmic_children_info);
-	if (!children)
-		printf("%s: %s - no child found\n", __func__, dev->name);
+	if (chg_node > 0) {
+		debug("%s: found charger subnode\n", __func__);
+		children = pmic_bind_children(dev, chg_node, pmic_chg_info);
+		if (!children)
+			debug("%s: %s - no child found\n", __func__, dev->name);
+	} else {
+		debug("%s: charger subnode not found!\n", __func__);
+	}
 
 	/* Always return success for this device */
 	return 0;
