@@ -316,7 +316,7 @@
 #define CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK			\
         "setenv bootargs console=ttySAC3,115200n8 " \
         "root=/dev/ram0 loglevel=4 quiet printk.time=1 consoleblank=0 " \
-        "nx_drm.fb_buffers=3; \0"
+        "nx_drm.fb_buffers=3;"
 
 #define CONFIG_EXTRA_ENV_KERNEL_LOAD				\
 	"ext4load mmc 0:1 0x40080000 Image;"
@@ -330,7 +330,7 @@
 	"ext4load mmc 0:1 0x48000000 uInitrd;"
 
 #define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL				\
-	"booti 0x40080000 - 0x48000000 "		    	\
+	"booti 0x40080000 - "				 	\
 	__stringify(CONFIG_KERNEL_DTB_ADDR)"\0"
 
 #define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL_FOR_INITRAMFS		\
