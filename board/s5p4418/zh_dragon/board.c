@@ -9,6 +9,17 @@
 #include <common.h>
 #include <asm/io.h>
 
+#ifdef CONFIG_DM_PMIC_NXE2000
+#include <dm.h>
+#include <dm/uclass-internal.h>
+#include <power/pmic.h>
+#include <power/nxe2000.h>
+#endif
+
+#ifdef CONFIG_DM_REGULATOR_NXE2000
+#include <power/regulator.h>
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 int board_init(void)
@@ -92,4 +103,38 @@ void dram_init_banksize(void)
 	gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE;
 	gd->bd->bi_dram[0].size  = CONFIG_SYS_SDRAM_SIZE;
 }
+
+#ifdef CONFIG_DM_PMIC_NXE2000
+void power_init_board(void)
+{
+	struct udevice *pmic;
+#ifdef CONFIG_DM_REGULATOR_NXE2000
+	struct dm_regulator_uclass_platdata *uc_pdata;
+	struct udevice *dev;
+	struct udevice *regulator;
+#endif
+	int ret = -ENODEV;
+
+	ret = pmic_get("nxe2000_gpio@32", &pmic);
+	if (ret)
+		printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
+
+#ifdef CONFIG_DM_REGULATOR_NXE2000
+	if (device_has_children(pmic)) {
+		for (ret = uclass_find_first_device(UCLASS_REGULATOR, &dev);
+			dev;
+			ret = uclass_find_next_device(&dev)) {
+			if (ret)
+				continue;
+
+			uc_pdata = dev_get_uclass_platdata(dev);
+			if (!uc_pdata)
+				continue;
+
+			uclass_get_device_tail(dev, 0, &regulator);
+		}
+	}
+#endif
+}
+#endif
 
