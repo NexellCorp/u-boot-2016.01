@@ -311,7 +311,7 @@
 	"mmcboot=run boot_cmd_mmcboot \0"           \
         "boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
                            "ext4load mmc 0:1 0x48000000 uInitrd; " \
-                           "ext4load mmc 0:1 0x49000000 s5p4418-daudio_ref-rev01.dtb; " \
+                           "run load_fdt; " \
                            "bootz 0x40008000 0x48000000 0x49000000\0" \
         "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
                   "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
