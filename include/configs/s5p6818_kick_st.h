@@ -269,10 +269,22 @@
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
+#define CONFIG_VIDEO_LOGO
+#define CONFIG_SPLASH_SCREEN
+
+#ifdef CONFIG_VIDEO_LOGO
+#define CONFIG_CMD_BMP
+#ifdef CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SOURCE
+#define CONFIG_SPLASH_MMC_OFFSET	0x2e4200
+#endif
+#endif
+
 /*-----------------------------------------------------------------------
  * Support Android Boot Image
 */
 #define CONFIG_ANDROID_BOOT_IMAGE
+#define CONFIG_RECOVERY_BOOT
 
 /*-----------------------------------------------------------------------
  * ENV
@@ -280,14 +292,57 @@
 #define CONFIG_ROOT_DEV		0
 #define CONFIG_BOOT_PART	1
 
-/* need to relocate env address */
-#define CONFIG_SYS_EXTRA_ENV_RELOC
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-	"fdt_high=0xffffffffffffffff\0"	\
-	"initrd_high=0xffffffff\0"	\
-	"kerneladdr=0x40080000\0"	\
-	"kernel_file=Image\0"		\
-	"fdtaddr=0x49000000\0"		\
+#define	CONFIG_KERNEL_DTB_ADDR	0x49000000
+#define	CONFIG_BMP_LOAD_ADDR	0x50000000
+
+#define CONFIG_EXTRA_ENV_BOOT_LOGO				\
+	"splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0"	\
+	"splashfile=logo.bmp\0"				\
+	"splashsource=mmc_fs\0"				\
+	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
+	"fb_addr=\0"						\
+	"dtb_reserve="						\
+	"if test -n \"$fb_addr\"; then "	\
+	"fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
+	"fdt resize;"						\
+	"fdt mk /reserved-memory display_reserved;"		\
+	"fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>;" \
+	"fi;\0"
+
+#define CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
+	"bootargs=console=ttySAC5,115200n8 "			\
+	"root=/dev/mmcblk0p3 rw rootfstype=ext4 rootwait "	\
+	"loglevel=4 quiet printk.time=1 consoleblank=0 "	\
+	"systemd.log_level=info systemd.show_status=false\0"
+
+#define CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK			\
+	"setenv bootargs console=ttySAC5,115200n8 " \
+	"root=/dev/ram0 loglevel=4 quiet printk.time=1 consoleblank=0 " \
+	"nx_drm.fb_buffers=3; \0"
+
+#define CONFIG_EXTRA_ENV_KERNEL_LOAD				\
+	"ext4load mmc 0:1 0x40080000 Image;"
+
+#define CONFIG_EXTRA_ENV_DTB_LOAD	\
+	"ext4load mmc 0:1 " __stringify(CONFIG_KERNEL_DTB_ADDR)	\
+	" s5p6818-avn-ref-rev01.dtb;"				\
+	"run dtb_reserve;"
+
+#define CONFIG_EXTRA_ENV_RAMDISK_LOAD				\
+	"ext4load mmc 0:1 0x48000000 uInitrd;"
+
+#define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL				\
+	"booti 0x40080000 - 0x48000000 "		    	\
+	__stringify(CONFIG_KERNEL_DTB_ADDR)"\0"
+
+#define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL_FOR_INITRAMFS		\
+	"booti 0x40080000 0x48000000 "			  	\
+	__stringify(CONFIG_KERNEL_DTB_ADDR)"\0"
+
+#define CONFIG_RECOVERY_BOOT_CMD	\
+	"recoveryboot=not supported\0"
+
+#define CONFIG_LOADFDT_CMD	\
 	"load_fdt="			\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
@@ -306,17 +361,35 @@
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
 		"fi; \0"						\
+
+/* need to relocate env address */
+#define CONFIG_SYS_EXTRA_ENV_RELOC
+#define CONFIG_EXTRA_ENV_SETTINGS	\
+	"fdt_high=0xffffffffffffffff\0"	\
+	"initrd_high=0xffffffff\0"	\
+	"kerneladdr=0x40080000\0"	\
+	"kernel_file=Image\0"		\
+	"fdtaddr=0x49000000\0"		\
+	CONFIG_LOADFDT_CMD			\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
-	"bootargs=console=ttySAC5,115200n8 "				\
-		"root=/dev/mmcblk0p3 rw rootfstype=ext4 rootwait "	\
-		"loglevel=4 quiet printk.time=1 consoleblank=0 "	\
-		"systemd.log_level=info systemd.show_status=false\0"	\
-	"boot_cmd_mmcboot="   \
-		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
-		"booti $kerneladdr - $fdtaddr\0"	\
-	"mmcboot=run boot_cmd_mmcboot\0"	\
-	"bootcmd=run mmcboot\0"
+	CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
+	"boot_cmd_mmcboot="					\
+		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
+		CONFIG_EXTRA_ENV_DTB_LOAD			\
+		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL			\
+	CONFIG_RECOVERY_BOOT_CMD		    		\
+	"mmcboot=run boot_cmd_mmcboot\0"			\
+	"bootcmd=run mmcboot\0"					\
+	CONFIG_EXTRA_ENV_BOOT_LOGO				\
+	"boot_cmd_ramfsboot="					\
+		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
+		CONFIG_EXTRA_ENV_RAMDISK_LOAD			\
+		CONFIG_EXTRA_ENV_DTB_LOAD			\
+		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL_FOR_INITRAMFS	\
+	"ramfsboot=" \
+		CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK		\
+		"run boot_cmd_ramfsboot \0"
 
 
 /*-----------------------------------------------------------------------
