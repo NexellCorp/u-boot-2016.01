@@ -325,14 +325,14 @@
 
 #define CONFIG_EXTRA_ENV_DTB_LOAD	\
 	"ext4load mmc 0:1 " __stringify(CONFIG_KERNEL_DTB_ADDR)	\
-	" s5p6818-avn-ref-rev01.dtb;"				\
+	" s5p6818-kick-st-rev00.dtb;"				\
 	"run dtb_reserve;"
 
 #define CONFIG_EXTRA_ENV_RAMDISK_LOAD				\
 	"ext4load mmc 0:1 0x48000000 uInitrd;"
 
 #define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL				\
-	"booti 0x40080000 - 0x48000000 "		    	\
+	"booti 0x40080000 - "		    	\
 	__stringify(CONFIG_KERNEL_DTB_ADDR)"\0"
 
 #define CONFIG_EXTRA_ENV_CMD_RUN_KERNEL_FOR_INITRAMFS		\
@@ -353,11 +353,11 @@
 				"number=0$loop; "			\
 			"else number=$loop; "				\
 			"fi; "						\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-kick_st-rev${number}.dtb && setexpr success 1; " \
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-kick-st-rev${number}.dtb && setexpr success 1; " \
 			"setexpr loop $loop - 1; "			\
 			"done; "					\
 		"if test $success -eq 0; then "				\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-kick_st-rev00.dtb;"	\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p6818-kick-st-rev00.dtb;"	\
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
 		"fi; \0"						\
