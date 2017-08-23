@@ -31,6 +31,11 @@ config TARGET_S5P4418_SMART_VOICE
 	help
 	  Support for s5p4418 smart_voice platform.
 
+config TARGET_S5P4418_FF_VOICE
+	bool "S5P4418_FF_VOICE"
+	help
+	  Support for s5p4418 farfield_voice platform
+
 config TARGET_S5P4418_ZH_DRAGON
 	bool "S5P4418_ZH_DRAGON"
 	help
@@ -58,5 +63,6 @@ source "board/s5p4418/avn_ref/Kconfig"
 source "board/s5p4418/navi_ref/Kconfig"
 source "board/s5p4418/daudio_ref/Kconfig"
 source "board/s5p4418/smart_voice/Kconfig"
+source "board/s5p4418/ff_voice/Kconfig"
 source "board/s5p4418/zh_dragon/Kconfig"
 source "board/s5p4418/daudio_covi/Kconfig"
