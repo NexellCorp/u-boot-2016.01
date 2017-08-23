@@ -25,6 +25,9 @@
 #ifdef CONFIG_DM_REGULATOR_NXE2000
 #include <power/regulator.h>
 #endif
+#ifdef CONFIG_DM_CHARGER
+#include <power/charger.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -171,10 +174,14 @@ void dram_init_banksize(void)
 void power_init_board(void)
 {
 	struct udevice *pmic;
-#ifdef CONFIG_DM_REGULATOR_NXE2000
-	struct dm_regulator_uclass_platdata *uc_pdata;
 	struct udevice *dev;
+#ifdef CONFIG_DM_REGULATOR
+	struct dm_regulator_uclass_platdata *reg_uc_pdata;
 	struct udevice *regulator;
+#endif
+#ifdef CONFIG_DM_CHARGER
+	struct dm_charger_uclass_platdata *chg_uc_pdata;
+	struct udevice *charger;
 #endif
 	int ret = -ENODEV;
 
@@ -182,22 +189,38 @@ void power_init_board(void)
 	if (ret)
 		printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
 
-#ifdef CONFIG_DM_REGULATOR_NXE2000
 	if (device_has_children(pmic)) {
+#ifdef CONFIG_DM_REGULATOR
 		for (ret = uclass_find_first_device(UCLASS_REGULATOR, &dev);
 			dev;
 			ret = uclass_find_next_device(&dev)) {
 			if (ret)
 				continue;
 
-			uc_pdata = dev_get_uclass_platdata(dev);
-			if (!uc_pdata)
+			reg_uc_pdata = dev_get_uclass_platdata(dev);
+			if (!reg_uc_pdata)
 				continue;
 
 			uclass_get_device_tail(dev, 0, &regulator);
 		}
-	}
 #endif
+#ifdef CONFIG_DM_CHARGER
+		for (ret = uclass_find_first_device(UCLASS_CHARGER, &dev);
+			dev;
+			ret = uclass_find_next_device(&dev)) {
+			if (ret)
+				continue;
+
+			chg_uc_pdata = dev_get_uclass_platdata(dev);
+			if (!chg_uc_pdata)
+				continue;
+
+			uclass_get_device_tail(dev, 0, &charger);
+		}
+
+		/* charger_get_value_vbatt(charger); */
+#endif
+	}
 }
 #endif
 
