@@ -16,3 +16,9 @@ config DM_CHARGER
 	for this purpose if PMIC I/O driver is implemented or dm_scan_fdt_node()
 	otherwise. Detailed information can be found in the header file.
 
+config DM_CHARGER_NXE2000
+	bool "Enable Driver Model for CHARGER NXE2000"
+	depends on DM_CHARGER && DM_PMIC_NXE2000
+	---help---
+	This config enables implementation of driver-model charger uclass
+	features for CHARGER NXE2000.
