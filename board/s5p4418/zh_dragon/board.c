@@ -108,9 +108,9 @@ void dram_init_banksize(void)
 void power_init_board(void)
 {
 	struct udevice *pmic;
-#ifdef CONFIG_DM_REGULATOR_NXE2000
-	struct dm_regulator_uclass_platdata *uc_pdata;
 	struct udevice *dev;
+#ifdef CONFIG_DM_REGULATOR
+	struct dm_regulator_uclass_platdata *reg_uc_pdata;
 	struct udevice *regulator;
 #endif
 	int ret = -ENODEV;
@@ -119,22 +119,22 @@ void power_init_board(void)
 	if (ret)
 		printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
 
-#ifdef CONFIG_DM_REGULATOR_NXE2000
 	if (device_has_children(pmic)) {
+#ifdef CONFIG_DM_REGULATOR
 		for (ret = uclass_find_first_device(UCLASS_REGULATOR, &dev);
 			dev;
 			ret = uclass_find_next_device(&dev)) {
 			if (ret)
 				continue;
 
-			uc_pdata = dev_get_uclass_platdata(dev);
-			if (!uc_pdata)
+			reg_uc_pdata = dev_get_uclass_platdata(dev);
+			if (!reg_uc_pdata)
 				continue;
 
 			uclass_get_device_tail(dev, 0, &regulator);
 		}
-	}
 #endif
+	}
 }
 #endif
 
