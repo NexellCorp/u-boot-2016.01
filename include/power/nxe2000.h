@@ -284,6 +284,12 @@
  * register bit position
  */
 
+/* IODAC */
+#define NXE2000_POS_IODAC (0)
+
+/* VINDAC */
+#define NXE2000_POS_VINDAC (0)
+
 /* PSWR */
 #define NXE2000_POS_PSWR_PSWR (0)
 #define NXE2000_POS_PSWR_RRESET (7)
@@ -995,6 +1001,8 @@ struct nxe2000_para {
 struct dm_nxe2000_platdata {
 	int off_press_time;
 
+	int vindac;
+
 	int chg_usb_vcontmask;
 	int chg_adp_vcontmask;
 	int chg_vbus_buck_ths;
@@ -1003,9 +1011,21 @@ struct dm_nxe2000_platdata {
 	int vsys_vol;
 	int vsys_over_vol;
 
+	int rapid_ttime;
+	int rapid_ctime;
+	int rapid_rtime;
+
+	int pwr_on_vol;
+	int vbatov_set;
+	int vweak;
+	int vdead;
+	int vshort;
+
 	int die_return_temp;
 	int die_error_temp;
 	int die_shutdown_temp;
+
+	int vfchg;
 
 	int repcnt_off_reseto;
 	int repcnt_repwrtim;

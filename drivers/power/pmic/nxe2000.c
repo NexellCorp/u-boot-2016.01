@@ -61,6 +61,39 @@ static u32 hw_revision(void)
 }
 #endif
 
+static void nxe2000_print_chgstate(struct udevice *dev)
+{
+	uint8_t value = 0;
+	const char *rdstatus[] = {
+		"CHG OFF",
+		"Charge Ready(VADP)",
+		"Trickle Charge",
+		"Rapid Charge",
+		"Charge Complete",
+		"Suspend",
+		"VCHG Over Voltage",
+		"Battery Error",
+		"No Battery",
+		"Battery Over Voltage",
+		"Battery Temp Error",
+		"Die Error",
+		"Die Shutdown",
+		"...",
+		"...",
+		"...",
+		"No Battery2",
+		"Charge Ready(VUSB)",
+	};
+
+	dm_i2c_read(dev, NXE2000_REG_CHGSTATE, &value, 1);
+	value &= 0x1F;
+	if (value <= 0x11)
+		printf("CHGS:  %s\n", rdstatus[value]);
+
+	return;
+}
+
+
 static int nxe2000_reg_count(struct udevice *dev)
 {
 	return NXE2000_NUM_OF_REGS;
@@ -148,6 +181,33 @@ static int nxe2000_param_setup(struct udevice *dev, uint8_t *cache)
 	cache[NXE2000_REG_PWRONTIMSET] |=
 		(pdata->off_press_time
 			<< NXE2000_POS_PWRONTIMSET_OFF_PRESS_PWRON);
+	if (pdata->off_press_time != -ENODATA)
+		dm_i2c_write(dev, NXE2000_REG_PWRONTIMSET
+			, &cache[NXE2000_REG_PWRONTIMSET], 1);
+
+	dm_i2c_read(dev, NXE2000_REG_FG_CTRL, &cache[NXE2000_REG_FG_CTRL], 1);
+	cache[NXE2000_REG_FG_CTRL] &= (1 << NXE2000_POS_FG_CTRL_FG_ACC);
+	cache[NXE2000_REG_FG_CTRL] =
+		(1 << NXE2000_POS_FG_CTRL_SRST0)
+		| (1 << NXE2000_POS_FG_CTRL_SRST1);
+	dm_i2c_write(dev, NXE2000_REG_FG_CTRL, &cache[NXE2000_REG_FG_CTRL], 1);
+
+	cache[NXE2000_REG_VINDAC] = (pdata->vindac << NXE2000_POS_VINDAC);
+
+	cache[NXE2000_REG_ADCCNT1] =
+		((pdata->adc_ain0 << NXE2000_POS_ADC_AIN0)
+		| (pdata->adc_ain1 << NXE2000_POS_ADC_AIN1)
+		| (pdata->adc_vthm << NXE2000_POS_ADC_VTHM)
+		| (pdata->adc_vsys << NXE2000_POS_ADC_VSYS)
+		| (pdata->adc_vusb << NXE2000_POS_ADC_VUSB)
+		| (pdata->adc_vadp << NXE2000_POS_ADC_VADP)
+		| (pdata->adc_vbat << NXE2000_POS_ADC_VBAT)
+		| (pdata->adc_ilim << NXE2000_POS_ADC_ILIM));
+
+	cache[NXE2000_REG_ADCCNT3] =
+		((pdata->adccnt3_adrq << NXE2000_POS_ADCCNT3_ADRQ)
+		| (pdata->adccnt3_ave << NXE2000_POS_ADCCNT3_AVE)
+		| (pdata->adccnt3_adsel << NXE2000_POS_ADCCNT3_ADSEL));
 
 	cache[NXE2000_REG_CHGCTL1] =
 		((0 << NXE2000_POS_CHGCTL1_CHGP)
@@ -169,10 +229,30 @@ static int nxe2000_param_setup(struct udevice *dev, uint8_t *cache)
 		((pdata->vsys_vol << NXE2000_POS_VSYSSET_VSYSSET)
 		| (pdata->vsys_over_vol << NXE2000_POS_VSYSSET_VSYSOVSET));
 
+	cache[NXE2000_REG_TIMSET] =
+		((pdata->rapid_ttime << NXE2000_POS_TIMSET_TTIMSET)
+		| ((pdata->rapid_ctime & 3) << NXE2000_POS_TIMSET_CTIMSET)
+		| (pdata->rapid_rtime & 3));
+
+	cache[NXE2000_REG_BATSET1] =
+		(((pdata->pwr_on_vol & 7) << NXE2000_POS_BATSET1_CHGPON)
+		| ((pdata->vbatov_set & 1) << NXE2000_POS_BATSET1_VBATOVSET)
+		| ((pdata->vweak & 3) << NXE2000_POS_BATSET1_VWEAK)
+		| ((pdata->vdead & 1) << NXE2000_POS_BATSET1_VDEAD)
+		| ((pdata->vshort & 1) << NXE2000_POS_BATSET1_VSHORT));
+
 	cache[NXE2000_REG_DIESET] =
 		((pdata->die_return_temp << NXE2000_POS_DIESET_DIERTNTEMP)
 		| (pdata->die_error_temp << NXE2000_POS_DIESET_DIEERRTEMP)
 		| (pdata->die_shutdown_temp << NXE2000_POS_DIESET_DIESHUTTEMP));
+
+	cache[NXE2000_REG_BATSET2] =
+		(((pdata->vfchg & 7) << NXE2000_POS_BATSET2_VFCHG)
+		| (pdata->vfchg & 7));
+
+	cache[NXE2000_REG_FG_CTRL] =
+		((1 << NXE2000_POS_FG_CTRL_FG_ACC)
+		| (1 << NXE2000_POS_FG_CTRL_FG_EN));
 
 	cache[NXE2000_REG_REPCNT] =
 		((pdata->repcnt_off_reseto << NXE2000_POS_REPCNT_OFF_RESETO)
@@ -200,26 +280,46 @@ static int nxe2000_device_setup(struct udevice *dev, uint8_t *cache)
 {
 	struct dm_nxe2000_platdata *pdata = dev->platdata;
 
-	if (pdata->off_press_time != -ENODATA)
-		dm_i2c_write(dev, NXE2000_REG_PWRONTIMSET
-			, &cache[NXE2000_REG_PWRONTIMSET], 1);
+	dm_i2c_write(dev, NXE2000_REG_CHGCTL1, &cache[NXE2000_REG_CHGCTL1], 1);
 
-	dm_i2c_write(dev, NXE2000_REG_CHGCTL1
-		, &cache[NXE2000_REG_CHGCTL1], 1);
+	if (pdata->vindac != -ENODATA)
+		dm_i2c_write(dev, NXE2000_REG_VINDAC
+			, &cache[NXE2000_REG_VINDAC], 1);
 
-	if (
+	/* if (
 		(pdata->chg_usb_vcontmask != -ENODATA) &&
 		(pdata->chg_adp_vcontmask != -ENODATA) &&
 		(pdata->chg_vbus_buck_ths != -ENODATA) &&
 		(pdata->chg_vadp_buck_ths != -ENODATA))
 		dm_i2c_write(dev, NXE2000_REG_CHGCTL2
 			, &cache[NXE2000_REG_CHGCTL2], 1);
+	*/
 
 	if (
 		(pdata->vsys_vol != -ENODATA) &&
 		(pdata->vsys_over_vol != -ENODATA))
 		dm_i2c_write(dev, NXE2000_REG_VSYSSET
 			, &cache[NXE2000_REG_VSYSSET], 1);
+
+	if (
+		(pdata->rapid_ttime != -ENODATA) &&
+		(pdata->rapid_ctime != -ENODATA) &&
+		(pdata->rapid_rtime != -ENODATA))
+		dm_i2c_write(dev, NXE2000_REG_TIMSET
+			, &cache[NXE2000_REG_TIMSET], 1);
+
+	if (
+		(pdata->pwr_on_vol != -ENODATA) &&
+		(pdata->vbatov_set != -ENODATA) &&
+		(pdata->vweak != -ENODATA) &&
+		(pdata->vdead != -ENODATA) &&
+		(pdata->vshort != -ENODATA))
+		dm_i2c_write(dev, NXE2000_REG_BATSET1
+			, &cache[NXE2000_REG_BATSET1], 1);
+
+	if (pdata->vfchg != -ENODATA)
+		dm_i2c_write(dev, NXE2000_REG_BATSET2
+			, &cache[NXE2000_REG_BATSET2], 1);
 
 	if (
 		(pdata->die_return_temp != -ENODATA) &&
@@ -273,6 +373,9 @@ static int nxe2000_probe(struct udevice *dev)
 #if defined(CONFIG_PMIC_REG_DUMP)
 	nxe2000_reg_dump(dev, "PMIC Setup Register Dump");
 #endif
+
+	nxe2000_print_chgstate(dev);
+
 	return 0;
 }
 
@@ -288,6 +391,9 @@ static int nxe2000_ofdata_to_platdata(struct udevice *dev)
 	pdata->off_press_time = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,off_press_time", -ENODATA);
 
+	pdata->vindac = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,vindac", -ENODATA);
+
 	pdata->chg_usb_vcontmask = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,chg_usb_vcontmask", -ENODATA);
 	pdata->chg_adp_vcontmask = fdtdec_get_int(blob, nxe2000_node,
@@ -302,12 +408,33 @@ static int nxe2000_ofdata_to_platdata(struct udevice *dev)
 	pdata->vsys_over_vol = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,vsys_over_vol", -ENODATA);
 
+	pdata->rapid_ttime = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,rapid_ttime", -ENODATA);
+	pdata->rapid_ctime = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,rapid_ctime", -ENODATA);
+	pdata->rapid_rtime = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,rapid_rtime", -ENODATA);
+
+	pdata->pwr_on_vol = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,pwr_on_vol", -ENODATA);
+	pdata->vbatov_set = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,vbatov_set", -ENODATA);
+	pdata->vweak = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,vweak", -ENODATA);
+	pdata->vdead = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,vdead", -ENODATA);
+	pdata->vshort = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,vshort", -ENODATA);
+
 	pdata->die_return_temp = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,die_return_temp", -ENODATA);
 	pdata->die_error_temp = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,die_error_temp", -ENODATA);
 	pdata->die_shutdown_temp = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,die_shutdown_temp", -ENODATA);
+
+	pdata->vfchg = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,vfchg", -ENODATA);
 
 	pdata->repcnt_off_reseto = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,repcnt_off_reseto", -ENODATA);
