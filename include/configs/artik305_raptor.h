@@ -419,6 +419,7 @@
 	"nr_cpus=2\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
+	"selinux=0\0"							\
 	"sdrecovery=run boot_cmd_sdboot;"				\
 		"sd_recovery mmc 1:3 $sdrecaddr partmap_emmc.txt\0"	\
 	"factory_load=factory_info load mmc 0 "				\
@@ -434,7 +435,8 @@
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
 		"rootfstype=${rootfs_type} ${recoverymode} ${ota} "	\
 		"nr_cpus=${nr_cpus} ${opts} "	\
-		"bootfrom=${bootpart} rescue=${rescue};\0"		\
+		"bootfrom=${bootpart} rescue=${rescue} "		\
+		"selinux=${selinux};\0"					\
 	"load_kernel="							\
 		"ret=0; "						\
 		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file && setexpr ret 1; " \
