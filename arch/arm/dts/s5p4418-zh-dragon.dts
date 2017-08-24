@@ -65,14 +65,14 @@
 		};
 
 		dp-sync {
-			h_active_len = <1280>;
-			h_front_porch = <44>;
-			h_back_porch = <16>;
+			h_active_len = <1024>;
+			h_front_porch = <160>;
+			h_back_porch = <160>;
 			h_sync_width = <2>;
-			v_active_len = <720>;
-			v_front_porch = <67>;
-			v_back_porch = <5>;
-			v_sync_width = <2>;
+			v_active_len = <600>;
+			v_front_porch = <15>;
+			v_back_porch = <23>;
+			v_sync_width = <14>;
 		};
 
 		dp-ctrl {
@@ -80,20 +80,20 @@
 			clk_div_lv0 = <16>;
 			clk_src_lv1 = <7>;
 			clk_div_lv1 = <1>;
-			out_format = <2>;
+			out_format = <3>;
 		};
 
 		dp-planes {
 			layer_top {
-				screen_width = <1280>;
-				screen_height = <720>;
+				screen_width = <1024>;
+				screen_height = <600>;
 				back_color = <0x0>;
 			};
 
 			layer_1 {
-				fb_base = <0x50000000>;
-				width = <1280>;
-				height = <720>;
+				fb_base = <0x7E000000>;
+				width = <1024>;
+				height = <600>;
 				format = <0x06530000>;
 				pixel_byte = <4>;
 			};
