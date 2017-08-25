@@ -292,7 +292,14 @@
 	"boot_cmd_mmcboot="   \
 		"ext4load mmc 0:1 $kerneladdr $kernel_file; ext4load mmc 0:1 $fdtaddr s5p4418-ff_voice.dtb; bootz $kerneladdr - $fdtaddr\0" \
 	"mmcboot=run boot_cmd_mmcboot\0"           \
-	"bootcmd=run mmcboot\0"
+	"bootcmd=run ramfsboot\0" \
+        "boot_cmd_ramfsboot=ext4load mmc 0:1 0xA1008000 zImage; " \
+                "ext4load mmc 0:1 0xA9000000 uInitrd; " \
+                "ext4load mmc 0:1 0xAA000000 s5p4418-ff_voice.dtb; " \
+                "bootz 0xA1008000 0xA9000000 0xAA000000\0" \
+        "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
+                "root=/dev/ram0 loglevel=4 printk.time=1; " \
+                "run boot_cmd_ramfsboot \0"
 
 #define CONFIG_SW_UBC_DETECT
 #define CONFIG_PMIC_REG_DUMP
