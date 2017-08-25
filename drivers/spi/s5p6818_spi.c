@@ -46,8 +46,11 @@ struct s5p6818_spi_priv {
  */
 static void spi_flush_fifo(struct s5p6818_spi *regs)
 {
-	clrsetbits_le32(&regs->ch_cfg, SPI_CH_HS_EN, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
+	clrbits_le32(&regs->ch_cfg, SPI_TX_CH_ON | SPI_RX_CH_ON);
+	if (!(readl(&regs->ch_cfg) & SPI_CH_CPOL_L)) {
+		clrsetbits_le32(&regs->ch_cfg, SPI_CH_HS_EN, SPI_CH_RST);
+		clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
+	}
 	setbits_le32(&regs->ch_cfg, SPI_TX_CH_ON | SPI_RX_CH_ON);
 }
 
@@ -88,9 +91,7 @@ static void spi_request_bytes(struct s5p6818_spi *regs, int count, int step)
 	}
 
 	assert(count && count < (1 << 16));
-	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
-
+	spi_flush_fifo(regs);
 	writel(count | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
 }
 
@@ -105,27 +106,29 @@ static int spi_rx_tx(struct s5p6818_spi_priv *priv, int todo,
 	int toread;
 	unsigned start = get_timer(0);
 	int stopping;
-	int step;
+	int step = 1;
 
 	out_bytes = in_bytes = todo;
 
 	stopping = priv->skip_preamble && (flags & SPI_XFER_END) &&
 					!(priv->mode & SPI_SLAVE);
 
-	/*
-	 * Try to transfer words if we can. This helps read performance at
-	 * SPI clock speeds above about 20MHz.
-	 */
-	step = 1;
-	if (!((todo | (uintptr_t)rxp | (uintptr_t)txp) & 3) &&
-	    !priv->skip_preamble)
-		step = 4;
+	if (!(priv->mode && SPI_CPOL)) {
+		/*
+		 * Try to transfer words if we can. This helps read performance at
+		 * SPI clock speeds above about 20MHz.
+		 */
+		step = 1;
+		if (!((todo | (uintptr_t)rxp | (uintptr_t)txp) & 3) &&
+		    !priv->skip_preamble)
+			step = 4;
 
-	/*
-	 * If there's something to send, do a software reset and set a
-	 * transaction size.
-	 */
-	spi_request_bytes(regs, todo, step);
+		/*
+		 * If there's something to send, do a software reset and set a
+		 * transaction size.
+		 */
+		spi_request_bytes(regs, todo, step);
+	}
 
 	/*
 	 * Bytes are transmitted/received in pairs. Wait to receive all the
