@@ -272,22 +272,6 @@ static int s5p6818_spi_ofdata_to_platdata(struct udevice *bus)
 	return 0;
 }
 
-static int s5p6818_spi_probe(struct udevice *bus)
-{
-	struct s5p6818_spi_platdata *plat = dev_get_platdata(bus);
-	struct s5p6818_spi_priv *priv = dev_get_priv(bus);
-
-	priv->regs = plat->regs;
-	priv->fifo_size = 256;
-
-	priv->skip_preamble = 0;
-	priv->last_transaction_us = timer_get_us();
-	priv->freq = plat->frequency;
-	priv->periph_id = plat->periph_id;
-
-	return 0;
-}
-
 static int spi_reset(int periph_id)
 {
 	int rstp_id = RESET_ID_SSP0_P + periph_id * 2;
@@ -328,13 +312,30 @@ static int set_spi_pad_func(int periph_id)
 	return 0;
 }
 
+static int s5p6818_spi_probe(struct udevice *bus)
+{
+	struct s5p6818_spi_platdata *plat = dev_get_platdata(bus);
+	struct s5p6818_spi_priv *priv = dev_get_priv(bus);
+
+	priv->regs = plat->regs;
+	priv->fifo_size = 256;
+
+	priv->skip_preamble = 0;
+	priv->last_transaction_us = timer_get_us();
+	priv->freq = plat->frequency;
+	priv->periph_id = plat->periph_id;
+
+	set_spi_pad_func(priv->periph_id);
+	spi_reset(priv->periph_id);
+
+	return 0;
+}
+
 static int s5p6818_spi_claim_bus(struct udevice *dev)
 {
 	struct udevice *bus = dev->parent;
 	struct s5p6818_spi_priv *priv = dev_get_priv(bus);
 
-	set_spi_pad_func(priv->periph_id);
-	spi_reset(priv->periph_id);
 	spi_flush_fifo(priv->regs);
 
 	writel(SPI_FB_DELAY_180, &priv->regs->fb_clk);
@@ -409,12 +410,12 @@ static int s5p6818_spi_set_speed(struct udevice *bus, uint speed)
 	if (!clk)
 		return 0;
 
-	clk_disable(clk);
-	speed = clk_set_rate(clk, plat->frequency);
-	clk_enable(clk);
-
 	if (speed > plat->frequency)
 		speed = plat->frequency;
+
+	clk_disable(clk);
+	clk_set_rate(clk, speed);
+	clk_enable(clk);
 
 	priv->freq = speed;
 	debug("%s: regs=%p, speed=%d\n", __func__, priv->regs, priv->freq);
