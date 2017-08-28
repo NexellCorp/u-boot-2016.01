@@ -312,17 +312,19 @@
         "fdt resize; " \
         "fdt mk /reserved-memory display_reserved; " \
         "fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>; " \
-        "fi;\0"
+        "fi\0"
 
 #define CONFIG_RECOVERY_BOOT_CMD \
     "recoveryboot=run ramfsboot\0"
 
 #ifdef CONFIG_BOOTANIM
-#define CONFIG_BOOTARGS "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 init=/usr/bin/bootanimation loglevel=4 rootwait quiet " \
-				         "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
+#define CONFIG_BOOTCMD \
+    "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 init=/usr/bin/bootanimation loglevel=4 rootwait quiet " \
+    "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
 #else
-#define CONFIG_BOOTARGS "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
-				         "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
+#define CONFIG_BOOTCMD \
+    "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+    "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
 #endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
@@ -348,23 +350,23 @@
 			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-daudio_ref-rev00.dtb;"	\
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
-		"fi; \0"						\
+		"fi\0"						\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
-	CONFIG_BOOTARGS \
+	CONFIG_BOOTCMD \
 	"boot_cmd_mmcboot="   \
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file; run load_fdt; run dtb_reserve; " \
 		"bootz $kerneladdr - $fdtaddr\0" \
 	"mmcboot=run boot_cmd_mmcboot \0"           \
-        "boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
-                           "ext4load mmc 0:1 0x48000000 uInitrd; " \
-                           "run load_fdt; " \
-                           "run dtb_reserve; " \
-                           "bootz 0x40008000 0x48000000 0x49000000\0" \
-        "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
-                  "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
-                  "run boot_cmd_ramfsboot \0" \
-	"bootcmd=run mmcboot\0" \
+    "boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
+                       "ext4load mmc 0:1 0x48000000 uInitrd; " \
+                       "run load_fdt; " \
+                       "run dtb_reserve; " \
+                       "bootz 0x40008000 0x48000000 0x49000000\0" \
+    "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
+              "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
+              "run boot_cmd_ramfsboot\0" \
+    "bootcmd=run mmcboot\0" \
     CONFIG_RECOVERY_BOOT_CMD \
     CONFIG_EXTRA_ENV_BOOT_LOGO
 
