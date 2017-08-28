@@ -268,7 +268,11 @@
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
 #define CONFIG_VIDEO_LOGO
+#undef  CONFIG_VIDEO_LOGO
 #define CONFIG_SPLASH_SCREEN
+#undef  CONFIG_SPLASH_SCREEN
+
+#define CONFIG_BOOTANIM
 
 #ifdef CONFIG_VIDEO_LOGO
 #define CONFIG_CMD_BMP
@@ -313,6 +317,14 @@
 #define CONFIG_RECOVERY_BOOT_CMD \
     "recoveryboot=run ramfsboot\0"
 
+#ifdef CONFIG_BOOTANIM
+#define CONFIG_BOOTARGS "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 init=/usr/bin/bootanimation loglevel=4 rootwait quiet " \
+				         "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
+#else
+#define CONFIG_BOOTARGS "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+				         "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
+#endif
+
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"fdt_high=0xffffffff\0"		\
 	"initrd_high=0xffffffff\0"	\
@@ -339,8 +351,7 @@
 		"fi; \0"						\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
-	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
-		"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0" \
+	CONFIG_BOOTARGS \
 	"boot_cmd_mmcboot="   \
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file; run load_fdt; run dtb_reserve; " \
 		"bootz $kerneladdr - $fdtaddr\0" \
