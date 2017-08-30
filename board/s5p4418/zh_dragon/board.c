@@ -9,6 +9,9 @@
 #include <common.h>
 #include <asm/io.h>
 
+#include <asm/arch/nexell.h>
+#include <asm/arch/nx_gpio.h>
+
 #ifdef CONFIG_DM_PMIC_NXE2000
 #include <dm.h>
 #include <dm/uclass-internal.h>
@@ -22,8 +25,63 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#ifdef CONFIG_PWM_NX
+enum gpio_group {
+	gpio_a,	gpio_b, gpio_c, gpio_d, gpio_e,
+};
+
+struct pwm_device {
+	int grp;
+	int bit;
+	int io_fn;
+};
+
+static struct pwm_device pwm_dev[] = {
+	[0] = { .grp = gpio_d, .bit = 1,  .io_fn = 0 },
+	[1] = { .grp = gpio_c, .bit = 13, .io_fn = 1 },
+	[2] = { .grp = gpio_c, .bit = 14, .io_fn = 1 },
+	[3] = { .grp = gpio_d, .bit = 0,  .io_fn = 0 },
+};
+#endif
+
+static void board_backlight_disable(void)
+{
+#ifdef CONFIG_PWM_NX
+	int gp = pwm_dev[CONFIG_BACKLIGHT_CH].grp;
+	int io = pwm_dev[CONFIG_BACKLIGHT_CH].bit;
+	int fn = pwm_dev[CONFIG_BACKLIGHT_CH].io_fn;
+
+	/*
+	 * pwm backlight OFF: HIGH, ON: LOW
+	 */
+	nx_gpio_set_pad_function(gp, io, fn);
+	nx_gpio_set_output_value(gp, io, 0);
+	nx_gpio_set_output_enable(gp, io, 1);
+#endif
+}
+
+static void board_backlight_enable(void)
+{
+#ifdef CONFIG_PWM_NX
+	/*
+	 * pwm backlight ON: HIGH, ON: LOW
+	 */
+	pwm_init(
+		CONFIG_BACKLIGHT_CH,
+		CONFIG_BACKLIGHT_DIV, CONFIG_BACKLIGHT_INV
+		);
+	pwm_config(
+		CONFIG_BACKLIGHT_CH,
+		TO_DUTY_NS(CONFIG_BACKLIGHT_DUTY, CONFIG_BACKLIGHT_HZ),
+		TO_PERIOD_NS(CONFIG_BACKLIGHT_HZ)
+		);
+#endif
+}
+
 int board_init(void)
 {
+	board_backlight_disable();
+
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags |= GD_FLG_SILENT;
 #endif
@@ -37,6 +95,8 @@ int board_late_init(void)
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
+
+	board_backlight_enable();
 
 #ifdef CONFIG_RECOVERY_BOOT
 #define ALIVE_SCRATCH1_READ_REGISTER	(0xc00108b4)
