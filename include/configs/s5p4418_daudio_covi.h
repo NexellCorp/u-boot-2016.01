@@ -290,14 +290,65 @@
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
+/* Support bootlogo */
+#define CONFIG_VIDEO_LOGO
+#undef	CONFIG_VIDEO_LOGO
+#define CONFIG_SPLASH_SCREEN
+#undef	CONFIG_SPLASH_SCREEN
+
+/* Support bootanimation */
+#define CONFIG_BOOTANIM
+
+#ifdef CONFIG_VIDEO_LOGO
+#define CONFIG_CMD_BMP
+#ifdef CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SOURCE
+#define CONFIG_SPLASH_MMC_OFFSET    0x2e4200
+#endif
+#endif
+
+/*-----------------------------------------------------------------------
+ * Support recovery boot
+*/
+#define CONFIG_SUPPORT_RAW_INITRD
+#define CONFIG_RECOVERY_BOOT
+
 /*-----------------------------------------------------------------------
  * ENV
  */
 #define CONFIG_ROOT_DEV 0
 #define CONFIG_BOOT_PART 1
 
+#define CONFIG_KERNEL_DTB_ADDR  0x49000000
+#define CONFIG_BMP_LOAD_ADDR    0x80000000
+
 /* need to relocate env address */
 #define CONFIG_SYS_EXTRA_ENV_RELOC
+
+#define CONFIG_EXTRA_ENV_BOOT_LOGO \
+    "splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0" \
+    "splashfile=logo.bmp\0" \
+    "splashsource=mmc_fs\0" \
+    "splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0" \
+    "fb_addr=\0" \
+    "dtb_reserve=" \
+        "if test -n \"$fb_addr\"; then " \
+        "fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)"; " \
+        "fdt resize; " \
+        "fdt mk /reserved-memory display_reserved; " \
+        "fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>; " \
+        "fi;\0"
+
+#define CONFIG_RECOVERY_BOOT_CMD \
+    "recoveryboot=run ramfsboot\0"
+
+#ifdef CONFIG_BOOTANIM
+#define CONFIG_BOOTCMD "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 init=/usr/bin/bootanimation loglevel=4 rootwait quiet " \
+ 			         	"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
+#else
+#define CONFIG_BOOTCMD "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+				        "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
+#endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS                                              \
 	"fdt_high=0xffffffff\0"                                                \
@@ -329,18 +380,7 @@
 	    CONFIG_ROOT_DEV) "\0"                                              \
 			     "bootpart=" __stringify(                          \
 				 CONFIG_BOOT_PART) "\0"                        \
-						   "bootargs=console=ttyAMA3," \
-						   "115200n8 "                 \
-						   "root=/dev/mmcblk0p3 rw "   \
-						   "rootfstype=ext4 "          \
-						   "loglevel=4 rootwait "      \
-						   "quiet "                    \
-						   "printk.time=1 "            \
-						   "consoleblank=0 "           \
-						   "nx_drm.fb_buffers=3 "      \
-						   "systemd.log_level=info "   \
-						   "systemd.show_status="      \
-						   "false\0"                   \
+						   CONFIG_BOOTCMD			   \
 						   "boot_cmd_mmcboot="         \
 						   "check_hw;ext4load mmc "    \
 						   "${rootdev}:${bootpart} "   \
@@ -370,6 +410,8 @@
 						   "consoleblank=0 "           \
 						   "nx_drm.fb_buffers=3; "     \
 						   "run boot_cmd_ramfsboot \0" \
-						   "bootcmd=run mmcboot\0"
+						   "bootcmd=run mmcboot\0"	   \
+						   CONFIG_RECOVERY_BOOT_CMD	   \
+						   CONFIG_EXTRA_ENV_BOOT_LOGO
 
 #endif /* __CONFIG_H__ */
