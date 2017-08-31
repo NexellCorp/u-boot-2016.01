@@ -59,7 +59,7 @@ static void *lcd_base;			/* Start of framebuffer memory	*/
 static char lcd_flush_dcache;	/* 1 to flush dcache after each lcd update */
 
 /* Flush LCD activity to the caches */
-void lcd_sync(void)
+__weak void lcd_sync(void)
 {
 	/*
 	 * flush_dcache_range() is declared in common.h but it seems that some
