@@ -172,6 +172,20 @@ void board_display_reset(void)
 }
 #endif
 
+#ifdef CONFIG_VIDEO_LCD_ILI9335
+void ili9335_init_gpios(void)
+{
+	nx_gpio_set_output_enable(4, 0, 0);
+	mdelay(1);
+	nx_gpio_set_output_enable(4, 0, 1);
+
+	nx_gpio_set_output_value(4, 0, 0);
+	mdelay(1);
+	nx_gpio_set_output_value(4, 0, 1);
+	mdelay(120);
+}
+#endif /* End of CONFIG_VIDEO_LCD_ILI9335 */
+
 int mmc_get_env_dev(void)
 {
 	int port_num;
