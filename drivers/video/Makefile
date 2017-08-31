@@ -53,6 +53,7 @@ obj-$(CONFIG_FORMIKE) += formike.o
 obj-$(CONFIG_LG4573) += lg4573.o
 obj-$(CONFIG_AM335X_LCD) += am335x-fb.o
 obj-$(CONFIG_VIDEO_NX) += nexell_display.o videomodes.o nexell/
+obj-$(CONFIG_VIDEO_LCD_ILI9335) += ili9335.o
 
 obj-${CONFIG_VIDEO_TEGRA124} += tegra124/
 

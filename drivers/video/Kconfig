@@ -263,6 +263,12 @@ config VIDEO_NX
 	   HDMI. This option enables this support which can be used on devices
 	   which have an eDP display connected.
 
+config VIDEO_LCD_ILI9335
+	bool "Enable LCD support of ilitek ili9335 spi"
+	default n
+	---help---
+	Support for the ili9335 spi lcd panel
+
 source "drivers/video/nexell/Kconfig"
 
 source "drivers/video/bridge/Kconfig"
