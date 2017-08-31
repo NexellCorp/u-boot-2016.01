@@ -161,7 +161,11 @@ int drv_lcd_init(void)
 	lcddev.putc  = lcd_stub_putc;		/* 'putc' function */
 	lcddev.puts  = lcd_stub_puts;		/* 'puts' function */
 
+#ifndef CONFIG_SKIP_LCD_STDIO
 	rc = stdio_register(&lcddev);
+#else
+	rc = 0;
+#endif
 
 	return (rc == 0) ? 1 : rc;
 }
