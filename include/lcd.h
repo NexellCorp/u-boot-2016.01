@@ -132,6 +132,8 @@ int lcd_get_size(int *line_length);
 /* Update the LCD / flush the cache */
 void lcd_sync(void);
 
+void lcd_draw(void);
+
 /*
  *  Information about displays we are using. This is for configuring
  *  the LCD controller and memory allocation. Someone has to know what
