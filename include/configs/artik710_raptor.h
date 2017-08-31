@@ -197,6 +197,26 @@
 #define CONFIG_EXT4_WRITE
 #endif
 
+#define LCD_BPP                 LCD_COLOR16
+#define CONFIG_SYS_WHITE_ON_BLACK
+
+#define CONFIG_VIDEO_LCD_ILI9335
+#define CONFIG_ILI9335_SPI_BUS		2
+#define CONFIG_ILI9335_SPI_CS		0
+#define CONFIG_ILI9335_SPI_MAX_HZ	20000000
+#define CONFIG_SKIP_LCD_STDIO
+
+#define CONFIG_LCD
+#define CONFIG_CMD_BMP
+#define CONFIG_BMP_16BPP
+#define CONFIG_VIDEO_BMP_GZIP
+#define CONFIG_LCD_LOGO
+#define CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SOURCE
+#define CONFIG_SPLASH_IMAGE_ADDR	0x52000000
+#define CONFIG_SPLASH_IMAGE_FILE	"artik_logo.bmp"
+#define CONFIG_SYS_VIDEO_LOGO_MAX_SIZE ((320 * 240 * 4) + 54)
+
 /*-----------------------------------------------------------------------
  * Default environment organization
  */
@@ -384,7 +404,10 @@
 	"lcd1_0=s6e8fa0\0"						\
 	"lcd2_0=gst7d0038\0"						\
 	"lcd_panel=s6e8fa0\0"						\
-	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"	\
+	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"    \
+	"splashsource=mmc_fs\0"						\
+	"splashfile=" CONFIG_SPLASH_IMAGE_FILE "\0"			\
+	"splashimage=" __stringify(CONFIG_SPLASH_IMAGE_ADDR) "\0"	\
 	"factory_load=factory_info load mmc 0 "				\
 		__stringify(CONFIG_FACTORY_INFO_START) " "		\
 		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
