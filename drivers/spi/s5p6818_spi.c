@@ -417,7 +417,7 @@ static int s5p6818_spi_set_speed(struct udevice *bus, uint speed)
 		speed = plat->frequency;
 
 	clk_disable(clk);
-	clk_set_rate(clk, speed);
+	clk_set_rate(clk, speed * 2);
 	clk_enable(clk);
 
 	priv->freq = speed;
