@@ -165,6 +165,35 @@ void ili9335_init_gpios(void)
 }
 #endif /* End of CONFIG_VIDEO_LCD_ILI9335 */
 
+#ifdef CONFIG_SPLASH_SCREEN
+#include <splash.h>
+static struct splash_location splash_locations[] = {
+	{
+		.name = "mmc_fs",
+		.storage = SPLASH_STORAGE_MMC,
+		.flags = SPLASH_STORAGE_FS,
+		.devpart = "0:2",
+	},
+};
+
+int splash_screen_prepare(void)
+{
+	char *bootpart, *rootdev;
+	char device[64];
+
+	rootdev = getenv("rootdev");
+	bootpart = getenv("bootpart");
+
+	if (rootdev && bootpart) {
+		snprintf(device, 64, "%s:%s", rootdev, bootpart);
+		splash_locations->devpart = strdup(device);
+	}
+
+	return splash_source_load(splash_locations,
+				  ARRAY_SIZE(splash_locations));
+}
+#endif /* End of CONFIG_SPLASH_SCREEN */
+
 int mmc_get_env_dev(void)
 {
 	int port_num;
