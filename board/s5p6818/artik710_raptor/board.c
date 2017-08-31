@@ -27,6 +27,9 @@
 #include <sensorid.h>
 #include <sensorid_artik.h>
 #endif
+
+#include <lcd.h>
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_REVISION_TAG
@@ -328,8 +331,26 @@ void pmic_init(void)
 }
 #endif
 
+#ifdef CONFIG_SPLASH_SCREEN
+static void splash_draw_logo(void)
+{
+	ulong addr;
+	char *s = getenv("splashimage");
+	if (s) {
+		addr = simple_strtoul(s, NULL, 16);
+		if (lcd_splash(addr) == 0)
+#ifdef CONFIG_LCD_DRAW_POSTPONE
+			lcd_draw();
+#else
+			lcd_sync();
+#endif
+	}
+}
+#endif
+
 int board_late_init(void)
 {
+	bool charging = true;
 #ifdef CONFIG_DM_PMIC_NXE2000
 	pmic_init();
 #endif
@@ -342,6 +363,18 @@ int board_late_init(void)
 #ifdef CONFIG_SENSORID_ARTIK
 	get_sensorid(board_rev);
 #endif
+#ifdef CONFIG_ARTIK_OTA
+	check_ota_update();
+#endif
+#ifdef CONFIG_SPLASH_SCREEN
+	if (charging)
+		setenv("splashfile", "charging.bmp");
+	else
+		setenv("splashfile", CONFIG_SPLASH_IMAGE_FILE);
+
+	splash_draw_logo();
+#endif
+
 	return 0;
 }
 

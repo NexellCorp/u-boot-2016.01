@@ -411,7 +411,9 @@ void lcd_ctrl_init(void *lcdbase)
 	ili9335_set_var(slave);
 
 	/* Clear display */
+#ifndef CONFIG_LCD_DRAW_POSTPONE
 	ili9335_update_display(slave, 0, HEIGHT - 1);
+#endif
 	ili9335_set_gamma(slave);
 }
 
@@ -425,5 +427,14 @@ void lcd_setcolreg(ushort regno, ushort red, ushort green, ushort blue)
 
 void lcd_sync(void)
 {
+#ifndef CONFIG_LCD_DRAW_POSTPONE
+	ili9335_update_display(slave, 0, HEIGHT - 1);
+#endif
+}
+
+#ifdef CONFIG_LCD_DRAW_POSTPONE
+void lcd_draw(void)
+{
 	ili9335_update_display(slave, 0, HEIGHT - 1);
 }
+#endif

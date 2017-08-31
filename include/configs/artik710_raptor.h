@@ -205,6 +205,7 @@
 #define CONFIG_ILI9335_SPI_CS		0
 #define CONFIG_ILI9335_SPI_MAX_HZ	20000000
 #define CONFIG_SKIP_LCD_STDIO
+#define CONFIG_LCD_DRAW_POSTPONE
 
 #define CONFIG_LCD
 #define CONFIG_CMD_BMP
@@ -406,7 +407,6 @@
 	"lcd_panel=s6e8fa0\0"						\
 	"sdrecovery=sd_recovery mmc 1:3 48000000 partmap_emmc.txt\0"    \
 	"splashsource=mmc_fs\0"						\
-	"splashfile=" CONFIG_SPLASH_IMAGE_FILE "\0"			\
 	"splashimage=" __stringify(CONFIG_SPLASH_IMAGE_ADDR) "\0"	\
 	"factory_load=factory_info load mmc 0 "				\
 		__stringify(CONFIG_FACTORY_INFO_START) " "		\
