@@ -296,6 +296,11 @@ static int set_spi_pad_func(int periph_id)
 		nx_gpio_set_pad_function(2, 30, 1);
 		nx_gpio_set_pad_function(2, 31, 1);
 		nx_gpio_set_pad_function(3, 0, 1);
+
+		nx_gpio_set_drive_strength(2, 29, 2);
+		nx_gpio_set_drive_strength(2, 30, 2);
+		nx_gpio_set_drive_strength(2, 31, 2);
+		nx_gpio_set_drive_strength(3, 0, 2);
 		break;
 	case 1:
 		nx_gpio_set_pad_function(4, 14, 2);
@@ -303,6 +308,10 @@ static int set_spi_pad_func(int periph_id)
 		nx_gpio_set_pad_function(4, 18, 2);
 		nx_gpio_set_pad_function(4, 19, 2);
 
+		nx_gpio_set_drive_strength(4, 14, 2);
+		nx_gpio_set_drive_strength(4, 15, 2);
+		nx_gpio_set_drive_strength(4, 18, 2);
+		nx_gpio_set_drive_strength(4, 19, 2);
 		break;
 	case 2:
 		nx_gpio_set_pad_function(2,  9, 2);
@@ -310,6 +319,10 @@ static int set_spi_pad_func(int periph_id)
 		nx_gpio_set_pad_function(2, 11, 2);
 		nx_gpio_set_pad_function(2, 12, 2);
 
+		nx_gpio_set_drive_strength(2, 9, 2);
+		nx_gpio_set_drive_strength(2, 10, 2);
+		nx_gpio_set_drive_strength(2, 11, 2);
+		nx_gpio_set_drive_strength(2, 12, 2);
 		break;
 	}
 	return 0;
