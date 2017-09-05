@@ -78,6 +78,16 @@ static void board_backlight_enable(void)
 #endif
 }
 
+static void board_gpio_ctl(int gp, int io, int fn, int on)
+{
+	nx_gpio_set_pad_function(gp, io, fn);
+	if (on)
+		nx_gpio_set_output_value(gp, io, 1);
+	else
+		nx_gpio_set_output_value(gp, io, 0);
+	nx_gpio_set_output_enable(gp, io, 1);
+}
+
 int board_init(void)
 {
 	board_backlight_disable();
@@ -95,6 +105,12 @@ int board_late_init(void)
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
+
+	/* SD1_PWREN Low:On*/
+	/* board_gpio_ctl(gpio_e, 13, 0, 0); */
+
+	/* SD2_PWREN Low:On*/
+	board_gpio_ctl(gpio_e, 7, 0, 0);
 
 	board_backlight_enable();
 
