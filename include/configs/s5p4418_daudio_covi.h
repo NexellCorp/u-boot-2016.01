@@ -387,6 +387,7 @@
 						   "$kerneladdr "              \
 						   "$kernel_file;run "         \
 						   "load_fdt;"                 \
+						   "run dtb_reserve;"          \
 						   "bootz $kerneladdr - "      \
 						   "$fdtaddr\0"                \
 						   "mmcboot=run "              \
@@ -400,6 +401,7 @@
 						   "0x7A000000 "               \
 						   "s5p4418-daudio_covi-"      \
 						   "rev00.dtb; "               \
+						   "run dtb_reserve; "         \
 						   "bootz 0x71008000 "         \
 						   "0x79000000 0x7A000000\0"   \
 						   "ramfsboot=setenv "         \
