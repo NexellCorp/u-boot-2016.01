@@ -47,17 +47,17 @@ static const struct artik_info_t artik_info[] = {
 		.model_code	= 3,
 		.oui		= 0x08152F,
 	}, {
-		/* Artik305 */
+		/* Artik305s */
 		.board_name	= ARTIK_A305,
 		.year_offset	= 2017,
-		.security	= '0',
+		.security	= 'L',
 		.model_code	= 1,
 		.oui		= 0x448F17,
 	}, {
-		/* Artik533 */
+		/* Artik533s */
 		.board_name	= ARTIK_A533,
 		.year_offset	= 2017,
-		.security	= '0',
+		.security	= 'L',
 		.model_code	= 0,
 		.oui		= 0x448F17,
 	},
