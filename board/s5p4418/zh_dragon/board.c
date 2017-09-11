@@ -107,10 +107,16 @@ int board_late_init(void)
 #endif
 
 	/* SD1_PWREN Low:On*/
-	/* board_gpio_ctl(gpio_e, 13, 0, 0); */
+	board_gpio_ctl(gpio_e, 13, 0, 0);
 
 	/* SD2_PWREN Low:On*/
 	board_gpio_ctl(gpio_e, 7, 0, 0);
+
+	/* WIFI EN High:On */
+	board_gpio_ctl(gpio_c, 12, 1, 1);
+
+	/* BT EN High:On */
+	board_gpio_ctl(gpio_c, 11, 1, 1);
 
 	board_backlight_enable();
 
