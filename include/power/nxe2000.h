@@ -1003,6 +1003,15 @@ struct dm_nxe2000_platdata {
 
 	int vindac;
 
+	int chgp;
+	int chgcmp_dis;
+	int nobatovlim;
+	int otg_boost_en;
+	int suspend;
+	int jeitaen;
+	int vusbchgen;
+	int vadpchgen;
+
 	int chg_usb_vcontmask;
 	int chg_adp_vcontmask;
 	int chg_vbus_buck_ths;

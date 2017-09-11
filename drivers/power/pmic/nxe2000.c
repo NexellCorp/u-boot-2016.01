@@ -210,14 +210,14 @@ static int nxe2000_param_setup(struct udevice *dev, uint8_t *cache)
 		| (pdata->adccnt3_adsel << NXE2000_POS_ADCCNT3_ADSEL));
 
 	cache[NXE2000_REG_CHGCTL1] =
-		((0 << NXE2000_POS_CHGCTL1_CHGP)
-		| (0 << NXE2000_POS_CHGCTL1_CHGCMP_DIS)
-		| (1 << NXE2000_POS_CHGCTL1_NOBATOVLIM)
-		| (0 << NXE2000_POS_CHGCTL1_OTG_BOOST_EN)
-		| (0 << NXE2000_POS_CHGCTL1_SUSPEND)
-		| (0 << NXE2000_POS_CHGCTL1_JEITAEN)
-		| (0 << NXE2000_POS_CHGCTL1_VUSBCHGEN)
-		| (0 << NXE2000_POS_CHGCTL1_VADPCHGEN));
+		((pdata->chgp << NXE2000_POS_CHGCTL1_CHGP)
+		| (pdata->chgcmp_dis << NXE2000_POS_CHGCTL1_CHGCMP_DIS)
+		| (pdata->nobatovlim << NXE2000_POS_CHGCTL1_NOBATOVLIM)
+		| (pdata->otg_boost_en << NXE2000_POS_CHGCTL1_OTG_BOOST_EN)
+		| (pdata->suspend << NXE2000_POS_CHGCTL1_SUSPEND)
+		| (pdata->jeitaen << NXE2000_POS_CHGCTL1_JEITAEN)
+		| (pdata->vusbchgen << NXE2000_POS_CHGCTL1_VUSBCHGEN)
+		| (pdata->vadpchgen << NXE2000_POS_CHGCTL1_VADPCHGEN));
 
 	cache[NXE2000_REG_CHGCTL2] =
 	((pdata->chg_usb_vcontmask << NXE2000_POS_CHGCTL2_USB_VCONTMASK)
@@ -280,7 +280,17 @@ static int nxe2000_device_setup(struct udevice *dev, uint8_t *cache)
 {
 	struct dm_nxe2000_platdata *pdata = dev->platdata;
 
-	dm_i2c_write(dev, NXE2000_REG_CHGCTL1, &cache[NXE2000_REG_CHGCTL1], 1);
+	if (
+		(pdata->chgp != -ENODATA) &&
+		(pdata->chgcmp_dis != -ENODATA) &&
+		(pdata->nobatovlim != -ENODATA) &&
+		(pdata->otg_boost_en != -ENODATA) &&
+		(pdata->suspend != -ENODATA) &&
+		(pdata->jeitaen != -ENODATA) &&
+		(pdata->vusbchgen != -ENODATA) &&
+		(pdata->vadpchgen != -ENODATA))
+		dm_i2c_write(dev, NXE2000_REG_CHGCTL1
+			, &cache[NXE2000_REG_CHGCTL1], 1);
 
 	if (pdata->vindac != -ENODATA)
 		dm_i2c_write(dev, NXE2000_REG_VINDAC
@@ -393,6 +403,23 @@ static int nxe2000_ofdata_to_platdata(struct udevice *dev)
 
 	pdata->vindac = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,vindac", -ENODATA);
+
+	pdata->chgp = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,chgp", -ENODATA);
+	pdata->chgcmp_dis = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,chgcmp_dis", -ENODATA);
+	pdata->nobatovlim = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,nobatovlim", -ENODATA);
+	pdata->otg_boost_en = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,otg_boost_en", -ENODATA);
+	pdata->suspend = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,suspend", -ENODATA);
+	pdata->jeitaen = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,jeitaen", -ENODATA);
+	pdata->vusbchgen = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,vusbchgen", -ENODATA);
+	pdata->vadpchgen = fdtdec_get_int(blob, nxe2000_node,
+		"nxe2000,vadpchgen", -ENODATA);
 
 	pdata->chg_usb_vcontmask = fdtdec_get_int(blob, nxe2000_node,
 		"nxe2000,chg_usb_vcontmask", -ENODATA);
