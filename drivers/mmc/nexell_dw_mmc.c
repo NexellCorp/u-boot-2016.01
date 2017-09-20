@@ -172,8 +172,13 @@ static void nx_dw_mmc_clksel(struct dwmci_host *host)
 {
 	u32 val;
 
+#ifdef CONFIG_BOOST_MMC
+	val = DWMCI_SET_SAMPLE_CLK(DWMCI_SHIFT_0) |
+	    DWMCI_SET_DRV_CLK(DWMCI_SHIFT_0) | DWMCI_SET_DIV_RATIO(1);
+#else
 	val = DWMCI_SET_SAMPLE_CLK(DWMCI_SHIFT_0) |
 	    DWMCI_SET_DRV_CLK(DWMCI_SHIFT_0) | DWMCI_SET_DIV_RATIO(3);
+#endif
 
 	dwmci_writel(host, DWMCI_CLKSEL, val);
 }
