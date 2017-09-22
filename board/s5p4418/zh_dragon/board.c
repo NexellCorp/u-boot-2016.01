@@ -78,13 +78,16 @@ static void board_backlight_enable(void)
 #endif
 }
 
-static void board_gpio_ctl(int gp, int io, int fn, int on)
+static void board_gpio_ctl(int gp, int io, int fn, int on, u32 mode)
 {
 	nx_gpio_set_pad_function(gp, io, fn);
+
 	if (on)
 		nx_gpio_set_output_value(gp, io, 1);
 	else
 		nx_gpio_set_output_value(gp, io, 0);
+
+	nx_gpio_set_pull_mode(gp, io, mode);
 	nx_gpio_set_output_enable(gp, io, 1);
 }
 
@@ -106,17 +109,60 @@ int board_late_init(void)
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
 
-	/* SD1_PWREN Low:On*/
-	board_gpio_ctl(gpio_e, 13, 0, 0);
+	/* Not used : gpio, output, low*/
+	board_gpio_ctl(gpio_b,  2, 0, 0, nx_gpio_pull_down);
+	board_gpio_ctl(gpio_b,  4, 0, 0, nx_gpio_pull_down);
+	board_gpio_ctl(gpio_b,  8, 0, 0, nx_gpio_pull_down);
+	board_gpio_ctl(gpio_b, 10, 0, 0, nx_gpio_pull_down);
 
-	/* SD2_PWREN Low:On*/
-	board_gpio_ctl(gpio_e, 7, 0, 0);
+	/* U74 I2C : gpio, output, high */
+	board_gpio_ctl(gpio_b, 28, 2, 1, nx_gpio_pull_off);
+	board_gpio_ctl(gpio_b, 29, 2, 1, nx_gpio_pull_off);
 
-	/* WIFI EN High:On */
-	board_gpio_ctl(gpio_c, 12, 1, 1);
+	/* HDMI I2C : gpio, output, high */
+	board_gpio_ctl(gpio_c,  0, 1, 1, nx_gpio_pull_off);
+	board_gpio_ctl(gpio_c,  1, 1, 1, nx_gpio_pull_off);
+
+	/* HDMI CEC : gpio, output, high */
+	board_gpio_ctl(gpio_c,  3, 1, 1, nx_gpio_pull_off);
+
+	/* Not used : gpio, output, low */
+	board_gpio_ctl(gpio_c,  9, 1, 0, nx_gpio_pull_down);
+	board_gpio_ctl(gpio_c, 10, 1, 0, nx_gpio_pull_down);
 
 	/* BT EN High:On */
-	board_gpio_ctl(gpio_c, 11, 1, 1);
+	board_gpio_ctl(gpio_c, 11, 1, 1, nx_gpio_pull_off);
+
+	/* WIFI EN High:On */
+	board_gpio_ctl(gpio_c, 12, 1, 1, nx_gpio_pull_off);
+
+	/* Not used : gpio, output, low */
+	board_gpio_ctl(gpio_c, 25, 1, 0, nx_gpio_pull_down);
+
+	/* DIV_TP I2C : gpio, output, high */
+	board_gpio_ctl(gpio_c, 29, 0, 1, nx_gpio_pull_off);
+	board_gpio_ctl(gpio_c, 30, 0, 1, nx_gpio_pull_off);
+
+	/* USB_OTG_POW_CTL : output, high */
+	board_gpio_ctl(gpio_d,  0, 0, 1, nx_gpio_pull_off);
+
+	/* DIV_TP_RST : gpio, output, high */
+	board_gpio_ctl(gpio_d, 11, 0, 1, nx_gpio_pull_off);
+
+	/* SD2_PWREN Low:On*/
+	board_gpio_ctl(gpio_e, 7, 0, 0, nx_gpio_pull_off);
+
+	/* SD1_PWREN Low:On*/
+	board_gpio_ctl(gpio_e, 13, 0, 0, nx_gpio_pull_off);
+
+	/* Not used : gpio, output, low */
+	board_gpio_ctl(gpio_e, 14, 0, 0, nx_gpio_pull_off);
+	board_gpio_ctl(gpio_e, 15, 0, 0, nx_gpio_pull_off);
+	board_gpio_ctl(gpio_e, 18, 0, 0, nx_gpio_pull_off);
+	board_gpio_ctl(gpio_e, 19, 0, 0, nx_gpio_pull_off);
+
+	/* Alive : gpio, input, pullup */
+
 
 	board_backlight_enable();
 
