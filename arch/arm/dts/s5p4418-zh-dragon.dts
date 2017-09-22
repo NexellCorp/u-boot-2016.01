@@ -15,11 +15,21 @@
 
 	compatible = "nexell,s5p4418";
 
+	pinctrl@C0010000 {
+		/delete-node/ gmac_txd;
+		/delete-node/ gmac_rxd;
+		/delete-node/ gmac_txen;
+		/delete-node/ gmac_mdc;
+		/delete-node/ gmac_mdio;
+		/delete-node/ gmac_rxclk;
+		/delete-node/ gmac_txclk;
+	};
+
 	mmc0:mmc@c0062000 {
 		nexell,drive_dly = <0x0>;
-		nexell,drive_shift = <0x02>;
+		nexell,drive_shift = <0x03>;
 		nexell,sample_dly = <0x00>;
-		nexell,sample_shift = <0x01>;
+		nexell,sample_shift = <0x02>;
 		frequency = <50000000>;
 		status = "okay";
 	};
