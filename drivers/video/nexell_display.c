@@ -59,17 +59,6 @@ static char *const dp_dev_str[] = {
 	[DP_DEVICE_DP1] = "DP1",
 };
 
-__weak int __dp_mipi_init(int width, int height, void *private_data)
-{
-	printf("[todo for mipi %s:%s]\n", __FILE__, __func__);
-	return 0;
-}
-
-__weak void __dp_mipi_exit(int width, int height, void *private_data)
-{
-	printf("[todo for mipi %s:%s]\n", __FILE__, __func__);
-}
-
 #if !defined CONFIG_SPL_BUILD && CONFIG_IS_ENABLED(OF_CONTROL)
 static void nx_display_parse_dp_sync(const void *blob, int node,
 				     struct dp_sync_info *sync)
@@ -292,8 +281,8 @@ static int nx_display_parse_dp_mipi(const void *blob, int node,
 
 	dev->lp_bitrate = fdtdec_get_int(blob, node, "lp_bitrate", 0);
 	dev->hs_bitrate = fdtdec_get_int(blob, node, "hs_bitrate", 0);
-	dev->dev_init = __dp_mipi_init;
-	dev->dev_exit = __dp_mipi_exit;
+	dev->lpm_trans = 1;
+	dev->command_mode = 0;
 
 	debug("DP: MIPI ->\n");
 	debug("lp:%dmhz, hs:%dmhz\n", dev->lp_bitrate, dev->hs_bitrate);

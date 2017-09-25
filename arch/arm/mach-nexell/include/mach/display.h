@@ -189,12 +189,18 @@ struct dp_lvds_dev {
 	unsigned int loc_pol[2];	/* Location Setting, 0 ~ 34 */
 };
 
+#include "mipi_display.h"
+
 struct dp_mipi_dev {
 	int lp_bitrate;	/* to lcd setup, low power bitrate (150, 100, 80 Mhz) */
 	int hs_bitrate; /* to lcd data, high speed bitrate (1000, ... Mhz) */
-	int (*dev_init)(int width, int height, void *private_data);
-	void (*dev_exit)(int width, int height, void *private_data);
-	void *private_data;
+	int lpm_trans;
+	int command_mode;
+	unsigned int hs_pllpms;
+	unsigned int hs_bandctl;
+	unsigned int lp_pllpms;
+	unsigned int lp_bandctl;
+	struct mipi_dsi_device dsi;
 };
 
 struct dp_rgb_dev {
@@ -240,8 +246,7 @@ void nx_mipi_display(int module,
 			 struct dp_plane_info *planes,
 			 struct dp_mipi_dev *dev);
 
-void nx_mipi_write_header(u32 data);
-void nx_mipi_write_payload(u32 data);
+int nx_mipi_dsi_lcd_bind(struct mipi_dsi_device *dsi);
 
 /* disaply api */
 void dp_control_init(int module);
