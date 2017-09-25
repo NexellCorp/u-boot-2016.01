@@ -6,3 +6,4 @@
 #
 
 obj-y	:= board.o
+obj-$(CONFIG_VIDEO_NX_MIPI) += lt010mb.o

@@ -68,3 +68,52 @@
 	};
 
 };
+
+&dp0 {
+        status = "okay";
+        module = <0>;
+        lcd-type = "mipi";
+
+	dp-device {
+		hs_bitrate = <1000>;
+		lp_bitrate = <80>;
+	};
+
+        dp-sync {
+		h_active_len = <1920>;
+		h_front_porch = <466>;
+		h_back_porch = <11>;
+		h_sync_width = <11>;
+		v_active_len = <1200>;
+		v_front_porch = <10>;
+		v_back_porch = <5>;
+		v_sync_width = <5>;
+	};
+
+	dp-ctrl {
+		clk_src_lv0 = <0>;
+		clk_div_lv0 = <5>;
+		clk_src_lv1 = <7>;
+		clk_div_lv1 = <1>;
+		out_format = <3>;
+		vs_start_offset = <2387>;
+		ev_start_offset = <2387>;
+		vs_end_offset = <0>;
+		ev_end_offset = <0>;
+	};
+
+	dp-planes {
+		layer_top {
+			screen_width = <1920>;
+			screen_height = <1200>;
+			back_color = <0x0>;
+		};
+
+		layer_1 {	/* RGB 1 */
+			width = <1920>;
+			height = <1200>;
+			format = <0x06530000>;
+			pixel_byte = <4>;
+		};
+	};
+};
