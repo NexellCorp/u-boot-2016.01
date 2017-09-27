@@ -1,0 +1,6 @@
+S5P4418 ZH_BLACKDRAGON BOARD
+M:  jongshin park <pjsin865@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/zh_blackdragon/
+F:  include/configs/s5p4418_zh_blackdragon.h
+F:  configs/s5p4418_zh_blackdragon_defconfig
