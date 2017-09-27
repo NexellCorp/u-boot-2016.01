@@ -40,3 +40,4 @@ obj-$(CONFIG_SYSRESET) += sysreset-uclass.o
 obj-$(CONFIG_FSL_DEVICE_DISABLE) += fsl_devdis.o
 obj-$(CONFIG_SENSORID) += sensorid-uclass.o
 obj-$(CONFIG_SENSORID_ARTIK) += sensorid_artik.o
+obj-$(CONFIG_SERDES_DS90UB92X) += ds90ub92x.o

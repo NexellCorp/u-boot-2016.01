@@ -125,4 +125,10 @@ config SENSORID_ARTIK
 	  MCU checks attached devices on add-on-board. And it reported
 	  Sendor ID inforamtion dynamically.
 
+config SERDES_DS90UB92X
+	bool "Enable support for SerDes DS90UB92X driver"
+	depends on DM
+	help
+	  Enable SerDes driver.
+
 endmenu
