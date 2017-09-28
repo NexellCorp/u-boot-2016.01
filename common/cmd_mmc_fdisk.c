@@ -12,7 +12,7 @@
 #include <div64.h>
 
 #define MMC_BLOCK_SIZE			(512)
-#define	MAX_PART_TABLE			(8)
+#define	MAX_PART_TABLE			(15)
 #define DOS_EBR_BLOCK				(0x100000/MMC_BLOCK_SIZE)
 
 #define DOS_PART_DISKSIG_OFFSET		0x1b8
