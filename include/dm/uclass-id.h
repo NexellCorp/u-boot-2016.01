@@ -71,6 +71,7 @@ enum uclass_id {
 	UCLASS_USB_HUB,		/* USB hub */
 	UCLASS_VIDEO_BRIDGE,	/* Video bridge, e.g. DisplayPort to LVDS */
 	UCLASS_SENSOR_ID,	/* Sensor type detecting device */
+	UCLASS_USBCHARGE_ID,	/* USB Charger */
 
 	UCLASS_COUNT,
 	UCLASS_INVALID = -1,
