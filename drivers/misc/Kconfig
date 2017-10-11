@@ -131,4 +131,10 @@ config SERDES_DS90UB92X
 	help
 	  Enable SerDes driver.
 
+config USB_CHARGE
+	bool "USB Charge support"
+	depends on DM_I2C_GPIO
+	help
+	  Enable usb charge driver
+
 endmenu
