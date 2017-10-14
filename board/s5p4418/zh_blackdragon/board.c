@@ -100,31 +100,6 @@ void board_gpio_init(void)
 	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
 }
 
-static void nx_alive_write_enable(int enable)
-{
-	writel(0x01, (PHY_BASEADDR_ALIVE + ALIVE_PWRGATEREG));
-	writel(0x00, (PHY_BASEADDR_ALIVE + 0x74));
-	writel(0x00, (PHY_BASEADDR_ALIVE + 0x8C));
-}
-
-static void nx_alive_out_set(int bit, int enable)
-{
-	register u32 newvalue;
-
-	newvalue &= ~(1ul << bit);
-	newvalue |= (u32)enable << bit;
-	writel(newvalue, (PHY_BASEADDR_ALIVE + ALIVE_PADOUTSET));
-}
-
-static void nx_alive_out_enable(int bit, int enable)
-{
-	register u32 newvalue;
-
-	newvalue &= ~(1ul << bit);
-	newvalue |= (u32)enable << bit;
-	writel(newvalue, (PHY_BASEADDR_ALIVE + ALIVE_PADOUTEN));
-}
-
 static void board_gpio_ctl(int gp, int io, int fn, int on, u32 mode)
 {
 	nx_gpio_set_pad_function(gp, io, fn);
@@ -136,6 +111,34 @@ static void board_gpio_ctl(int gp, int io, int fn, int on, u32 mode)
 
 	nx_gpio_set_pull_mode(gp, io, mode);
 	nx_gpio_set_output_enable(gp, io, 1);
+}
+
+static void board_gpio_alv_ctl(char *str_gpio, int on)
+{
+	unsigned int gpio;
+	int ret;
+
+#if defined(CONFIG_DM_GPIO)
+	ret = gpio_lookup_name(str_gpio, NULL, NULL, &gpio);
+	if (ret)
+		printf("gpio_lookup_name: pin %s failed\n", str_gpio);
+#else
+	gpio = name_to_gpio(str_gpio);
+	if (gpio < 0)
+		printf("name_to_gpio: pin %s failed\n", str_gpio);
+#endif
+
+	ret = gpio_request(gpio, "cmd_gpio");
+	if (ret && ret != -EBUSY) {
+		printf("gpio: requesting pin %u failed\n", gpio);
+		return;
+	}
+
+	if (on)
+		gpio_direction_output(gpio, 1);
+	else
+		gpio_direction_output(gpio, 0);
+
 }
 
 int board_init(void)
@@ -246,15 +249,12 @@ int board_late_init(void)
 	/* USB4_CTL : gpio, output, high */
 	board_gpio_ctl(gpio_e, 19, 0, 1, nx_gpio_pull_off);
 
-	nx_alive_write_enable(1);
-
+	/* Alive : output */
 	/* 927_PDB : AliveGPIO0 output, high */
-	nx_alive_out_set(0, 1);
-	nx_alive_out_enable(0, 1);
+	board_gpio_alv_ctl("gpio_alv0", 1);
 
-	/* ARM_TP_RST : AliveGPIO5 output */
-	nx_alive_out_set(5, 0);
-	nx_alive_out_enable(5, 0);
+	/* ARM_TP_RST : AliveGPIO5 output, low */
+	board_gpio_alv_ctl("gpio_alv5", 0);
 
 	board_backlight_enable();
 
