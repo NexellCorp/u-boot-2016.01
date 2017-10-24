@@ -1,0 +1,6 @@
+S5P4418_CLOVA BOARD
+M:  sungwoo park <swpark@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/clova/
+F:  include/configs/s5p4418_clova.h
+F:  configs/s5p4418_clova_defconfig

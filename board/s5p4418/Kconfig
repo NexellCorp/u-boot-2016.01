@@ -50,6 +50,11 @@ config TARGET_S5P4418_DAUDIO_COVI
 	bool "S5P4418_DAUDIO_COVI"
 	help
 	  Support for s5p4418 daudio_covi platform.
+
+config TARGET_S5P4418_CLOVA
+    bool "S5P4418_CLOVA"
+    help
+      Support for s5p4418 clova platform
 endchoice
 
 config SYS_VENDOR
@@ -72,3 +77,4 @@ source "board/s5p4418/ff_voice/Kconfig"
 source "board/s5p4418/zh_dragon/Kconfig"
 source "board/s5p4418/zh_blackdragon/Kconfig"
 source "board/s5p4418/daudio_covi/Kconfig"
+source "board/s5p4418/clova/Kconfig"
