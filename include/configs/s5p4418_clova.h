@@ -177,7 +177,7 @@
 #define CONFIG_BOUNCE_BUFFER
 #define CONFIG_CMD_MMC
 #define CONFIG_CMD_BOOTZ
-#define CONFIG_BOOST_MMC
+/* #define CONFIG_BOOST_MMC */
 
 #if defined(CONFIG_MMC)
 #define CONFIG_2NDBOOT_OFFSET			512
