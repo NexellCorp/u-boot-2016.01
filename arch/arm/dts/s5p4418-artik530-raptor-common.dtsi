@@ -8,7 +8,7 @@
 #include "s5p4418-artik530.dtsi"
 
 / {
-	model = "Samsung artik530 raptor board based on Nexell s5p4418";
+	model = "Samsung artik530 board based on Nexell s5p4418";
 	cpu-model = "S5p4418";
 
 	compatible = "samsung,artik530-raptor", "samsung,artik530",
