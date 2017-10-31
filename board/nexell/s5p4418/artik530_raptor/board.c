@@ -39,6 +39,11 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#define TYPE_A530	0
+#define TYPE_A533	1
+#define BOARD_COMPY	0
+#define BOARD_RAPTOR	1
+
 #ifdef CONFIG_CHECK_BONDING_ID
 int check_bonding_id(void)
 {
@@ -52,14 +57,19 @@ int check_bonding_id(void)
 
 #ifdef CONFIG_CHECK_BOARD_TYPE
 int check_board_type(void)
-{	int val;
+{	int val = 0;
 
-	val = nx_gpio_get_input_value(1, 25);
-	val <<= 1;
-
+	val |= (nx_gpio_get_input_value(1, 25) << 1);
 	val |= nx_gpio_get_input_value(1, 24);
 
 	return val;
+}
+#endif
+
+#ifdef CONFIG_SUPPORT_COMPY_BOARD
+int check_sub_board(void)
+{
+	return nx_gpio_get_input_value(1, 30);
 }
 #endif
 
@@ -108,7 +118,7 @@ int checkboard(void)
 	}
 #endif
 #ifdef CONFIG_CHECK_BOARD_TYPE
-	if (check_board_type() == 1) {
+	if (check_board_type() == TYPE_A533) {
 		memset(board_type, 0, 20);
 		strncpy(board_type, "ARTIK533 Raptor", 20);
 	}
@@ -325,10 +335,13 @@ int board_late_init(void)
 #endif
 
 #ifdef CONFIG_CHECK_BOARD_TYPE
-	if (check_board_type() == 1)
+	if (check_board_type() == TYPE_A533)
 		setenv_ulong("model_id", 533);
 #endif
-
+#ifdef CONFIG_SUPPORT_COMPY_BOARD
+	if (check_sub_board() == BOARD_COMPY)
+		setenv("board_type" ,"compy");
+#endif
 #ifdef CONFIG_DM_PMIC_NXE2000
 	pmic_init();
 #endif
@@ -343,7 +356,9 @@ int board_late_init(void)
 	generate_mac();
 #endif
 #ifdef CONFIG_SENSORID_ARTIK
+#ifndef CONFIG_SUPPORT_COMPY_BOARD
 	get_sensorid(board_rev);
+#endif
 #endif
 #ifdef CONFIG_ARTIK_OTA
 	check_ota_update();
