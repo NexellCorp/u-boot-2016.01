@@ -316,6 +316,7 @@
 #define CONFIG_FACTORY_INFO_SIZE		0x100
 
 #define CONFIG_CHECK_BOARD_TYPE
+#define CONFIG_SUPPORT_COMPY_BOARD
 /* OTA */
 #if defined(CONFIG_ARTIK_OTA)
 #define CONFIG_FLAG_INFO_ADDR	0x9A000000
@@ -387,6 +388,9 @@
 		"setexpr sdrecaddr $sdram_base + $sd_offset\0"	\
 	"initrd_high=0xFFFFFFFF\0"	\
 	"load_fdt="							\
+		"if test $board_type = compy; then "			\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik${model_id}-compy.dtb; "	\
+		"else "							\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
 		"number=$board_rev: "					\
@@ -405,7 +409,8 @@
 			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik${model_id}-raptor-rev${number}.dtb; "	\
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; " \
-		"fi; setenv success; setenv number; setenv loop;\0"	\
+		"fi; setenv success; setenv number; setenv loop;"	\
+		"fi;\0"							\
 	"bootdelay=" __stringify(CONFIG_BOOTDELAY) "\0"			\
 	"console=" CONFIG_DEFAULT_CONSOLE				\
 	"consoleon=setenv console=" CONFIG_DEFAULT_CONSOLE		\
@@ -418,6 +423,7 @@
 	"rescue=0\0"							\
 	"root_rw=rw\0"							\
 	"model_id=533\0"						\
+	"board_type=raptor\0"						\
 	"nr_cpus=4\0"							\
 	"opts=loglevel=4\0"						\
 	"rootfs_type=ext4\0"						\
