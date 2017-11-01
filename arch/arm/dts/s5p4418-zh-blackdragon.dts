@@ -80,22 +80,18 @@
 		};
 	};
 
-	arm_tp_i2c:i2c_gpio@2 {
+	ub927928_gpio:i2c_gpio@2 {
 		compatible = "i2c-gpio";
 		#address-cells = <1>;
 		#size-cells = <0>;
 		gpios = <&gpio_d 7 1>,	/* SDA */
 		      <&gpio_d 6 1>;	/* SCL */
 
-		i2c-gpio,delay-us = <3>;
-		ds90ub927@0x0c {
-			compatible = "ti,ds90ub927";
+		i2c-gpio,delay-us = <12>;
+		ub927928_gpio@0c{
+			compatible = "mediatek,ub9xx";
+			gpios-en = <&gpio_alv 0 1>;
 			reg = <0x0c>;
-		};
-
-		ds90ub928@0x2c {
-			compatible = "ti,ds90ub928";
-			reg = <0x2c>;
 		};
 	};
 
