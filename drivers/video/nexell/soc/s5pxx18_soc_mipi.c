@@ -597,3 +597,32 @@ u32 nx_mipi_dsi_read_fifo_status(u32 module_index)
 	pregister = __g_pregister[module_index];
 	return read_reg(&pregister->dsim_fifoctrl);
 }
+
+void nx_mipi_dsi_clear_interrupt_pending(u32 module_index, u32 int_num)
+{
+	register struct nx_mipi_register_set *pregister;
+
+	pregister = __g_pregister[module_index];
+	write_reg(1ul << (int_num), &pregister->dsim_intsrc);
+}
+
+int nx_mipi_dsi_get_interrupt_pending(u32 module_index, u32 int_num)
+{
+	register struct nx_mipi_register_set *pregister;
+	register u32 regvalue;
+	int ret;
+
+	pregister = __g_pregister[module_index];
+	regvalue = read_reg(&pregister->dsim_intsrc);
+	ret = (int)((regvalue >> int_num) & 0x01);
+
+	return ret;
+}
+
+u32 nx_mipi_dsi_read_fifo(u32 module_index)
+{
+	register struct nx_mipi_register_set *pregister;
+
+	pregister = __g_pregister[module_index];
+	return read_reg(&pregister->dsim_rxfifo);
+}

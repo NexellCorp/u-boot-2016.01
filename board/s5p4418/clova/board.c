@@ -70,6 +70,8 @@ static void board_backlight_disable(void)
 static void board_backlight_enable(void)
 {
 #ifdef CONFIG_PWM_NX
+
+#if 0
 	/*
 	 * pwm backlight ON: HIGH, ON: LOW
 	 */
@@ -82,7 +84,7 @@ static void board_backlight_enable(void)
 		TO_DUTY_NS(CONFIG_BACKLIGHT_DUTY, CONFIG_BACKLIGHT_HZ),
 		TO_PERIOD_NS(CONFIG_BACKLIGHT_HZ)
 		);
-
+#endif
 	/*
 	 * LCD LED Enable(GPA20): HIGH
 	*/

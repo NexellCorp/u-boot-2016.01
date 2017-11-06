@@ -163,9 +163,9 @@
  */
 #define CONFIG_BACKLIGHT_CH			0
 #define CONFIG_BACKLIGHT_DIV			0
-#define CONFIG_BACKLIGHT_INV			0
-#define CONFIG_BACKLIGHT_DUTY			50
-#define CONFIG_BACKLIGHT_HZ			20000
+#define CONFIG_BACKLIGHT_INV			1
+#define CONFIG_BACKLIGHT_DUTY			40
+#define CONFIG_BACKLIGHT_HZ			100000
 
 /*-----------------------------------------------------------------------
  * SD/MMC

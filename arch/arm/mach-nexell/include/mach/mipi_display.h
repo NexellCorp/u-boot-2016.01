@@ -203,6 +203,8 @@ struct mipi_dsi_device {
 	struct mipi_panel_ops *ops;
 	ssize_t (*write_buffer)(struct mipi_dsi_device *dsi,
 			const void *data, size_t len);
+	ssize_t (*read_buffer)(struct mipi_dsi_device *dsi,
+			u8 cmd, void *data, size_t len);
 };
 
 struct mipi_panel_ops {

@@ -205,10 +205,12 @@ static int mipi_prepare(int module, int input,
 			struct dp_sync_info *sync, struct dp_ctrl_info *ctrl,
 			struct dp_mipi_dev *mipi)
 {
+	struct mipi_dsi_device *dsi = &mipi->dsi;
 	int index = MIPI_INDEX;
 	u32 esc_pre_value = MIPI_EXC_PRE_VALUE;
 	int lpm = mipi->lpm_trans;
 	int ret = 0;
+    int data_len = dsi->lanes - 1;
 
 	ret = mipi_get_phy_pll(mipi->hs_bitrate,
 			       &mipi->hs_pllpms, &mipi->hs_bandctl);
@@ -237,13 +239,51 @@ static int mipi_prepare(int module, int input,
 	 * disable the escape clock generating prescaler
 	 * before soft reset.
 	 */
-	nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 0, 0, 0, 0, 10);
+    switch (data_len) {
+	case 0:     /* 1 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 0, 0, 0, 0, 10);
+		break;
+	case 1:     /* 2 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 0, 0, 0, 10);
+		break;
+	case 2:     /* 3 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 1, 0, 0, 10);
+		break;
+	case 3:     /* 4 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 1, 1, 0, 10);
+		break;
+	default:
+		printf("%s: not support data lanes %d\n",
+			__func__, data_len + 1);
+		return -EINVAL;
+	}
 	mdelay(1);
 #endif
 
 	nx_mipi_dsi_software_reset(index);
-	nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 0, 0, 0, 1, esc_pre_value);
-	nx_mipi_dsi_set_phy(index, 0, 1, 1, 0, 0, 0, 0, 0);
+
+	switch (data_len) {
+	case 0:     /* 1 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 0, 0, 0, 1, esc_pre_value);
+		nx_mipi_dsi_set_phy(index, data_len, 1, 1, 0, 0, 0, 0, 0);
+		break;
+	case 1:     /* 1 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 0, 0, 1, esc_pre_value);
+		nx_mipi_dsi_set_phy(index, data_len, 1, 1, 1, 0, 0, 0, 0);
+		break;
+	case 2:     /* 1 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 1, 0, 1, esc_pre_value);
+		nx_mipi_dsi_set_phy(index, data_len, 1, 1, 1, 1, 0, 0, 0);
+		break;
+	case 3:     /* 4 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 1, 1, 1, esc_pre_value);
+		nx_mipi_dsi_set_phy(index, data_len, 1, 1, 1, 1, 1, 0, 0);
+		break;
+	default:
+		printf("%s: not support data lanes %d\n",
+			__func__, data_len + 1);
+		return -EINVAL;
+	}
 
 	if (lpm)
 		nx_mipi_dsi_set_escape_lp(index, nx_mipi_dsi_lpmode_lp,
@@ -292,7 +332,7 @@ static int mipi_enable(int module, int input,
 	en_prescaler = 0;
 #endif
 
-	debug("%s: mode:%s, lanes.%d\n", __func__,
+	printf("%s: mode:%s, lanes.%d\n", __func__,
 	      command_mode ? "command" : "video", data_len + 1);
 
 	if (lpm)
@@ -304,12 +344,51 @@ static int mipi_enable(int module, int input,
 			    mipi->hs_pllpms, mipi->hs_bandctl, 0, 0);
 	mdelay(1);
 
-	nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 0, 0, 0, en_prescaler, 10);
+	switch (data_len) {
+	case 0:		/* 1 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 0, 0, 0, en_prescaler, 10);
+		break;
+	case 1:		/* 2 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 0, 0, en_prescaler, 10);
+		break;
+	case 2:		/* 3 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 1, 0, en_prescaler, 10);
+		break;
+	case 3:		/* 4 lane */
+		nx_mipi_dsi_set_clock(index, 0, 0, 1, 1, 1, 1, 1, 1, en_prescaler, 10);
+		break;
+	default:
+		printf("%s: not support data lanes %d\n",
+			__func__, data_len + 1);
+		return -EINVAL;
+	}
+
 	mdelay(1);
 
 	nx_mipi_dsi_software_reset(index);
-	nx_mipi_dsi_set_clock(index, txhsclock, 0, 1,
+
+	switch (data_len) {
+	case 0:		/* 1 lane */
+		nx_mipi_dsi_set_clock(index, txhsclock, 0, 1,
 			      1, 1, 0, 0, 0, 1, esc_pre_value);
+		break;
+	case 1:		/* 2 lane */
+		nx_mipi_dsi_set_clock(index, txhsclock, 0, 1,
+			      1, 1, 1, 0, 0, 1, esc_pre_value);
+		break;
+	case 2:		/* 3 lane */
+		nx_mipi_dsi_set_clock(index, txhsclock, 0, 1,
+			      1, 1, 1, 1, 0, 1, esc_pre_value);
+		break;
+	case 3:		/* 4 lane */
+		nx_mipi_dsi_set_clock(index, txhsclock, 0, 1,
+			      1, 1, 1, 1, 1, 1, esc_pre_value);
+		break;
+	default:
+		printf("%s: not support data lanes %d\n",
+			__func__, data_len + 1);
+		return -EINVAL;
+	}
 
 	switch (data_len) {
 	case 0:		/* 1 lane */
@@ -321,12 +400,12 @@ static int mipi_enable(int module, int input,
 	case 2:		/* 3 lane */
 		nx_mipi_dsi_set_phy(index, data_len, 1, 1, 1, 1, 0, 0, 0);
 		break;
-	case 3:		/* 3 lane */
+	case 3:		/* 4 lane */
 		nx_mipi_dsi_set_phy(index, data_len, 1, 1, 1, 1, 1, 0, 0);
 		break;
 	default:
 		printf("%s: not support data lanes %d\n",
-		       __func__, data_len + 1);
+			__func__, data_len + 1);
 		return -EINVAL;
 	}
 
@@ -430,8 +509,10 @@ static int nx_mipi_transfer_done(struct mipi_dsi_device *dsi)
 			break;
 	} while (count-- > 0);
 
-	if (count < 0)
+	if (count < 0) {
+		printf("%s: timeout error \n",__FUNCTION__);
 		return -EINVAL;
+	}
 
 	return 0;
 }
@@ -575,7 +656,10 @@ static int nx_mipi_transfer(struct mipi_dsi_device *dsi,
 	if (xfer.rx_len)
 		err = nx_mipi_transfer_rx(dsi, &xfer);
 
-	nx_mipi_transfer_done(dsi);
+	err = nx_mipi_transfer_done(dsi);
+	if(err)
+		printf("%s: err  %d \n",__FUNCTION__, err);
+
 
 	return err;
 }
@@ -609,10 +693,26 @@ static ssize_t nx_mipi_write_buffer(struct mipi_dsi_device *dsi,
 	return nx_mipi_transfer(dsi, &msg);
 }
 
+static ssize_t nx_mipi_read_buffer(struct mipi_dsi_device *dsi, u8 cmd,
+				   void *data, size_t len)
+{
+	struct mipi_dsi_msg msg = {
+		.channel = dsi->channel,
+		.type = MIPI_DSI_DCS_READ,
+		.tx_buf = &cmd,
+		.tx_len = 1,
+		.rx_buf = data,
+		.rx_len = len
+	};
+
+	return nx_mipi_transfer(dsi, &msg);
+}
+
 __weak int nx_mipi_dsi_lcd_bind(struct mipi_dsi_device *dsi)
 {
 	return 0;
 }
+
 
 /*
  * disply
@@ -637,6 +737,7 @@ void nx_mipi_display(int module,
 
 	/* map mipi-dsi write callback func */
 	dsi->write_buffer = nx_mipi_write_buffer;
+	dsi->read_buffer = nx_mipi_read_buffer;
 
 	ret = nx_mipi_dsi_lcd_bind(dsi);
 	if (ret) {

@@ -70,7 +70,8 @@
 /* LDO1~4 Voltage Value(uV) = 0: 0.90 ~ 3.5V, Step = 25mV */
 /* LDO5~6 Voltage Value(uV) = 0: 0.60 ~ 3.5V, Step = 25mV */
 /* LDO7~10 Voltage Value(uV) = 0: 0.90 ~ 3.5V, Step = 25mV */
-#define	NXE2000_DEF_LDO1_VOL 3300000 /* OTP = 3.30V */
+/* #define	NXE2000_DEF_LDO1_VOL 3300000 /* OTP = 3.30V */ 
+#define	NXE2000_DEF_LDO1_VOL 2800000 /* OTP = 3.30V */
 #define	NXE2000_DEF_LDO2_VOL 1800000 /* OTP = 1.80V */
 #define	NXE2000_DEF_LDO3_VOL 1800000 /* OTP = 1.80V */
 #define	NXE2000_DEF_LDO4_VOL 1800000 /* OTP = 1.80V */
@@ -78,7 +79,7 @@
 #define	NXE2000_DEF_LDO6_VOL 3300000 /* OTP = 3.30V */
 #define	NXE2000_DEF_LDO7_VOL 2800000 /* OTP = 2.80V */
 #define	NXE2000_DEF_LDO8_VOL 3300000 /* OTP = 3.30V */
-#define	NXE2000_DEF_LDO9_VOL 3300000 /* OTP = 3.30V */
+#define	NXE2000_DEF_LDO9_VOL 1800000 /* OTP = 3.30V */
 #define	NXE2000_DEF_LDO10_VOL 1000000 /* OTP = 1.20V */
 #define	NXE2000_DEF_LDORTC1_VOL 1800000 /* OTP = 1.80V */
 #define	NXE2000_DEF_LDORTC2_VOL 1000000 /* OTP = 1.00V */
@@ -86,7 +87,7 @@
 /* LDO1~4 Sleep Voltage Value(uV) = 0: 0.90 ~ 3.5V, Step = 25mV */
 /* LDO5~6 Sleep Voltage Value(uV) = 0: 0.60 ~ 3.5V, Step = 25mV */
 /* LDO7~10 Sleep Voltage Value(uV) = 0: 0.90 ~ 3.5V, Step = 25mV */
-#define	NXE2000_DEF_LDO1_SLP_VOL 3300000 /* OTP = 3.30V */
+#define	NXE2000_DEF_LDO1_SLP_VOL 2800000 /* OTP = 3.30V */
 #define	NXE2000_DEF_LDO2_SLP_VOL 1800000 /* OTP = 1.80V */
 #define	NXE2000_DEF_LDO3_SLP_VOL 1800000 /* OTP = 1.80V */
 #define	NXE2000_DEF_LDO4_SLP_VOL 1800000 /* OTP = 1.80V */
@@ -94,7 +95,7 @@
 #define	NXE2000_DEF_LDO6_SLP_VOL 3300000 /* OTP = 3.30V */
 #define	NXE2000_DEF_LDO7_SLP_VOL 2800000 /* OTP = 2.80V */
 #define	NXE2000_DEF_LDO8_SLP_VOL 3300000 /* OTP = 3.30V */
-#define	NXE2000_DEF_LDO9_SLP_VOL 3300000 /* OTP = 3.30V */
+#define	NXE2000_DEF_LDO9_SLP_VOL 1800000 /* OTP = 3.30V */
 #define	NXE2000_DEF_LDO10_SLP_VOL 1000000 /* OTP = 1.20V */
 
 /* DCDC and LDO Min/Max/Step Value */
