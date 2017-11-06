@@ -67,7 +67,7 @@ static void board_backlight_disable(void)
 	 * pwm backlight OFF: HIGH, ON: LOW
 	 */
 	nx_gpio_set_pad_function(gp, io, fn);
-	nx_gpio_set_output_value(gp, io, 0);
+	nx_gpio_set_output_value(gp, io, 1);
 	nx_gpio_set_output_enable(gp, io, 1);
 #endif
 }
@@ -145,6 +145,8 @@ int board_init(void)
 {
 	board_gpio_init();
 
+	board_gpio_alv_ctl("gpio_alv0", 0);
+
 	board_backlight_disable();
 
 #ifdef CONFIG_SILENT_CONSOLE
@@ -180,7 +182,7 @@ int board_late_init(void)
 	board_gpio_ctl(gpio_b, 28, 2, 1, nx_gpio_pull_off);
 	board_gpio_ctl(gpio_b, 29, 2, 1, nx_gpio_pull_off);
 
-	/* Not used : gpio, output, high */
+	/* Not used : gpio, output, low */
 	board_gpio_ctl(gpio_c,  0, 1, 0, nx_gpio_pull_down);
 	board_gpio_ctl(gpio_c,  1, 1, 0, nx_gpio_pull_down);
 	board_gpio_ctl(gpio_c,  3, 1, 0, nx_gpio_pull_down);
@@ -255,6 +257,10 @@ int board_late_init(void)
 
 	/* ARM_TP_RST : AliveGPIO5 output, low */
 	board_gpio_alv_ctl("gpio_alv5", 0);
+
+#ifdef CONFIG_UB927928
+	ub927928_init_s();
+#endif
 
 	board_backlight_enable();
 
