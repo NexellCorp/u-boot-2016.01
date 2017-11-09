@@ -72,6 +72,7 @@
 
 		dp-device {
 			format = <0>;
+			voltage_level = <0x3f>;
 		};
 
 		dp-sync {
