@@ -123,6 +123,12 @@ int board_late_init(void)
 		setenv("bootcmd", "run recoveryboot");
 	}
 #endif
+	/* Temporary disable the CHARGER_ENABLE */
+	nx_gpio_set_pad_function(gpio_a, 13, 0);
+	nx_gpio_set_pull_mode(gpio_a, 13, 1);
+	nx_gpio_set_output_enable(gpio_a, 13, 1);
+	nx_gpio_set_output_value(gpio_a,13, 1);
+
 
 	return 0;
 }
