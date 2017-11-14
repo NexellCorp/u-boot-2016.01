@@ -344,10 +344,10 @@
 
 #ifdef CONFIG_BOOTANIM
 #define CONFIG_BOOTCMD "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 init=/usr/bin/bootanimation loglevel=4 rootwait quiet " \
- 			         	"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
+ 			         	"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
 #else
 #define CONFIG_BOOTCMD "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
-				        "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0"
+				        "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
 #endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS                                              \
