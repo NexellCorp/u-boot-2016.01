@@ -35,9 +35,6 @@ static void cpu_soc_init(void)
 	writel(1, ALIVEPWRGATEREG);
 	writel(0xFFFFFFFF, SCR_ARM_SECOND_BOOT);
 
-	/* write 0xf0 on alive scratchpad reg for boot success check */
-	writel(readl(SCR_SIGNAGURE_READ) | 0xF0, (SCR_SIGNAGURE_SET));
-
 	/* set l2 cache tieoff */
 	nx_tieoff_set(NX_TIEOFF_CORTEXA9MP_TOP_QUADL2C_L2RET1N_0, 1);
 	nx_tieoff_set(NX_TIEOFF_CORTEXA9MP_TOP_QUADL2C_L2RET1N_1, 1);
