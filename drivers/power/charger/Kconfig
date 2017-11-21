@@ -22,3 +22,10 @@ config DM_CHARGER_NXE2000
 	---help---
 	This config enables implementation of driver-model charger uclass
 	features for CHARGER NXE2000.
+
+config DM_CHARGER_BQ25895M
+	bool "Enable Driver Model for CHARGER BQ25895M"
+	depends on DM_CHARGER
+	---help---
+	This config enables implementation of driver-model charger uclass
+	features for CHARGER BQ25895M.

@@ -7,3 +7,4 @@
 
 obj-$(CONFIG_DM_CHARGER) += charger-uclass.o
 obj-$(CONFIG_DM_CHARGER_NXE2000) += nxe2000.o
+obj-$(CONFIG_DM_CHARGER_BQ25895M) += bq25895m.o
