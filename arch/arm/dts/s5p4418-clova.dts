@@ -54,6 +54,20 @@
 			reg = <0x32>;
 		};
 	};
+	bq25895m_i2c:i2c@1 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_d 5 0>, /* SDA */
+			<&gpio_d 4 0>;   /* SCL */
+		status ="okay";
+
+	bq25895m@6a {
+		compatible = "ti,bq25895m";
+		reg = <0x6A>;
+		ti,charging-voltage= <4192>; /*4.19Volt*/
+		};
+	};
 
 	board_rev:rev@0 {
 		#address-cells = <1>;
