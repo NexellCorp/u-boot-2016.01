@@ -22,6 +22,9 @@
 #ifdef CONFIG_DM_REGULATOR_NXE2000
 #include <power/regulator.h>
 #endif
+#ifdef CONFIG_DM_CHARGER
+#include <power/charger.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -127,7 +130,7 @@ int board_late_init(void)
 	nx_gpio_set_pad_function(gpio_a, 13, 0);
 	nx_gpio_set_pull_mode(gpio_a, 13, 1);
 	nx_gpio_set_output_enable(gpio_a, 13, 1);
-	nx_gpio_set_output_value(gpio_a,13, 1);
+	nx_gpio_set_output_value(gpio_a,13, 0);
 
 
 	return 0;
@@ -193,6 +196,10 @@ void power_init_board(void)
 	struct dm_regulator_uclass_platdata *reg_uc_pdata;
 	struct udevice *regulator;
 #endif
+#ifdef CONFIG_DM_CHARGER
+	struct dm_charger_uclass_platdata *chg_uc_pdata;
+	struct udevice *charger;
+#endif
 	int ret = -ENODEV;
 
 	ret = pmic_get("nxe2000_gpio@32", &pmic);
@@ -213,6 +220,20 @@ void power_init_board(void)
 
 			uclass_get_device_tail(dev, 0, &regulator);
 		}
+#endif
+#ifdef CONFIG_DM_CHARGER
+	for (ret = uclass_find_first_device(UCLASS_CHARGER, &dev);
+		dev;
+		ret = uclass_find_next_device(&dev)) {
+		if (ret)
+			continue;
+
+		chg_uc_pdata = dev_get_uclass_platdata(dev);
+		if (!chg_uc_pdata)
+			continue;
+
+		uclass_get_device_tail(dev, 0, &charger);
+	}
 #endif
 	}
 }
