@@ -445,7 +445,8 @@
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
 		"rootfstype=${rootfs_type} ${recoverymode} ${ota} "	\
 		"drm_panel=$lcd_panel nr_cpus=${nr_cpus} ${opts} "	\
-		"bootfrom=${bootpart} rescue=${rescue};\0"		\
+		"bootfrom=${bootpart} rescue=${rescue} "		\
+		"board_type=${board_type};\0"				\
 	"load_kernel="							\
 		"ret=0; "						\
 		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file && setexpr ret 1; " \
