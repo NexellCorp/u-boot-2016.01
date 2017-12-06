@@ -339,8 +339,16 @@ int board_late_init(void)
 		setenv_ulong("model_id", 533);
 #endif
 #ifdef CONFIG_SUPPORT_COMPY_BOARD
-	if (check_sub_board() == BOARD_COMPY)
+	if (check_sub_board() == BOARD_COMPY) {
 		setenv("board_type" ,"compy");
+		/* Clear Indicator LED */
+		nx_gpio_set_pad_function(1, 11, 2);
+		nx_gpio_set_pad_function(4, 31, 1);
+		nx_gpio_set_output_enable(1, 11, 1);
+		nx_gpio_set_output_enable(4, 31, 1);
+		nx_gpio_set_output_value(1, 11, 0);
+		nx_gpio_set_output_value(4, 31, 0);
+	}
 #endif
 #ifdef CONFIG_DM_PMIC_NXE2000
 	pmic_init();
