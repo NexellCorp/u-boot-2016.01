@@ -68,6 +68,20 @@
 		ti,charging-voltage= <4192>; /*4.19Volt*/
 		};
 	};
+	eeprom_i2c:i2c_gpio@2 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_d 3 0>, /* SDA */
+			<&gpio_d 2 0>;   /* SCL */
+		/* i2c-gpio,delay-us = <12>; */
+		status ="okay";
+		eeprom {
+			compatible = "fmd,24c256a";
+			reg = <0x50>;
+			u-boot,i2c-offset-len = <2>;
+		};
+	};
 
 	board_rev:rev@0 {
 		#address-cells = <1>;
