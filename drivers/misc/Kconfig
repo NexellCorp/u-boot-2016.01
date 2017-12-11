@@ -137,4 +137,9 @@ config UB927928
 	help
 	  Enable ub927928 driver
 
+config I2C_EEPROM
+	bool "Enable driver for generic I2C-attached EEPROM"
+	depends on DM
+	help
+	  Enable a generic driver for EEPROMs attached via I2C.
 endmenu
