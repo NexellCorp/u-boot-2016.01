@@ -126,6 +126,14 @@
 /*-----------------------------------------------------------------------
  * serial console configuration
  */
+#define CONFIG_DBG_UNLOCK_KEY			0xFFFFFFFF
+#define CONFIG_DBG_UNLOCK_OFFSET		0x0
+#define CONFIG_DBG_UNLOCK_SIZE			0x4
+#define CONFIG_DBG_UNLOCK_ARG			"loglevel=7 quiet"
+#define CONFIG_DBG_LOCK_ARG			"loglevel=0 dbg_locked=1"
+/*-----------------------------------------------------------------------
+ * serial console configuration
+ */
 #define CONFIG_PL011_SERIAL
 #define CONFIG_CONS_INDEX			3
 #define CONFIG_PL011_CLOCK			50000000

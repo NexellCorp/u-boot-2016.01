@@ -25,6 +25,9 @@
 #ifdef CONFIG_DM_CHARGER
 #include <power/charger.h>
 #endif
+#ifdef CONFIG_I2C_EEPROM
+#include <i2c_eeprom.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -109,6 +112,17 @@ int board_init(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
+#ifdef CONFIG_I2C_EEPROM
+	struct udevice *dev;
+	struct dm_eeprom_uclass_platdata *i2c_eeprom_pdata;
+	struct udevice *i2c_eeprom;
+	uint8_t buf[CONFIG_DBG_UNLOCK_SIZE] = {0, };
+	uint32_t data;
+	char *penv;
+	char env_buf[256] = {0, };
+	int ret = -ENODEV;
+#endif
+
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
@@ -132,8 +146,37 @@ int board_late_init(void)
 	nx_gpio_set_output_enable(gpio_a, 13, 1);
 	nx_gpio_set_output_value(gpio_a,13, 0);
 
+#ifdef CONFIG_I2C_EEPROM
+	ret = uclass_get_device_by_name(UCLASS_I2C_EEPROM, "eeprom", &dev);
+	if (ret < 0) {
+		printf("Cannot find eeprom device\n");
+		goto dbg_lock;
+	}
 
+	dm_eeprom_read(dev, CONFIG_DBG_UNLOCK_OFFSET, &buf[0],
+						CONFIG_DBG_UNLOCK_SIZE);
+	printf("EEPROM#:#1:0x%X, #2:0x%X, #3:0x%X, #4:0x%X\n",
+		buf[0], buf[1], buf[2], buf[3]);
+	memcpy(&data,buf,sizeof(data));
+
+	if(data == CONFIG_DBG_UNLOCK_KEY) {
+		printf("DBG UNLOCKED \n");
+		penv = getenv("bootargs");
+		sprintf(env_buf,"%s %s", penv, CONFIG_DBG_UNLOCK_ARG);
+		setenv("bootargs",env_buf);
+		return 0;
+	}
+
+dbg_lock:
+	printf("DBG LOCKED \n");
+	penv = getenv("bootargs");
+	sprintf(env_buf,"%s %s", penv, CONFIG_DBG_LOCK_ARG);
+	setenv("bootargs",env_buf);
+	run_command("run bootcmd", 0);
 	return 0;
+
+#endif
+
 }
 #endif
 
@@ -186,7 +229,6 @@ void dram_init_banksize(void)
 	gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE;
 	gd->bd->bi_dram[0].size  = CONFIG_SYS_SDRAM_SIZE;
 }
-
 #ifdef CONFIG_DM_PMIC_NXE2000
 void power_init_board(void)
 {
