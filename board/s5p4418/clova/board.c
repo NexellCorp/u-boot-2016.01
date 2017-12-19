@@ -119,6 +119,7 @@ int board_late_init(void)
 	uint8_t buf[CONFIG_DBG_UNLOCK_SIZE] = {0, };
 	uint32_t data;
 	char *penv;
+	char *ptr;
 	char env_buf[256] = {0, };
 	int ret = -ENODEV;
 #endif
@@ -162,7 +163,11 @@ int board_late_init(void)
 	if(data == CONFIG_DBG_UNLOCK_KEY) {
 		printf("DBG UNLOCKED \n");
 		penv = getenv("bootargs");
-		sprintf(env_buf,"%s %s", penv, CONFIG_DBG_UNLOCK_ARG);
+		ptr = strstr(penv,CONFIG_DBG_UNLOCK_ARG);
+		if(ptr != NULL)
+			sprintf(env_buf,"%s", penv);
+		else
+			sprintf(env_buf,"%s %s", penv, CONFIG_DBG_UNLOCK_ARG);
 		setenv("bootargs",env_buf);
 		return 0;
 	}
