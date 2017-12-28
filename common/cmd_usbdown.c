@@ -14,11 +14,7 @@
 
 #include <asm/arch/reset.h>
 #include <asm/arch/nexell.h>
-
-#define VENDORID			0x04e8	/* Samsung Vendor ID */
-#define PRODUCTID			0x1234	/* Nexell Product ID */
-#define NXP4330_USBD_VID		0x2375
-#define NXP4330_USBD_PID		0x4330
+#include <asm/arch/usbid.h>
 
 #define BASEADDR_BOOTSTATUS \
 	(BASEADDR_SRAM+(INTERNAL_SRAM_SIZE/2))
@@ -421,66 +417,6 @@ struct  nx_usbboot_status {
 	const u8	*device_descriptor;
 	const u8	*config_descriptor;
 } __aligned(4);
-
-/* @brief ECID Module's Register List */
-struct  nx_ecid_registerset {
-	u32 ecid[4];           /* 0x00 ~ 0x0C	: 128bit ECID Register */
-	u8  chipname[48];      /* 0x10 ~ 0x3C	: Chip Name Register */
-	u32 reserved;          /* 0x40		: Reserved Region */
-	u32 guid0;             /* 0x44		: GUID 0 Register */
-	u16 guid1;             /* 0x48		: GUID 1 Register */
-	u16 guid2;             /* 0x4A		: GUID 2 Register */
-	u8  guid3[8];          /* 0x4C ~ x50    : GUID 3-0 ~ 3-7 Register */
-	u32 ec[3];             /* 0x54 ~ 0x5C	: EC 0 ~ 3 Register */
-};
-
-struct nx_guid {
-	u32 guid0;
-	u16 guid1;
-	u16 guid2;
-	u8  guid3[8];
-};
-
-void cal_usbid(u16 *vid, u16 *pid, u32 ecid)
-{
-	if (ecid == 0) {   /* ecid is not burned */
-		*vid = VENDORID;
-		*pid = PRODUCTID;
-		debug("\nECID Null!!\nVID %x, PID %x\n", *vid, *pid);
-	} else {
-		*vid = (ecid >> 16)&0xFFFF;
-		*pid = (ecid >> 0)&0xFFFF;
-		debug("VID %x, PID %x\n", *vid, *pid);
-	}
-}
-
-void get_usbid(u16 *vid, u16 *pid)
-{
-	struct nx_ecid_registerset * const nx_ecidreg
-		= (struct nx_ecid_registerset *)PHY_BASEADDR_ECID;
-	char *cmp_name = "NEXELL-NXP4330-R0-LF3000";
-	char name[49];
-	int i;
-
-	for (i = 0 ; i < 48 ; i++)
-		name[i] = (char)nx_ecidreg->chipname[i];
-
-	for (i = 0; i < 48; i++) {
-		if ((name[i] == '-') && (name[i+1] == '-')) {
-			name[i] = 0;
-			name[i+1] = 0;
-		}
-	}
-
-	if (!strcmp(name, cmp_name)) {
-		*vid = NXP4330_USBD_VID;
-		*pid = NXP4330_USBD_PID;
-	} else {
-		u32 id = readl(&nx_ecidreg->ecid[3]);
-
-		cal_usbid(vid, pid, id);
-	}
-}
 
 static struct nx_usb_otg_registerset *nx_otgreg =
 		(struct nx_usb_otg_registerset *)PHY_BASEADDR_HSOTG;

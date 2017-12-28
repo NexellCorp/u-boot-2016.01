@@ -28,6 +28,7 @@
 #include <fb_nand.h>
 #endif
 #include <part.h>
+#include <mapmem.h>
 
 #ifdef CONFIG_ENV_IS_NOWHERE
 #define saveenv()			0
@@ -1152,6 +1153,45 @@ static void fb_flash_write_based_partmap(const char *cmd,
 	}
 }
 
+unsigned int get_addr(const char *a)
+{
+	char ch = *a;
+	unsigned int cnt = 0, hex = 0;
+
+	while(((ch != '\r') && (ch != '\n')) || (cnt == 0)) {
+		ch  = *a;
+
+		if (! ch)
+			break;
+
+		if (cnt != 16) {
+			if (ch >= '0' && ch <= '9') {
+				hex = (hex<<4) + (ch - '0');
+				cnt++;
+			} else if (ch >= 'a' && ch <= 'f') {
+				hex = (hex<<4) + (ch-'a' + 0x0a);
+				cnt++;
+			} else if (ch >= 'A' && ch <= 'F') {
+				hex = (hex<<4) + (ch-'A' + 0x0A);
+				cnt++;
+			}
+		}
+		a++;
+	}
+	return hex;
+}
+
+void get_reg(uint64_t addr, uint32_t *buf)
+{
+	ulong bytes = 4;
+	const void *read_buf = map_sysmem(addr, bytes);
+
+	debug("read data %x\n", *(uint32_t *)read_buf);
+
+	*buf = *(uint32_t *)read_buf;
+	debug("copy data %x\n", *buf);
+}
+
 #define FASTBOOT_VERSION		"0.4"
 
 #define FASTBOOT_INTERFACE_CLASS	0xff
@@ -1601,6 +1641,16 @@ static void cb_getvar(struct usb_ep *ep, struct usb_request *req)
 			printf("FAIL Please set partmap setting\n");
 			strcpy(response, "FAILPlease set partmap setting");
 		}
+	} else if (!strcmp_l1("0x", cmd)) {
+		uint64_t addr;
+		uint32_t buf;
+		char *s = cmd;
+
+		addr = get_addr(cmd + sizeof(char) * 2);
+		get_reg(addr, &buf);
+		printf("reg value : 0x%llx(0x%x)\n", addr, buf);
+		sprintf(s,"%x", buf);
+		strncat(response, s, chars_left);
 	} else {
 		error("unknown variable: %s\n", cmd);
 		strcpy(response, "FAILVariable not implemented");
