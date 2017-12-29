@@ -364,7 +364,10 @@ int board_late_init(void)
 	generate_mac();
 #endif
 #ifdef CONFIG_SENSORID_ARTIK
-#ifndef CONFIG_SUPPORT_COMPY_BOARD
+#ifdef CONFIG_SUPPORT_COMPY_BOARD
+	if (check_sub_board() == BOARD_RAPTOR)
+		get_sensorid(board_rev);
+#else
 	get_sensorid(board_rev);
 #endif
 #endif
