@@ -135,7 +135,8 @@ int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 				       (unsigned char *)data+offset,
 				       WRITE_SECTOR*512);
 
-				sprintf(run_cmd, "mmc write 0x%x 0x%x 0x%x",
+				snprintf(run_cmd, sizeof(run_cmd),
+					 "mmc write 0x%x 0x%x 0x%x",
 					(int)((ulong)tmp_align),
 					sector, WRITE_SECTOR);
 
@@ -145,7 +146,8 @@ int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 				memcpy((unsigned char *)tmp_align,
 				       (unsigned char *)data+offset,
 				       sector_size * 512);
-				sprintf(run_cmd, "mmc write 0x%x 0x%x 0x%x",
+				snprintf(run_cmd, sizeof(run_cmd),
+					 "mmc write 0x%x 0x%x 0x%x",
 					(int)((ulong)tmp_align),
 					sector, sector_size);
 
@@ -158,8 +160,8 @@ int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 		return 0;
 	}
 	debug("write raw data in %d size %d\n", sector, sector_size);
-	sprintf(run_cmd, "mmc write 0x%x 0x%x 0x%x", (int)((ulong)data),
-		sector, sector_size);
+	snprintf(run_cmd, sizeof(run_cmd), "mmc write 0x%x 0x%x 0x%x",
+		 (int)((ulong)data), sector, sector_size);
 	run_command(run_cmd, 0);
 
 	return 0;
@@ -238,7 +240,7 @@ int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
 		return 1;
 	}
 	dev = simple_strtoul(argv[1], NULL, 10);
-	sprintf(cmd, "mmc dev %d", dev);
+	snprintf(cmd, sizeof(cmd), "mmc dev %d", dev);
 	if (0 > run_command(cmd, 0))	/* mmc device */
 		return -1;
 
