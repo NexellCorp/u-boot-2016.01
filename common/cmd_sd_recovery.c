@@ -320,7 +320,7 @@ int update_sd_do_load(cmd_tbl_t *cmdtp, int flag, int argc,
 	}
 	puts("\n");
 
-	sprintf(buf, "0x%llx", len_read);
+	snprintf(buf, sizeof(buf), "0x%llx", len_read);
 
 	return len_read;
 }
@@ -348,12 +348,12 @@ static int make_mmc_partition(struct update_sdcard_part *fp)
 		cnt++;
 	}
 
-	l = sprintf(args, "fdisk %d %d:", dev, cnt);
+	l = snprintf(args, sizeof(args), "fdisk %d %d:", dev, cnt);
 	p = l;
 
 	for (j = 0; j < cnt; j++) {
-		l = sprintf(&args[p], " 0x%llx:0x%llx", part_start[j],
-			    part_length[j]);
+		l = snprintf(&args[p], sizeof(args) - p," 0x%llx:0x%llx",
+			     part_start[j], part_length[j]);
 		p += l;
 	}
 
@@ -396,7 +396,7 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 	memset(cmd, 0x0, sizeof(cmd));
 
 	if (!strcmp(device, "mmc")) {
-		sprintf(cmd, "mmc dev %d", dev);
+		snprintf(cmd, sizeof(cmd), "mmc dev %d", dev);
 		printf("** mmc.%d partition %s (%s)**\n",
 		       dev, partition_name,
 		       fs_type&UPDATE_SDCARD_FS_EXT4 ? "FS" : "Image");
@@ -433,17 +433,17 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 				if (length % 512)
 					blk_cnt++;
 
-			p = sprintf(cmd, "mmc write ");
-			l = sprintf(&cmd[p], "0x%x 0x%llx 0x%x",
-				    (unsigned int)addr,
-				    lldiv(start, 512),
-				    blk_cnt);
+			p = snprintf(cmd, sizeof(cmd), "mmc write ");
+			l = snprintf(&cmd[p], sizeof(cmd) - p,
+				     "0x%x 0x%llx 0x%x", (unsigned int)addr,
+				     lldiv(start, 512), blk_cnt);
 			p += l;
 			cmd[p] = 0;
 		} else if (fs_type & UPDATE_SDCARD_FS_MASK) {
-			p = sprintf(cmd, "ext4_img_write %d %x %d %x",
-				    dev, (unsigned int)addr, part_num,
-				    (unsigned int)length);
+			p = snprintf(cmd, sizeof(cmd),
+				     "ext4_img_write %d %x %d %x", dev,
+				     (unsigned int)addr, part_num,
+				     (unsigned int)length);
 		}
 
 		ret = run_command(cmd, 0);
