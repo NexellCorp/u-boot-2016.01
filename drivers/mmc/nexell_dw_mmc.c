@@ -161,16 +161,12 @@ static unsigned int nx_dw_mmc_get_clk(struct dwmci_host *host, uint freq)
 	struct clk *clk;
 	struct nx_dwmci_dat *priv = host->priv;
 	int index = host->dev_index;
-	char name[50] = { 0, };
+	char name[50] = {0, };
 
-	clk = priv->clk;
-	if (!clk) {
-		sprintf(name, "%s.%d", DEV_NAME_SDHC, index);
-		clk = clk_get((const char *)name);
-		if (!clk)
-			return 0;
-		priv->clk = clk;
-	}
+	snprintf(name, sizeof(name), "%s.%d", DEV_NAME_SDHC, index);
+	clk = clk_get((const char *)name);
+	if (!clk)
+		return 0;
 
 	return clk_get_rate(clk) / 2;
 }
@@ -183,14 +179,10 @@ static unsigned long nx_dw_mmc_set_clk(struct dwmci_host *host,
 	struct nx_dwmci_dat *priv = host->priv;
 	int index = host->dev_index;
 
-	clk = priv->clk;
-	if (!clk) {
-		sprintf(name, "%s.%d", DEV_NAME_SDHC, index);
-		clk = clk_get((const char *)name);
-		if (!clk)
-			return 0;
-		priv->clk = clk;
-	}
+	snprintf(name, sizeof(name), "%s.%d", DEV_NAME_SDHC, dev_index);
+	clk = clk_get((const char *)name);
+	if (!clk)
+		return 0;
 
 	clk_disable(clk);
 	rate = clk_set_rate(clk, rate);
