@@ -198,14 +198,14 @@ static int update_sdcard_part_lists_make(const char *ptable_str,
 			break;
 
 		p = update_sdcard_get_string(p, ',', str, sizeof(str));
-		strcpy(fp->device, str);
+		strlcpy(fp->device, str, sizeof(fp->device));
 
 		p = update_sdcard_get_string(p, ':', str, sizeof(str));
 		fp->dev_no = simple_strtoul(str, NULL, 10);
 
 		p = update_sdcard_get_string(p, ':', str, sizeof(str));
-		strcpy(fp->partition_name, str);
-
+		strlcpy(fp->partition_name, str,
+			sizeof(fp->partition_name));
 
 		p = update_sdcard_get_string(p, ':', str, sizeof(str));
 
@@ -228,7 +228,7 @@ static int update_sdcard_part_lists_make(const char *ptable_str,
 		fp->length = simple_strtoul(str, NULL, 16);
 
 		p = update_sdcard_get_string(p, ';', str, sizeof(str));
-		strcpy(fp->file_name, str);
+		strlcpy(fp->file_name, str, sizeof(fp->file_name));
 
 		err = 0;
 	}
