@@ -101,7 +101,7 @@ static unsigned int dw_mci_get_clk(struct dwmci_host *host, uint freq)
 	int index = host->dev_index;
 	char name[50] = {0, };
 
-	sprintf(name, "%s.%d", DEV_NAME_SDHC, index);
+	snprintf(name, sizeof(name), "%s.%d", DEV_NAME_SDHC, index);
 	clk = clk_get((const char *)name);
 	if (!clk)
 		return 0;
@@ -114,7 +114,7 @@ static unsigned long dw_mci_set_clk(int dev_index, unsigned  rate)
 	struct clk *clk;
 	char name[50];
 
-	sprintf(name, "%s.%d", DEV_NAME_SDHC, dev_index);
+	snprintf(name, sizeof(name), "%s.%d", DEV_NAME_SDHC, dev_index);
 	clk = clk_get((const char *)name);
 	if (!clk)
 		return 0;
