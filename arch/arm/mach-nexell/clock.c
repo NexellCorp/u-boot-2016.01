@@ -576,6 +576,8 @@ struct clk *clk_get(const char *id)
 
 	if (id)
 		str = id;
+	else
+		return ERR_PTR(-EINVAL);
 
 	for (i = 0; CLK_DEVS_NUM > i; i++, cdev++) {
 		if (NULL == cdev->name)
