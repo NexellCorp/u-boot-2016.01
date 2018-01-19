@@ -49,7 +49,7 @@ static const struct artik_info_t artik_info[] = {
 	}, {
 		/* Artik305s */
 		.board_name	= ARTIK_A305,
-		.year_offset	= 2017,
+		.year_offset	= 2018,
 		.security	= 'L',
 		.model_code	= 1,
 		.oui		= 0x448F17,
