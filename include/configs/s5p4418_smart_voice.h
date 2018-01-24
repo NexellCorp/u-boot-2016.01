@@ -271,6 +271,12 @@
  * VIDEO
  */
 
+/*-----------------------------------------------------------------------
+ * Support Android Boot Image
+ */
+#define CONFIG_SUPPORT_RAW_INITRD
+#define CONFIG_RECOVERY_BOOT
+
 
 /*-----------------------------------------------------------------------
  * ENV
