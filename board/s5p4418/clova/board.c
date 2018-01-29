@@ -8,7 +8,7 @@
 #include <config.h>
 #include <common.h>
 #include <asm/io.h>
-
+#include <asm/gpio.h>
 #include <asm/arch/nexell.h>
 #include <asm/arch/nx_gpio.h>
 
@@ -109,9 +109,56 @@ int board_init(void)
 	return 0;
 }
 
+void check_powerkey(void)
+{
+	struct gpio_desc gpio = {};
+	int node;
+	int key_value;
+
+	node = fdt_node_offset_by_compatible(gd->fdt_blob, 0,
+		"nexell,board-pwrkey");
+
+	if (node < 0) {
+		printf("Cannot Founc board-pwrkey \n");
+		return;
+	}
+
+	gpio_request_by_name_nodev(gd->fdt_blob, node, "pwrkey-gpio", 0, &gpio,
+								GPIOD_IS_IN);
+
+	if (!dm_gpio_is_valid(&gpio)) {
+		printf("pwrkey-gpio not valid \n");
+		return;
+	}
+
+	while(1) {
+		key_value = (*(unsigned int *)(0xC001091C)) & 0x1;
+		printk("key_value = %d \n", key_value);
+		if(!key_value) {
+			printf("power key pressed \n");
+			return;
+		}
+		mdelay(500);
+	}
+
+}
+
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
+	int ret = -ENODEV;
+	uint32_t reset_signature;
+	int node;
+#ifdef CONFIG_DM_CHARGER
+	struct udevice *dev_charger;
+	int charger_status, vbatt_value;
+	char vsys_status, online;
+#endif
+
+#ifdef CONFIG_DM_PMIC_NXE2000
+	struct udevice *dev_pmic;
+#endif
+
 #ifdef CONFIG_I2C_EEPROM
 	struct udevice *dev;
 	struct dm_eeprom_uclass_platdata *i2c_eeprom_pdata;
@@ -121,29 +168,10 @@ int board_late_init(void)
 	char *penv;
 	char *ptr;
 	char env_buf[256] = {0, };
-	int ret = -ENODEV;
 #endif
 
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
-#endif
-
-	board_backlight_enable();
-
-#ifdef CONFIG_RECOVERY_BOOT
-#define ALIVE_SCRATCH1_READ_REGISTER	(0xc00108b4)
-#define ALIVE_SCRATCH1_RESET_REGISTER	(0xc00108ac)
-#define RECOVERY_SIGNATURE				(0x52455343)    /* (ASCII) : R.E.S.C */
-	printf("signature --> 0x%x\n", readl(ALIVE_SCRATCH1_READ_REGISTER));
-	if (readl(ALIVE_SCRATCH1_READ_REGISTER) == RECOVERY_SIGNATURE) {
-		printf("reboot recovery!!!!\n");
-		writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
-		setenv("bootcmd", "run recoveryboot");
-	}
-#endif
-
-#ifdef CONFIG_SYS_BURNING
-	setenv("bootcmd", "fastboot 0");
 #endif
 
 	/* Temporary disable the CHARGER_ENABLE */
@@ -151,6 +179,86 @@ int board_late_init(void)
 	nx_gpio_set_pull_mode(gpio_a, 13, 1);
 	nx_gpio_set_output_enable(gpio_a, 13, 1);
 	nx_gpio_set_output_value(gpio_a,13, 0);
+
+
+#ifdef CONFIG_DM_CHARGER
+	/* Check Battery */
+	ret = uclass_get_device_by_name(UCLASS_CHARGER, "bq25895m@6a", &dev_charger);
+	if (ret < 0) {
+		printf("Cannot find charger device\n");
+		return 0;
+	}
+
+	charger_status = charger_get_charge_type(dev_charger);
+
+	vsys_status = charger_status & 0x1;
+	online = (charger_status >> 2) & 0x01;
+
+	printf("charger_status = 0x%x \n", charger_status);
+	printf("vsys_status = 0x%x \n", vsys_status);
+	printf("online = 0x%x \n", online);
+
+	if(vsys_status) {
+		printf("Battery Not detected \n");
+		goto power_off;
+	} else {
+		printf("Battery detected \n");
+	}
+	if(!online) {
+		printf("AC adaptor Not detected \n");
+		goto power_off;
+	} else {
+		printf("AC adaptor detected \n");
+	}
+
+#endif /* CONFIG_DM_CHARGER */
+
+	board_backlight_enable();
+
+#ifdef CONFIG_RECOVERY_BOOT
+#define ALIVE_SCRATCH1_READ_REGISTER	(0xc00108b4)
+#define ALIVE_SCRATCH1_RESET_REGISTER	(0xc00108ac)
+#define RECOVERY_SIGNATURE				(0x52455343)    /* (ASCII) : R.E.S.C */
+#define CHARGING_SIGNATURE				(0x43484152)    /* (ASCII) : C.H.A.G */
+	reset_signature = readl(ALIVE_SCRATCH1_READ_REGISTER);
+	printf("signature --> 0x%x\n", reset_signature);
+	switch (reset_signature) {
+		case RECOVERY_SIGNATURE :
+			printf("reboot recovery!!!!\n");
+			writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
+			setenv("bootcmd", "run recoveryboot");
+		case CHARGING_SIGNATURE :
+			printf("Charging !!!!\n");
+			writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
+			/* TODO : Display charging logo */
+			run_command("ext4load mmc 0:2 48000000 media/Charging.bmp B71E6",0);
+			run_command("bmp display 48000000 150 390", 0);
+			check_powerkey();
+		default :
+			writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
+			break;
+
+	}
+	if (readl(ALIVE_SCRATCH1_READ_REGISTER) == RECOVERY_SIGNATURE) {
+		printf("reboot recovery!!!!\n");
+		writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
+		setenv("bootcmd", "run recoveryboot");
+	}
+#endif
+
+#ifdef CONFIG_DM_CHARGER
+	vbatt_value = charger_get_value_vbatt(dev_charger);
+	printf("vbatt_value = %d \n", vbatt_value);
+	if(vbatt_value < 3600) {
+		printf("LOW vbatt(%d) \n", vbatt_value);
+		//goto power_off;
+	}
+#endif /* CONFIG_DM_CHARGER */
+
+#ifdef CONFIG_SYS_BURNING
+	setenv("bootcmd", "fastboot 0");
+#endif
+
 
 #ifdef CONFIG_I2C_EEPROM
 	ret = uclass_get_device_by_name(UCLASS_I2C_EEPROM, "eeprom", &dev);
@@ -184,6 +292,18 @@ dbg_lock:
 	setenv("bootargs",env_buf);
 	run_command("run bootcmd", 0);
 	return 0;
+
+power_off:
+#ifdef CONFIG_DM_PMIC_NXE2000
+	ret = pmic_get("nxe2000_gpio@32", &dev_pmic);
+	if (ret) {
+		printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
+		return 0;
+	}
+	printf("Power Off\n");
+	mdelay(500);
+	pmic_reg_write(dev_pmic, (u32)NXE2000_REG_SLPCNT, 1);
+#endif
 
 #endif
 
