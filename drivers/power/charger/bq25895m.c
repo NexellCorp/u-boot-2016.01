@@ -26,20 +26,20 @@ static const struct udevice_id bq25895m_ids[] = {
 
 static int bq25895m_get_value_vbatt(struct udevice *dev)
 {
-	/* char data=0; */
-	printf("%s: Enter +++ \n",__FUNCTION__);
-	/* dm_i2c_read(dev, 0xE, &data, 1); */
-	/* data &= ~(0x80); */
+	char data=0;
+	dm_i2c_read(dev, 0xE, &data, 1);
+	data &= ~(0x80);
 
-	/* return 2304 + (data * 20); */
-	return 0;
+	return 2304 + (data * 20);
 
 }
 
 static int bq25895m_get_charge_type(struct udevice *dev)
 {
-	printf("%s: Enter +++ \n",__FUNCTION__);
-	return 0;
+	char value=0;
+	dm_i2c_read(dev, REG0B, &value, 1);
+
+	return (int) value;
 }
 
 
@@ -60,7 +60,7 @@ static int bq25895m_chg_probe(struct udevice *dev)
 
 	/*i2c md 6A 0 0x15 */
 	/* Check ID */
-	dm_i2c_read(dev, 0x14, &value, 1);
+	dm_i2c_read(dev, REG14, &value, 1);
 	if( (value & 0x3) == 0x2)
 		printf("FOUND BQ2489M Charger IC \n");
 	else {

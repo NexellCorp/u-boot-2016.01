@@ -22,4 +22,7 @@ struct dm_bq25895m_chg_platdata {
 
 #define BQ25895M_CHG_DRIVER "bq25895m_chg"
 
+#define REG0B	0x0B
+#define	REG14	0x14
+
 #endif /* __BQ25895M_H_ */
