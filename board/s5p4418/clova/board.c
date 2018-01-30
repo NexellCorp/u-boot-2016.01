@@ -109,11 +109,16 @@ int board_init(void)
 	return 0;
 }
 
-void check_powerkey(void)
+int check_powerkey(struct udevice *dev_charger)
 {
 	struct gpio_desc gpio = {};
 	int node;
 	int key_value;
+	int charger_status;
+	char online;
+
+	run_command("ext4load mmc 0:2 48000000 media/Charging.bmp B71E6",0);
+	run_command("bmp display 48000000 150 390", 0);
 
 	node = fdt_node_offset_by_compatible(gd->fdt_blob, 0,
 		"nexell,board-pwrkey");
@@ -133,11 +138,14 @@ void check_powerkey(void)
 
 	while(1) {
 		key_value = (*(unsigned int *)(0xC001091C)) & 0x1;
-		printk("key_value = %d \n", key_value);
 		if(!key_value) {
 			printf("power key pressed \n");
-			return;
+			return 1;
 		}
+		charger_status = charger_get_charge_type(dev_charger);
+		online = (charger_status >> 2) & 0x01;
+		if(!online)
+			return -1;
 		mdelay(500);
 	}
 
@@ -222,19 +230,13 @@ int board_late_init(void)
 		case CHARGING_SIGNATURE :
 			printf("Charging !!!!\n");
 			writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
-			/* TODO : Display charging logo */
-			run_command("ext4load mmc 0:2 48000000 media/Charging.bmp B71E6",0);
-			run_command("bmp display 48000000 150 390", 0);
-			check_powerkey();
+			ret = check_powerkey(dev_charger);
+			if (ret < 0)
+				goto power_off;
 		default :
 			writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
 			break;
 
-	}
-	if (readl(ALIVE_SCRATCH1_READ_REGISTER) == RECOVERY_SIGNATURE) {
-		printf("reboot recovery!!!!\n");
-		writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
-		setenv("bootcmd", "run recoveryboot");
 	}
 #endif
 
@@ -243,7 +245,9 @@ int board_late_init(void)
 	printf("vbatt_value = %d \n", vbatt_value);
 	if(vbatt_value < 3600) {
 		printf("LOW vbatt(%d) \n", vbatt_value);
-		//goto power_off;
+		ret = check_powerkey(dev_charger);
+		if (ret < 0)
+			goto power_off;
 	}
 #endif /* CONFIG_DM_CHARGER */
 
