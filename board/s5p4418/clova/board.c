@@ -152,7 +152,7 @@ int board_late_init(void)
 #ifdef CONFIG_DM_CHARGER
 	struct udevice *dev_charger;
 	int charger_status, vbatt_value;
-	char vsys_status, online;
+	char online;
 #endif
 
 #ifdef CONFIG_DM_PMIC_NXE2000
@@ -191,19 +191,11 @@ int board_late_init(void)
 
 	charger_status = charger_get_charge_type(dev_charger);
 
-	vsys_status = charger_status & 0x1;
 	online = (charger_status >> 2) & 0x01;
 
 	printf("charger_status = 0x%x \n", charger_status);
-	printf("vsys_status = 0x%x \n", vsys_status);
 	printf("online = 0x%x \n", online);
 
-	if(vsys_status) {
-		printf("Battery Not detected \n");
-		goto power_off;
-	} else {
-		printf("Battery detected \n");
-	}
 	if(!online) {
 		printf("AC adaptor Not detected \n");
 		goto power_off;
