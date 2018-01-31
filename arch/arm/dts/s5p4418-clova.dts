@@ -67,7 +67,14 @@
 		reg = <0x6A>;
 		stat-pin = <&gpio_a 13 0>;
 		irq-pin = <&gpio_a 12 0>;
-		ti,charging-voltage= <4192>; /*4.19Volt*/
+		ti,battery-regulation-voltage= <4192>; /*4.19Volt*/
+		ti,charge-current = <960>;
+		ti,termination-current = <50>;
+		ti,precharge-current = <128>;
+		ti,minimum-sys-voltage = <3600>;
+		ti,boost-voltage = <4998>;
+
+		ti,use-ilim-pin;
 		};
 	};
 	eeprom_i2c:i2c_gpio@2 {
