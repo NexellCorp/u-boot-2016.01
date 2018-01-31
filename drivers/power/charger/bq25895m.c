@@ -56,7 +56,7 @@ static int bq25895m_chg_bind(struct udevice *dev)
 }
 static int bq25895m_chg_probe(struct udevice *dev)
 {
-	char data=0, value=0;
+	unsigned char data=0, value=0;
 	struct dm_i2c_chip *chip = dev_get_parent_platdata(dev);
 	struct dm_bq25895m_chg_platdata *pdata = dev->platdata;
 
@@ -70,15 +70,63 @@ static int bq25895m_chg_probe(struct udevice *dev)
 		return -EINVAL;
 	}
 
-	/* Temporary Set voltage*/
-	if(pdata->chg_vol != 0) {
-		value = (((pdata->chg_vol - 3840) >> 4));
+	/* ti,battery-regulation-voltage */
+	if(pdata->vreg != 0) {
+		value = (((pdata->vreg - 3840) >> 4));
 		dm_i2c_read(dev, 0x6, &data, 1);
 		data &= (0x3);
 		data |= (value << 2);
 		dm_i2c_write(dev,0x6, &data ,1);
 	}
-
+	/* ti,charge-current */
+	if(pdata->ichg != 0) {
+		value = (((pdata->ichg) >> 6));
+		dm_i2c_read(dev, 0x4, &data, 1);
+		data &= (0x80);
+		data |= (value);
+		dm_i2c_write(dev,0x4, &data ,1);
+	}
+	/* ti,termination-current */
+	if(pdata->iterm != 0) {
+		if(pdata->iterm < 64)
+			value = 0;
+		else
+			value = (((pdata->iterm - 64) >> 6));
+		dm_i2c_read(dev, 0x5, &data, 1);
+		data &= (0xF0);
+		data |= value;
+		dm_i2c_write(dev,0x5, &data ,1);
+	}
+	/* ti,precharge-current */
+	if(pdata->iprechg != 0) {
+		value = (((pdata->iprechg - 64) >> 6));
+		dm_i2c_read(dev, 0x5, &data, 1);
+		data &= (0xF);
+		data |= (value << 4);
+		dm_i2c_write(dev,0x5, &data ,1);
+	}
+	/* ti,minimum-sys-voltage */
+	if(pdata->sysvmin != 0) {
+		value = (((pdata->sysvmin - 3000) / 100));
+		dm_i2c_read(dev, 0x3, &data, 1);
+		data &= (0xF1);
+		data |= (value << 1);
+		dm_i2c_write(dev,0x3, &data ,1);
+	}
+	/* ti,boost-voltage */
+	if(pdata->boostv != 0) {
+		value = (((pdata->boostv - 4550) >> 6));
+		dm_i2c_read(dev, 0xa, &data, 1);
+		data &= (0x0F);
+		data |= (value << 4);
+		dm_i2c_write(dev,0xa, &data ,1);
+	}
+	/* ti,use-ilim-pin */
+	if(pdata->ilim_en != 0) {
+		dm_i2c_read(dev, 0xa, &data, 1);
+		data |= (1 << 6);
+		dm_i2c_write(dev,0xa, &data ,1);
+	}
 
 	return 0;
 }
@@ -91,8 +139,25 @@ static int bq25895m_chg_ofdata_to_platdata(struct udevice *dev)
 
 	memset(pdata,0,sizeof(struct dm_bq25895m_chg_platdata));
 
-	pdata->chg_vol = fdtdec_get_int(blob, offset,
-			        "ti,charging-voltage", -ENODATA);
+	pdata->vreg = fdtdec_get_int(blob, offset,
+				"ti,battery-regulation-voltage", -ENODATA);
+	pdata->ichg = fdtdec_get_int(blob, offset,
+				"ti,charge-current", -ENODATA);
+	pdata->iterm = fdtdec_get_int(blob, offset,
+				"ti,termination-current", -ENODATA);
+	pdata->iprechg = fdtdec_get_int(blob, offset,
+				"ti,precharge-current", -ENODATA);
+	pdata->sysvmin = fdtdec_get_int(blob, offset,
+				"ti,minimum-sys-voltage", -ENODATA);
+	pdata->boostv = fdtdec_get_int(blob, offset,
+				"ti,boost-voltage", -ENODATA);
+	pdata->boosti = fdtdec_get_int(blob, offset,
+				"ti,boost-max-current", -ENODATA);
+	pdata->ilim_en = fdtdec_get_bool(blob, offset,
+				"ti,use-ilim-pin");
+	pdata->treg = fdtdec_get_int(blob, offset,
+				"ti,thermal-regulation-threshold", -ENODATA);
+
 	gpio_request_by_name(
 		dev, "stat-pin", 0, &(pdata->gpio_stat), GPIOD_IS_IN);
 
