@@ -65,6 +65,8 @@
 	bq25895m@6a {
 		compatible = "ti,bq25895m";
 		reg = <0x6A>;
+		stat-pin = <&gpio_a 13 0>;
+		irq-pin = <&gpio_a 12 0>;
 		ti,charging-voltage= <4192>; /*4.19Volt*/
 		};
 	};
