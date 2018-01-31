@@ -13,6 +13,8 @@
 #include <errno.h>
 #include <dm.h>
 #include <i2c.h>
+#include <asm/io.h>
+#include <asm/gpio.h>
 #include <power/pmic.h>
 #include <power/charger.h>
 #include <power/bq25895m.h>
@@ -91,6 +93,21 @@ static int bq25895m_chg_ofdata_to_platdata(struct udevice *dev)
 
 	pdata->chg_vol = fdtdec_get_int(blob, offset,
 			        "ti,charging-voltage", -ENODATA);
+	gpio_request_by_name(
+		dev, "stat-pin", 0, &(pdata->gpio_stat), GPIOD_IS_IN);
+
+	if (!dm_gpio_is_valid(&(pdata->gpio_stat))) {
+		printf("stat-gpio not valid \n");
+		return;
+	}
+
+	gpio_request_by_name(
+		dev, "irq-pin", 0, &(pdata->gpio_irq), GPIOD_IS_IN);
+
+	if (!dm_gpio_is_valid(&(pdata->gpio_irq))) {
+		printf("irq-gpio not valid \n");
+		return;
+	}
 
 	return 0;
 }

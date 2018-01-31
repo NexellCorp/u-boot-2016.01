@@ -12,6 +12,8 @@
 #define __BQ25895M_H_
 
 struct dm_bq25895m_chg_platdata {
+	struct gpio_desc gpio_irq;
+	struct gpio_desc gpio_stat;
 	int chg_vol;
 	int chg_cur;
 	int pre_chg_cur;
