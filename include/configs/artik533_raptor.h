@@ -159,7 +159,8 @@
 #define CONFIG_PL01x_PORTS			{(void *)PHY_BASEADDR_UART0, \
 						(void *)PHY_BASEADDR_UART1, \
 						(void *)PHY_BASEADDR_UART2, \
-						(void *)PHY_BASEADDR_UART3}
+						(void *)PHY_BASEADDR_UART3, \
+						(void *)PHY_BASEADDR_UART4}
 
 #define CONFIG_BAUDRATE				115200
 #define CONFIG_SYS_BAUDRATE_TABLE \
