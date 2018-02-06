@@ -904,7 +904,9 @@ static init_fnc_t init_sequence_f[] = {
 #if defined(CONFIG_HARD_SPI)
 	init_func_spi,
 #endif
+#ifndef QUICKBOOT
 	announce_dram_init,
+#endif
 	/* TODO: unify all these dram functions? */
 #if defined(CONFIG_ARM) || defined(CONFIG_X86) || defined(CONFIG_NDS32) || \
 		defined(CONFIG_MICROBLAZE) || defined(CONFIG_AVR32)
@@ -980,7 +982,9 @@ static init_fnc_t init_sequence_f[] = {
 	reserve_arch,
 	reserve_stacks,
 	setup_dram_config,
+#ifndef QUICKBOOT
 	show_dram_config,
+#endif
 #if defined(CONFIG_PPC) || defined(CONFIG_M68K) || defined(CONFIG_MIPS)
 	setup_board_part1,
 #endif

@@ -356,7 +356,9 @@ static int nx_dw_mmc_setup(const void *blob)
 
 		nx_dw_mmc_set_pin(host);
 		nx_dw_mmc_set_clk(host, priv->frequency * 4);
+#ifndef QUICKBOOT
 		nx_dw_mmc_reset(host->dev_index);
+#endif
 		nx_dw_mmc_clk_delay(host);
 
 		/* add to dwmci */

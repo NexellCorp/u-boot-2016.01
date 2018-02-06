@@ -381,8 +381,10 @@ int bootz_setup(ulong image, ulong *start, ulong *end)
 	*start = zi->zi_start;
 	*end = zi->zi_end;
 
+#ifndef QUICKBOOT
 	printf("Kernel image @ %#08lx [ %#08lx - %#08lx ]\n", image, *start,
 	      *end);
+#endif
 
 	return 0;
 }

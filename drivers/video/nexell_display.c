@@ -468,10 +468,12 @@ static struct nx_display_dev *nx_display_setup(void)
 		goto err_setup;
 	};
 
+#ifndef QUICKBOOT
 	printf("LCD: [%s] dp.%d.%d %dx%d %dbpp FB:0x%08x\n",
 	       dp_dev_str[dp->dev_type], dp->module, dp->fb_plane->layer,
 	       dp->fb_plane->width, dp->fb_plane->height, dp->depth * 8,
 	       dp->fb_addr);
+#endif
 
 	return dp;
 

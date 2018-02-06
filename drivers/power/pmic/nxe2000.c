@@ -384,7 +384,9 @@ static int nxe2000_probe(struct udevice *dev)
 	nxe2000_reg_dump(dev, "PMIC Setup Register Dump");
 #endif
 
+#ifndef QUICKBOOT
 	nxe2000_print_chgstate(dev);
+#endif
 
 	return 0;
 }

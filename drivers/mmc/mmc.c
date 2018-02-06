@@ -1667,10 +1667,83 @@ static int mmc_complete_init(struct mmc *mmc)
 	return err;
 }
 
+#ifdef QUICKBOOT
+static void dump_mmc(struct mmc *mmc)
+{
+	printf("mmc info\n");
+	if (mmc->cfg) {
+		printf("cfg: name %s\n", mmc->cfg->name);
+		printf("cfg: ops %p\n", mmc->cfg->ops);
+		printf("cfg: host_caps 0x%x\n", mmc->cfg->host_caps);
+		printf("cfg: voltages 0x%x\n", mmc->cfg->voltages);
+		printf("cfg: f_min %d\n", mmc->cfg->f_min);
+		printf("cfg: f_max %d\n", mmc->cfg->f_max);
+		printf("cfg: b_max %d\n", mmc->cfg->b_max);
+		printf("cfg: part_type %d\n", mmc->cfg->part_type);
+	}
+	printf("version: %d\n", mmc->version);
+	printf("priv: %p\n", mmc->priv);
+	printf("high_capacity: %d\n", mmc->high_capacity);
+	printf("bus_width: %d\n", mmc->bus_width);
+	printf("clock: %d\n", mmc->clock);
+	printf("card_caps: 0x%x\n", mmc->card_caps);
+	printf("ocr: 0x%x\n", mmc->ocr);
+	printf("dsr: 0x%x\n", mmc->dsr);
+	printf("dsr_imp: 0x%x\n", mmc->dsr_imp);
+	printf("scr: 0x%x 0x%x\n", mmc->scr[0], mmc->scr[1]);
+	printf("csd: 0x%x 0x%x 0x%x 0x%x\n", mmc->csd[0], mmc->csd[1],
+	       mmc->csd[2], mmc->csd[3]);
+	printf("cid: 0x%x 0x%x 0x%x 0x%x\n", mmc->cid[0], mmc->cid[1],
+	       mmc->cid[2], mmc->cid[3]);
+	printf("rca: 0x%x\n", mmc->rca);
+	printf("part_support: %d\n", mmc->part_support);
+	printf("part_num: %d\n", mmc->part_num);
+	printf("tran_speed: %d\n", mmc->tran_speed);
+	printf("read_bl_len: %d\n", mmc->read_bl_len);
+	printf("write_bl_len: %d\n", mmc->write_bl_len);
+	printf("erase_grp_size: %d\n", mmc->erase_grp_size);
+	printf("hc_wp_grp_size: %d\n", mmc->hc_wp_grp_size);
+	printf("capacity: %llu\n", mmc->capacity);
+	printf("capacity_user: %llu\n", mmc->capacity_user);
+	printf("capacity_rpmb: %llu\n", mmc->capacity_rpmb);
+	printf("capacity_gp: %d %d %d %d\n", mmc->capacity_gp[0],
+	       mmc->capacity_gp[1], mmc->capacity_gp[2], mmc->capacity_gp[3]);
+	printf("enh_user_start: %d\n", mmc->enh_user_start);
+	printf("enh_user_size: %d\n", mmc->enh_user_size);
+	printf("ddr_mode: %d\n", mmc->ddr_mode);
+}
+#endif
+
+#ifdef QUICKBOOT
+int __weak board_set_mmc_pre(struct mmc *mmc)
+{
+	return 0;
+}
+#endif
 int mmc_init(struct mmc *mmc)
 {
 	int err = 0;
 	unsigned start;
+
+#ifdef QUICKBOOT
+	if (mmc->has_init)
+		return 0;
+
+	if (board_set_mmc_pre(mmc)) {
+		mmc->has_init = 1;
+
+		mmc->block_dev.lun = 0;
+		mmc->block_dev.type = 0;
+		mmc->block_dev.blksz = mmc->read_bl_len;
+		mmc->block_dev.log2blksz = LOG2(mmc->block_dev.blksz);
+		mmc->block_dev.lba = lldiv(mmc->capacity, mmc->read_bl_len);
+		mmc->block_dev.vendor[0] = 0;
+		mmc->block_dev.product[0] = 0;
+		mmc->block_dev.revision[0] = 0;
+
+		init_part(&mmc->block_dev);
+	}
+#endif
 
 	if (mmc->has_init)
 		return 0;
@@ -1683,6 +1756,11 @@ int mmc_init(struct mmc *mmc)
 	if (!err)
 		err = mmc_complete_init(mmc);
 	debug("%s: %d, time %lu\n", __func__, err, get_timer(start));
+
+#ifdef QUICKBOOT
+	/* dump_mmc(mmc); */
+#endif
+
 	return err;
 }
 
@@ -1813,11 +1891,13 @@ int mmc_initialize(bd_t *bis)
 	if (ret)
 		return ret;
 
+#ifndef QUICKBOOT
 #ifndef CONFIG_SPL_BUILD
 	print_mmc_devices(',');
 #endif
 
 	do_preinit();
+#endif
 	return 0;
 }
 

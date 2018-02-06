@@ -226,8 +226,10 @@ static int abortboot_normal(int bootdelay)
 #ifdef CONFIG_MENUPROMPT
 	printf(CONFIG_MENUPROMPT);
 #else
+#ifndef QUICKBOOT
 	if (bootdelay >= 0)
 		printf("Hit any key to stop autoboot: %2d ", bootdelay);
+#endif
 #endif
 
 #if defined CONFIG_ZERO_BOOTDELAY_CHECK
