@@ -12,6 +12,7 @@
 #include <serial.h>
 #include <asm/arch/nexell.h>
 #include <asm/arch/clk.h>
+#include <asm/arch/nx_gpio.h>
 
 /* baudrate rest value */
 union br_rest {
@@ -64,10 +65,50 @@ static unsigned int   const clock_in = CONFIG_S5P_SERIAL_CLOCK;
 #define RX_FIFO_COUNT_MASK	0xff
 #define RX_FIFO_FULL_MASK	(1 << 8)
 #define TX_FIFO_FULL_MASK	(1 << 24)
+static void serial_set_pad_function(int index)
+{
+	switch (index) {
+	case 0:
+		/* gpiod-14, gpiod-18 */
+		nx_gpio_set_pad_function(3, 14, 1);
+		nx_gpio_set_pad_function(3, 18, 1);
+		break;
+	case 1:
+		/* gpiod-15, gpiod-19, gpioc-5, gpioc-6 */
+		nx_gpio_set_pad_function(3, 15, 1);
+		nx_gpio_set_pad_function(3, 19, 1);
+		nx_gpio_set_pad_function(2, 5, 2);
+		nx_gpio_set_pad_function(2, 6, 2);
+		break;
+	case 2:
+		/* gpiod-16, gpiod-20 */
+		nx_gpio_set_pad_function(3, 16, 1);
+		nx_gpio_set_pad_function(3, 20, 1);
+		break;
+	case 3:
+		/* gpiod-17, gpiod-21 */
+		nx_gpio_set_pad_function(3, 17, 1);
+		nx_gpio_set_pad_function(3, 21, 1);
+		break;
+	case 4:
+		/* gpiob-28, gpiob-29 */
+		nx_gpio_set_pad_function(1, 28, 3);
+		nx_gpio_set_pad_function(1, 29, 3);
+		break;
+	case 5:
+		/* gpiob-30, gpiob-31 */
+		nx_gpio_set_pad_function(1, 30, 3);
+		nx_gpio_set_pad_function(1, 31, 3);
+		break;
+	}
+}
 
 static void __serial_device_init(void)
 {
 	char dev[10];
+
+	serial_set_pad_function(CONSOLE_PORT);
+
 	sprintf(dev, "nx-uart.%d", CONFIG_S5P_SERIAL_INDEX);
 
 	struct clk *clk = clk_get((const char *)dev);
