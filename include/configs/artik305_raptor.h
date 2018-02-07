@@ -418,7 +418,8 @@
 	"root_rw=rw\0"							\
 	"model_id=305\0"						\
 	"nr_cpus=2\0"							\
-	"opts=loglevel=4\0"						\
+	"opts=\0"							\
+	"loglevel=loglevel=4 splash\0"					\
 	"rootfs_type=ext4\0"						\
 	"selinux=0\0"							\
 	"sdrecovery=run boot_cmd_sdboot;"				\
@@ -435,7 +436,7 @@
 	"load_args=run factory_load; setenv bootargs ${console} "	\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
 		"rootfstype=${rootfs_type} ${recoverymode} ${ota} "	\
-		"nr_cpus=${nr_cpus} ${opts} "	\
+		"nr_cpus=${nr_cpus} ${loglevel} ${opts} "		\
 		"bootfrom=${bootpart} rescue=${rescue} "		\
 		"selinux=${selinux};\0"					\
 	"load_kernel="							\
