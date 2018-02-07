@@ -426,7 +426,8 @@
 	"model_id=533\0"						\
 	"board_type=raptor\0"						\
 	"nr_cpus=4\0"							\
-	"opts=loglevel=4\0"						\
+	"opts=\0"							\
+	"loglevel=loglevel=4 splash\0"					\
 	"rootfs_type=ext4\0"						\
 	"lcd1_0=s6e8fa0\0"						\
 	"lcd2_0=gst7d0038\0"						\
@@ -445,7 +446,7 @@
 	"load_args=run factory_load; setenv bootargs ${console} "	\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
 		"rootfstype=${rootfs_type} ${recoverymode} ${ota} "	\
-		"drm_panel=$lcd_panel nr_cpus=${nr_cpus} ${opts} "	\
+		"drm_panel=$lcd_panel nr_cpus=${nr_cpus} ${loglevel} ${opts} "	\
 		"bootfrom=${bootpart} rescue=${rescue} "		\
 		"board_type=${board_type};\0"				\
 	"load_kernel="							\
