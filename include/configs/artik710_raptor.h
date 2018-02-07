@@ -406,7 +406,8 @@
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
 	"rescue=0\0"							\
 	"root_rw=rw\0"							\
-	"opts=loglevel=4\0"						\
+	"opts=\0"							\
+	"loglevel=loglevel=4 splash\0"					\
 	"rootfs_type=ext4\0"						\
 	"lcd1_0=s6e8fa0\0"						\
 	"lcd2_0=gst7d0038\0"						\
@@ -424,8 +425,8 @@
 		"run factory_save\0"					\
 	"load_args=run factory_load; setenv bootargs ${console} "	\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
-		"rootfstype=${rootfs_type} ${opts} ${recoverymode} "	\
-		"drm_panel=$lcd_panel "					\
+		"rootfstype=${rootfs_type} ${loglevel} ${opts} "	\
+		"${recoverymode} drm_panel=$lcd_panel "			\
 		"${ota} bootfrom=${bootpart} rescue=${rescue};\0"	\
 	"load_kernel="							\
 		"ret=0; "						\
