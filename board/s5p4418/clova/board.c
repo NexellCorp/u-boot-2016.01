@@ -227,6 +227,7 @@ int board_late_init(void)
 			printf("reboot recovery!!!!\n");
 			writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
 			setenv("bootcmd", "run recoveryboot");
+			break;
 		case CHARGING_SIGNATURE :
 			printf("Charging !!!!\n");
 			writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
