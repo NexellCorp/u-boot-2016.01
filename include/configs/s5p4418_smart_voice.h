@@ -295,7 +295,7 @@
 	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
 		"printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false\0" \
 	"boot_cmd_mmcboot="   \
-		"ext4load mmc 0:1 $kerneladdr $kernel_file; ext4load mmc 0:1 $fdtaddr s5p4418-smart_voice.dtb; bootz $kerneladdr - $fdtaddr\0" \
+		"ext4load mmc 0:1 $kerneladdr $kernel_file; ext4load mmc 0:1 $fdtaddr s5p4418-smart_voice-rev00.dtb; bootz $kerneladdr - $fdtaddr\0" \
 	"mmcboot=run boot_cmd_mmcboot\0"           \
 	"bootcmd=run mmcboot\0"
 
