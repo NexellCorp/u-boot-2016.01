@@ -188,6 +188,13 @@ int board_late_init(void)
 	nx_gpio_set_output_enable(gpio_a, 13, 1);
 	nx_gpio_set_output_value(gpio_a,13, 0);
 
+	board_backlight_enable();
+
+#ifdef CONFIG_SYS_BURNING
+	setenv("bootcmd", "fastboot 0");
+	run_command("run bootcmd", 0);
+#endif
+
 
 #ifdef CONFIG_DM_CHARGER
 	/* Check Battery */
@@ -213,7 +220,6 @@ int board_late_init(void)
 
 #endif /* CONFIG_DM_CHARGER */
 
-	board_backlight_enable();
 
 #ifdef CONFIG_RECOVERY_BOOT
 #define ALIVE_SCRATCH1_READ_REGISTER	(0xc00108b4)
@@ -252,9 +258,6 @@ int board_late_init(void)
 	}
 #endif /* CONFIG_DM_CHARGER */
 
-#ifdef CONFIG_SYS_BURNING
-	setenv("bootcmd", "fastboot 0");
-#endif
 
 
 #ifdef CONFIG_I2C_EEPROM
