@@ -127,7 +127,7 @@
 		v_active_len = <1280>;
 		v_front_porch = <16>;
 		v_back_porch = <22>;
-		v_sync_width = <2>;
+		v_sync_width = <5>;
 	};
 
 	dp-ctrl {
