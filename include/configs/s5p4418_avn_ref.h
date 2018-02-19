@@ -73,8 +73,10 @@
 #define	CONFIG_BOARD_LATE_INIT
 /* board_init_f->init_sequence, call print_cpuinfo */
 #define	CONFIG_DISPLAY_CPUINFO
+#ifndef QUICKBOOT
 /* board_init_f, CONFIG_SYS_ICACHE_OFF */
 #define	CONFIG_SYS_DCACHE_OFF
+#endif
 /* board_init_r, call arch_misc_init */
 #define	CONFIG_ARCH_MISC_INIT
 /*#define	CONFIG_SYS_ICACHE_OFF*/
@@ -82,7 +84,9 @@
 /*-----------------------------------------------------------------------
  *	U-Boot default cmd
  */
+#ifndef QUICKBOOT
 #define	CONFIG_CMD_MEMTEST
+#endif
 
 /*-----------------------------------------------------------------------
  *	U-Boot Environments
@@ -323,5 +327,10 @@
 	"bootcmd=run mmcboot\0" \
 	CONFIG_RECOVERY_BOOT_CMD \
 	CONFIG_EXTRA_ENV_BOOT_LOGO
+
+#ifdef QUICKBOOT
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
+#define CONFIG_BOOST_MMC
+#endif
 
 #endif /* __CONFIG_H__ */
