@@ -143,38 +143,6 @@ void dram_init_banksize(void)
 	gd->bd->bi_dram[0].size  = CONFIG_SYS_SDRAM_SIZE;
 }
 
-static void nxcbl_pwm_init(int channel)
-{
-	pwm_init(channel, 0, 0);
-	pwm_config(channel, TO_DUTY_NS(50, 8000000), TO_PERIOD_NS(8000000));
-	pwm_enable(channel);
-}
-
-static void nxcbl_reset(void)
-{
-	u32 grp = 4 , bit = 15, pad = 0;
-
-	nx_gpio_set_pad_function(grp, bit, pad);
-	nx_gpio_set_output_enable(grp, bit, 1);
-
-	nx_gpio_set_output_value(grp, bit, 0);
-
-	mdelay(100);
-
-	nx_gpio_set_output_value(grp, bit, 1);
-
-	mdelay(100);
-}
-
-static void nxcbl_bootmode(int mode)
-{
-	u32 grp = 2, bit = 15, pad = 1;
-
-	nx_gpio_set_pad_function(grp, bit, pad);
-	nx_gpio_set_output_enable(grp, bit, 1);
-
-	nx_gpio_set_output_value(grp, bit, mode);
-}
 static void uart2_pad_init(void)
 {
 	nx_gpio_set_pad_function(3, 16, 1);
@@ -189,10 +157,6 @@ int board_late_init(void)
 	pmic_init();
 #endif
 	uart2_pad_init();
-	nxcbl_pwm_init(1);
-	nxcbl_bootmode(0);
-	nxcbl_reset();
-
 	return 0;
 }
 
