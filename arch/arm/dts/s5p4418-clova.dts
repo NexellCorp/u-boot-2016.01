@@ -121,12 +121,12 @@
 	dp-sync {
 		/* 67161600 */
 		h_active_len = <800>;
-		h_front_porch = <40>;
-		h_back_porch = <40>;
-		h_sync_width = <4>;
+		h_front_porch = <18>;
+		h_back_porch = <18>;
+		h_sync_width = <2>;
 		v_active_len = <1280>;
-		v_front_porch = <16>;
-		v_back_porch = <22>;
+		v_front_porch = <20>;
+		v_back_porch = <10>;
 		v_sync_width = <5>;
 	};
 
