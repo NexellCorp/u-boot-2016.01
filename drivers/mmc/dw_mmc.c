@@ -15,6 +15,10 @@
 #include <dwmmc.h>
 #include <asm-generic/errno.h>
 
+#ifdef CONFIG_MACH_S5P6818
+#undef QUICKBOOT
+#endif
+
 #define PAGE_SIZE 4096
 
 static int dwmci_wait_reset(struct dwmci_host *host, u32 value)

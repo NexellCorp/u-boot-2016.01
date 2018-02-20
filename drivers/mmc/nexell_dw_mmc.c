@@ -17,6 +17,10 @@
 #include <fdtdec.h>
 #include <libfdt.h>
 
+#ifdef CONFIG_MACH_S5P6818
+#undef QUICKBOOT
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #define	DWMCI_NAME "NEXELL DWMMC"

@@ -21,6 +21,10 @@
 #include <div64.h>
 #include "mmc_private.h"
 
+#ifdef CONFIG_MACH_S5P6818
+#undef QUICKBOOT
+#endif
+
 static struct list_head mmc_devices;
 static int cur_dev_num = -1;
 
