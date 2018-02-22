@@ -187,6 +187,7 @@ static void nx_dw_mmc_clksel(struct dwmci_host *host)
 	dwmci_writel(host, DWMCI_CLKSEL, val);
 }
 
+#ifndef QUICKBOOT
 static void nx_dw_mmc_reset(int ch)
 {
 	int rst_id = RESET_ID_SDMMC0 + ch;
@@ -194,6 +195,7 @@ static void nx_dw_mmc_reset(int ch)
 	nx_rstcon_setrst(rst_id, 0);
 	nx_rstcon_setrst(rst_id, 1);
 }
+#endif
 
 static void nx_dw_mmc_clk_delay(struct dwmci_host *host)
 {

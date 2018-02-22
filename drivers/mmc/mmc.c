@@ -1672,7 +1672,7 @@ static int mmc_complete_init(struct mmc *mmc)
 }
 
 #ifdef QUICKBOOT
-static void dump_mmc(struct mmc *mmc)
+static __attribute__((unused)) void dump_mmc(struct mmc *mmc)
 {
 	printf("mmc info\n");
 	if (mmc->cfg) {
@@ -1710,10 +1710,10 @@ static void dump_mmc(struct mmc *mmc)
 	printf("capacity: %llu\n", mmc->capacity);
 	printf("capacity_user: %llu\n", mmc->capacity_user);
 	printf("capacity_rpmb: %llu\n", mmc->capacity_rpmb);
-	printf("capacity_gp: %d %d %d %d\n", mmc->capacity_gp[0],
+	printf("capacity_gp: %llu %llu %llu %llu\n", mmc->capacity_gp[0],
 	       mmc->capacity_gp[1], mmc->capacity_gp[2], mmc->capacity_gp[3]);
-	printf("enh_user_start: %d\n", mmc->enh_user_start);
-	printf("enh_user_size: %d\n", mmc->enh_user_size);
+	printf("enh_user_start: %llu\n", mmc->enh_user_start);
+	printf("enh_user_size: %llu\n", mmc->enh_user_size);
 	printf("ddr_mode: %d\n", mmc->ddr_mode);
 }
 #endif
@@ -1830,6 +1830,7 @@ void mmc_set_preinit(struct mmc *mmc, int preinit)
 	mmc->preinit = preinit;
 }
 
+#ifndef QUICKBOOT
 static void do_preinit(void)
 {
 	struct mmc *m;
@@ -1845,6 +1846,7 @@ static void do_preinit(void)
 			mmc_start_init(m);
 	}
 }
+#endif
 
 #if defined(CONFIG_DM_MMC) && defined(CONFIG_SPL_BUILD)
 static int mmc_probe(bd_t *bis)

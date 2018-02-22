@@ -61,6 +61,7 @@ static u32 hw_revision(void)
 }
 #endif
 
+#ifndef QUICKBOOT
 static void nxe2000_print_chgstate(struct udevice *dev)
 {
 	uint8_t value = 0;
@@ -92,6 +93,7 @@ static void nxe2000_print_chgstate(struct udevice *dev)
 
 	return;
 }
+#endif
 
 
 static int nxe2000_reg_count(struct udevice *dev)

@@ -172,11 +172,13 @@ static int display_text_info(void)
 	return 0;
 }
 
+#ifndef QUICKBOOT
 static int announce_dram_init(void)
 {
 	puts("DRAM:  ");
 	return 0;
 }
+#endif
 
 #if defined(CONFIG_MIPS) || defined(CONFIG_PPC) || defined(CONFIG_M68K)
 static int init_func_ram(void)
@@ -197,6 +199,7 @@ static int init_func_ram(void)
 }
 #endif
 
+#ifndef QUICKBOOT
 static int show_dram_config(void)
 {
 	unsigned long long size;
@@ -224,6 +227,7 @@ static int show_dram_config(void)
 
 	return 0;
 }
+#endif
 
 __weak void dram_init_banksize(void)
 {
