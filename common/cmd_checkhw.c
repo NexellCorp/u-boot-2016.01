@@ -11,6 +11,7 @@
 #include <asm/gpio.h>
 #include <fdtdec.h>
 #include <libfdt.h>
+#include <linux/compat.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
