@@ -121,7 +121,15 @@ static int splash_load_raw(struct splash_location *location, u32 bmp_load_addr)
 	if (res < 0)
 		return res;
 
+#ifdef CONFIG_ARM64
+	{
+		u64 u64_load_addr = bmp_load_addr;
+
+		bmp_hdr = (struct bmp_header *)u64_load_addr;
+	}
+#else
 	bmp_hdr = (struct bmp_header *)bmp_load_addr;
+#endif
 	bmp_size = le32_to_cpu(bmp_hdr->file_size);
 
 #ifndef CONFIG_SPL_BUILD
