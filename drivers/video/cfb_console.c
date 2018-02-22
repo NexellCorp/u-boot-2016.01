@@ -2081,7 +2081,15 @@ static int video_init(void)
 	if (pGD == NULL)
 		return -1;
 
+#ifdef CONFIG_ARM64
+	{
+		u64 fb_addr = VIDEO_FB_ADRS;
+
+		video_fb_address = (void *) fb_addr;
+	}
+#else
 	video_fb_address = (void *) VIDEO_FB_ADRS;
+#endif
 #ifdef CONFIG_VIDEO_HW_CURSOR
 	video_init_hw_cursor(VIDEO_FONT_WIDTH, VIDEO_FONT_HEIGHT);
 #endif
