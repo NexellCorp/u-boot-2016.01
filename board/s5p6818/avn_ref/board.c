@@ -18,6 +18,8 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_PWM_NX
+#include <pwm.h>
+
 enum gpio_group {
 	gpio_a, gpio_b, gpio_c, gpio_d, gpio_e,
 };
