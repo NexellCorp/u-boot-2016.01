@@ -41,6 +41,7 @@ static struct pwm_device pwm_dev[] = {
 #ifdef QUICKBOOT
 static u8 camera_sensor_reg[] = {0x02, 0x1c, 0x03, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x10, 0x11, 0x19, 0x1b, 0x1a, 0xaf};
 static u8 camera_sensor_val[] = {0x40, 0x00, 0xa6, 0x80, 0x02, 0x15, 0xf0, 0x09, 0xc0, 0xec, 0x68, 0x50, 0x00, 0x0f, 0x40};
+static const char boot_args[] = "setenv bootargs console=ttyAMA3,115200n8 loglevel=7 printk.time=1 androidboot.hardware=navi_ref androidboot.console=ttyAMA3 androidboot.serialno=0123456789ABCDEF nx_rearcam.sensor_init_parm=1 quiet";
 
 int board_rearcam_check(void)
 {
@@ -97,6 +98,7 @@ static int board_camera_sensor_power_enable(void)
 static int board_camera_sensor_init(void)
 {
 	nx_i2c_init_s(camera_sensor_reg, camera_sensor_val);
+	run_command_list(boot_args, sizeof(boot_args), 0);
 	return 0;
 }
 #endif
