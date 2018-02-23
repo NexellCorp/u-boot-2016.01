@@ -1926,6 +1926,15 @@ static void plot_logo_or_black(void *screen, int x, int y, int black)
 #endif
 }
 
+/*
+ * Implement a weak default function for boards that optionally
+ * need to skip the log display if rearcam is on
+ */
+int __weak board_rearcam_check(void)
+{
+	return 0;
+}
+
 static void *video_logo(void)
 {
 	char info[128];
@@ -1933,6 +1942,10 @@ static void *video_logo(void)
 	__maybe_unused int y_off = 0;
 	__maybe_unused ulong addr;
 	__maybe_unused char *s;
+
+	if (board_rearcam_check()) {
+		return 0;
+	}
 
 	splash_get_pos(&video_logo_xpos, &video_logo_ypos);
 
