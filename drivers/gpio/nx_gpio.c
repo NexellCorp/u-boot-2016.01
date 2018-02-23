@@ -4,7 +4,6 @@
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
-
 #include <common.h>
 #include <dm.h>
 #include <errno.h>
@@ -88,8 +87,8 @@ static int nx_alive_gpio_get_value(struct udevice *dev, unsigned pin)
 	unsigned int mask = 1UL << pin;
 	unsigned int value;
 
-	value = (readl(&regs->pad_read) & mask) >> pin;
-
+	/*value = (readl(&regs->pad_read) & mask) >> pin;*/
+	value = (readl(&regs->pad) & mask) >> pin;
 	return value;
 }
 
