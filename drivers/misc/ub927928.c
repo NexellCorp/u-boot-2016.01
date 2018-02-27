@@ -77,7 +77,9 @@ int ub9xx_init(struct udevice *dev)
 
 	for (i = 0; i < 3; i++) {
 		ret = ub9xx_i2c_read(dev, i2c_rev_slave_addr, 0x1c, data, 1);
+#ifndef QUICKBOOT
 		printf("ti927_Init: read reg:0x1c: 0x%x\n", data[0]);
+#endif
 
 		if (data[0] == 0x03) {
 			printf("927,928 already lock\n");
@@ -93,7 +95,9 @@ int ub9xx_init(struct udevice *dev)
 	}
 
 	ret = ub9xx_i2c_read(dev, i2c_rev_slave_addr, 0x21, data, 1);
+#ifndef QUICKBOOT
 	printf("ti927_Init: read reg:0x21: 0x%x\n", data[0]);
+#endif
 
 	if ((data[0] & 0xf0) == 0x90) {
 		printf("927,928 already init\n");
@@ -114,13 +118,17 @@ int ub9xx_init(struct udevice *dev)
 		ret = ub9xx_i2c_write(dev, i2c_rev_slave_addr,
 				reg1[i], &val1[i], 1);
 
+#ifndef QUICKBOOT
 	printf("ub927928_init-----ret[%d]\n" , ret);
+#endif
 
 	return 0;
 }
 static int ub927928_probe(struct udevice *dev)
 {
+#ifndef QUICKBOOT
 	printf("ub927928_probe\n");
+#endif
 
 	return 0;
 }
@@ -153,7 +161,9 @@ static int ub927928_bind(struct udevice *dev)
 	dm_i2c_read(dev,0x01, &value, 1);
 	*/
 
+#ifndef QUICKBOOT
 	printf("ub927928_bind\n");
+#endif
 
 	return 0;
 }

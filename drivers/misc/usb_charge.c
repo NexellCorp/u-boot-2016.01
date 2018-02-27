@@ -87,8 +87,9 @@ int e522xx_set_mode(struct udevice *dev , int mode)
 
 	if (mode > E_E522XX_PORT_CONF_CCP || mode < 0)
 		return -1;
-
+#ifndef QUICKBOOT
 	printf("e522xx_set_mode [%d]\n", mode);
+#endif
 	e522xx_state_ctrl(dev, E_E522XX_STATE_STANDBY);
 
 	/* status */
@@ -131,7 +132,9 @@ int e522xx_set_mode(struct udevice *dev , int mode)
 		cmd = 0x01;
 		/* 0x0c(DCP-BC1.2)  0X10(CCP FOR APPLE) 0x08(CDP)  0x14(CCP) */
 		buf[0] = 0x0c;
+#ifndef QUICKBOOT
 		printf("DCP-BC1.2\n");
+#endif
 		ret = e522xx_i2c_write(dev, cmd, buf, 1);
 		if (ret)
 			printf("usb_i2c_Write fail2==%d\n", ret);
@@ -142,7 +145,9 @@ int e522xx_set_mode(struct udevice *dev , int mode)
 		cmd = 0x01;
 		/* 0x0c(DCP-BC1.2)  0X10(CCP FOR APPLE) 0x08(CDP)  0x14(CCP) */
 		buf[0] = 0x10;
+#ifndef QUICKBOOT
 		printf("CCP APPLE\n");
+#endif
 		ret = e522xx_i2c_write(dev, cmd, buf, 1);
 		if (ret)
 			printf("usb_i2c_Write fail2==%d\n", ret);
@@ -153,7 +158,9 @@ int e522xx_set_mode(struct udevice *dev , int mode)
 		cmd = 0x01;
 		/* 0x0c(DCP-BC1.2)  0X10(CCP FOR APPLE) 0x08(CDP)  0x14(CCP) */
 		buf[0] = 0x14;
+#ifndef QUICKBOOT
 		printf("CCP\n");
+#endif
 		ret = e522xx_i2c_write(dev, cmd, buf, 1);
 		if (ret)
 			printf("usb_i2c_Write fail2==%d\n", ret);
@@ -164,7 +171,9 @@ int e522xx_set_mode(struct udevice *dev , int mode)
 		cmd = 0x01;
 		/* 0x0c(DCP-BC1.2)  0X10(CCP FOR APPLE) 0x08(CDP)  0x14(CCP) */
 		buf[0] = 0x1c;
+#ifndef QUICKBOOT
 		printf("AUTO\n");
+#endif
 		ret = e522xx_i2c_write(dev, cmd, buf, 1);
 		if (ret)
 			printf("usb_i2c_Write fail2==%d\n", ret);
@@ -177,8 +186,10 @@ int e522xx_set_mode(struct udevice *dev , int mode)
 	e522xx_state_ctrl(dev, E_E522XX_STATE_RUN);
 	if (ret)
 		printf("e522xx_set_mode [%d] fail\n", mode);
+#ifndef QUICKBOOT
 	else
 		printf("e522xx_set_mode [%d] success\n", mode);
+#endif
 
 	return ret;
 }
@@ -189,7 +200,9 @@ int e522_init(struct udevice *dev)
 
 	e522xx_set_mode(dev , E_E522XX_PORT_CONF_CDP);
 	/* dm_i2c_read(dev,0x84, &value, 1); */
+#ifndef QUICKBOOT
 	printf("usb_charge_init\n");
+#endif
 
 	return 0;
 }

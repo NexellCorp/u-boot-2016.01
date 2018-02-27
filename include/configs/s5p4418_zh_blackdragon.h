@@ -351,4 +351,8 @@
 #define CONFIG_SW_UBC_DETECT
 /* #define CONFIG_PMIC_REG_DUMP */
 
+#ifdef QUICKBOOT
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
+#endif
+
 #endif /* __CONFIG_H__ */
