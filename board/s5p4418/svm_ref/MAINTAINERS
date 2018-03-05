@@ -1,0 +1,6 @@
+S5P4418 SVM_REF BOARD
+M:  gyoungbo min <mingyoungbo@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/svm_ref/
+F:  include/configs/s5p4418_svm_ref.h
+F:  configs/s5p4418_svm_ref_defconfig

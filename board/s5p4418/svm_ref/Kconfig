@@ -1,0 +1,6 @@
+if TARGET_S5P4418_SVM_REF
+
+config SYS_BOARD
+	default "svm_ref"
+
+endif

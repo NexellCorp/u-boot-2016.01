@@ -55,6 +55,11 @@ config TARGET_S5P4418_CLOVA
     bool "S5P4418_CLOVA"
     help
       Support for s5p4418 clova platform
+
+config TARGET_S5P4418_SVM_REF
+	bool "S5P4418_SVM_REF"
+	help
+	  Support for s5p4418 svm_ref platform.
 endchoice
 
 config SYS_VENDOR
@@ -78,3 +83,4 @@ source "board/s5p4418/zh_dragon/Kconfig"
 source "board/s5p4418/zh_blackdragon/Kconfig"
 source "board/s5p4418/daudio_covi/Kconfig"
 source "board/s5p4418/clova/Kconfig"
+source "board/s5p4418/svm_ref/Kconfig"
