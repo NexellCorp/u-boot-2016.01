@@ -326,6 +326,17 @@ int board_late_init(void)
 #ifdef CONFIG_ARTIK_OTA
 	check_ota_update();
 #endif
+
+#ifdef CONFIG_RECOVERY_BOOT
+#define ALIVE_SCRATCH1_READ_REGISTER	(0xc00108b4)
+#define ALIVE_SCRATCH1_RESET_REGISTER	(0xc00108ac)
+#define RECOVERY_SIGNATURE		(0x52455343)    /* (ASCII) : R.E.S.C */
+	if (readl(ALIVE_SCRATCH1_READ_REGISTER) == RECOVERY_SIGNATURE) {
+		printf("reboot recovery!!!!\n");
+		writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
+		setenv("bootcmd", "run recoveryboot");
+	}
+#endif
 	return 0;
 }
 
