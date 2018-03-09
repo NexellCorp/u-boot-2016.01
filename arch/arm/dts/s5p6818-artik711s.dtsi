@@ -1,0 +1,19 @@
+/*
+ * (C) Copyright 2018 Samsung Electronics
+ * Chanho Park <chanho61.park@samsung.com>
+ *
+ * SPDX-License-Identifier: GPL-2.0+
+ */
+
+#include "s5p6818-artik710.dtsi"
+
+&mmc2 {
+	reg = <0xc0062000 0x1000>;
+	nexell,bus-width = <4>;
+	index = <0>;
+};
+
+&mmc0 {
+	reg = <0xc0069000 0x1000>;
+	index = <2>;
+};
