@@ -29,33 +29,6 @@ static const struct pmic_child_info pmic_children_info[] = {
 	{ },
 };
 
-#ifdef CONFIG_REVISION_TAG
-static void gpio_init(void)
-{
-	nx_gpio_set_pad_function(4, 4, 0);
-	nx_gpio_set_pad_function(4, 5, 0);
-	nx_gpio_set_pad_function(4, 6, 0);
-	nx_gpio_set_output_value(4, 4, 0);
-	nx_gpio_set_output_value(4, 5, 0);
-	nx_gpio_set_output_value(4, 6, 0);
-}
-
-static u32 hw_revision(void)
-{
-	u32 val = 0;
-
-	val |= nx_gpio_get_input_value(4, 6);
-	val <<= 1;
-
-	val |= nx_gpio_get_input_value(4, 5);
-	val <<= 1;
-
-	val |= nx_gpio_get_input_value(4, 4);
-
-	return val;
-}
-#endif
-
 static int nxe2000_reg_count(struct udevice *dev)
 {
 	return NXE2000_NUM_OF_REGS;
@@ -87,16 +60,6 @@ static int nxe2000_bind(struct udevice *dev)
 	int regulators_node;
 	const void *blob = gd->fdt_blob;
 	int children;
-
-#ifdef CONFIG_REVISION_TAG
-	gpio_init();
-
-	if ((hw_revision() < 3) && !strcmp(dev->name, "nxe2000_gpio@32"))
-		return 0;
-
-	if ((hw_revision() >= 3) && !strcmp(dev->name, "nxe2000@32"))
-		return 0;
-#endif
 
 	debug("%s: dev->name:%s\n", __func__, dev->name);
 
