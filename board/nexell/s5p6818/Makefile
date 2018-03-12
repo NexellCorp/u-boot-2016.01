@@ -7,3 +7,4 @@
 
 obj-$(CONFIG_TARGET_S5P6818_DRONE)	+= drone/
 obj-$(CONFIG_TARGET_ARTIK710_RAPTOR)	+= artik710_raptor/
+obj-$(CONFIG_TARGET_ARTIK711S_RAPTOR)	+= artik711s_raptor/

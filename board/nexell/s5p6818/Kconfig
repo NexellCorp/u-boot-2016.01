@@ -11,6 +11,11 @@ config TARGET_ARTIK710_RAPTOR
 	help
 	  Support for artik710_raptor platform.
 
+config TARGET_ARTIK711S_RAPTOR
+	bool "ARTIK711S_RAPTOR"
+	help
+	  Support for artik711s_raptor platform.
+
 endchoice
 
 config SYS_VENDOR

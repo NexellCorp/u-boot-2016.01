@@ -1,0 +1,6 @@
+ARTIK711S_RAPTOR BOARD
+M:  Chanho Park <chanho61.park@samsung.com>
+S:  Maintained
+F:  board/nexell/s5p6818/artik711s_raptor/
+F:  include/configs/artik711s_raptor.h
+F:  configs/artik711s_raptor_defconfig
