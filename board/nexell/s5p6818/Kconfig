@@ -21,6 +21,11 @@ config TARGET_KICK_ST
 	help
 	  Support for S5P6818 kick st platform.
 
+config TARGET_ARTIK711S_RAPTOR
+	bool "ARTIK711S_RAPTOR"
+	help
+	  Support for artik711s_raptor platform.
+
 endchoice
 
 config SYS_VENDOR
