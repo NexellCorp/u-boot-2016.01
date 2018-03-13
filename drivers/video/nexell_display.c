@@ -59,6 +59,7 @@ static char *const dp_dev_str[] = {
 	[DP_DEVICE_DP1] = "DP1",
 };
 
+#if defined(CONFIG_VIDEO) || defined(CONFIG_LCD)
 #if !defined CONFIG_SPL_BUILD && CONFIG_IS_ENABLED(OF_CONTROL)
 static void nx_display_parse_dp_sync(const void *blob, int node,
 				     struct dp_sync_info *sync)
@@ -482,6 +483,7 @@ err_setup:
 
 	return NULL;
 }
+#endif
 
 #if defined CONFIG_VIDEO
 void *video_hw_init(void)
