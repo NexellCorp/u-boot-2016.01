@@ -20,6 +20,7 @@ dtb-$(CONFIG_ARCH_S5P4418) += s5p4418-drone.dtb \
 	s5p4418-zh-dragon.dtb\
 	s5p4418-zh-blackdragon.dtb\
 	s5p4418-daudio-covi.dtb\
+	s5p4418-daudio-cona.dtb\
 	s5p4418-ff-voice.dtb \
 	s5p4418-clova.dtb \
 	s5p4418-svm-ref.dtb
