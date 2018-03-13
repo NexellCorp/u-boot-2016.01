@@ -219,10 +219,4 @@
 		};
 	};
 
-	board_rev:rev@0 {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		gpios = < 0 0 0 >;
-		compatible = "nexell,board_rev";
-	};
 };

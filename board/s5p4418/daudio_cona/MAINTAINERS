@@ -1,0 +1,6 @@
+S5P4418 DAUDIO_CONA BOARD
+M:  Han Yiboem <yibhan@cafeel.co.kr>
+S:  Maintained
+F:  board/s5p4418/daudio_cona/
+F:  include/configs/s5p4418_daudio_cona.h
+F:  configs/s5p4418_daudio_cona_defconfig
