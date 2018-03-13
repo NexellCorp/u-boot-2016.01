@@ -11,6 +11,7 @@
 #include <artik_mac.h>
 
 #define ARTIK_A710		"710"
+#define ARTIK_A711		"711"
 #define ARTIK_A530		"530"
 #define ARTIK_A533		"533"
 #define ARTIK_A305		"305"
@@ -47,6 +48,13 @@ static const struct artik_info_t artik_info[] = {
 		.model_code	= 3,
 		.oui		= 0x08152F,
 	}, {
+		/* Artik533s */
+		.board_name	= ARTIK_A533,
+		.year_offset	= 2017,
+		.security	= 'L',
+		.model_code	= 0,
+		.oui		= 0x448F17,
+	}, {
 		/* Artik305s */
 		.board_name	= ARTIK_A305,
 		.year_offset	= 2018,
@@ -54,11 +62,11 @@ static const struct artik_info_t artik_info[] = {
 		.model_code	= 1,
 		.oui		= 0x448F17,
 	}, {
-		/* Artik533s */
-		.board_name	= ARTIK_A533,
-		.year_offset	= 2017,
+		/* Artik711s */
+		.board_name	= ARTIK_A711,
+		.year_offset	= 2018,
 		.security	= 'L',
-		.model_code	= 0,
+		.model_code	= 2,
 		.oui		= 0x448F17,
 	},
 	{ },
