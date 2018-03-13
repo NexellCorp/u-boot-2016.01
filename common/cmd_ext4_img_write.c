@@ -127,9 +127,11 @@ int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
 	unsigned int write_sector;
 	int ret;
 	bool big = false;
+	unsigned long fastboot_buf_end =
+		(unsigned long)CONFIG_FASTBOOT_BUF_ADDR +
+		(unsigned long)CONFIG_FASTBOOT_BUF_SIZE;
 
-	tmp_align = ((unsigned char *)((CONFIG_FASTBOOT_BUF_ADDR +
-				      CONFIG_FASTBOOT_BUF_SIZE) & 0xffffffff));
+	tmp_align = (unsigned char *)(fastboot_buf_end & 0xffffffff);
 	ptr = data;
 	remaining_sector_size = sector_size;
 	write_sector = sector;
