@@ -105,7 +105,8 @@ int mmc_get_env_dev(void)
 	int port_num;
 	int boot_mode = readl(PHY_BASEADDR_CLKPWR + SYSRSTCONFIG);
 
-	if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_SDMMC) {
+	if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_SDMMC ||
+	    (boot_mode & BOOTMODE_MASK) == BOOTMODE_USB) {
 		port_num = readl(SCR_ARM_SECOND_BOOT_REG1);
 
 		/* Reverse order compared with artik710 */
@@ -113,8 +114,6 @@ int mmc_get_env_dev(void)
 			return 0;
 		else if (port_num == EMMC_PORT_NUM)
 			return 1;
-	} else if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_USB) {
-		return 0;
 	}
 
 	return -1;
