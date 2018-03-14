@@ -17,9 +17,9 @@
 #error Not support timer channel. Please use "0~3" channels.
 #endif
 
-/* global variables to save timer count */
-static unsigned long timestamp;
-static unsigned long lastdec;
+DECLARE_GLOBAL_DATA_PTR;
+/* Using gd->arch.tbl and tbu for lastdec and timestamp respectively */
+
 /* set .data section, before u-boot is relocated */
 static int	timerinit __attribute__ ((section(".data")));
 
@@ -163,7 +163,7 @@ unsigned long get_timer(unsigned long base)
 
 void set_timer(unsigned long t)
 {
-	timestamp = (unsigned long)t;
+	gd->arch.tbu = (unsigned long)t;
 }
 
 void reset_timer_masked(void)
@@ -173,9 +173,9 @@ void reset_timer_masked(void)
 
 	/* reset time */
 	/* capure current decrementer value time */
-	lastdec = timer_read(base, ch);
+	gd->arch.tbl = timer_read(base, ch);
 	/* start "advancing" time stamp from 0 */
-	timestamp = 0;
+	gd->arch.tbu = 0;
 }
 
 unsigned long get_timer_masked(void)
@@ -185,9 +185,9 @@ unsigned long get_timer_masked(void)
 
 	unsigned long now = timer_read(base, ch);	/* current tick value */
 
-	if (now >= lastdec) {			/* normal mode (non roll) */
+	if (now >= gd->arch.tbl) {			/* normal mode (non roll) */
 		/* move stamp fordward with absoulte diff ticks */
-		timestamp += now - lastdec;
+		gd->arch.tbu += now - gd->arch.tbl;
 	} else {
 		/* we have overflow of the count down timer */
 		/* nts = ts + ld + (TLV - now)
@@ -196,13 +196,13 @@ unsigned long get_timer_masked(void)
 		 * nts = new "advancing time stamp"...
 		 * it could also roll and cause problems.
 		 */
-		timestamp += now + TIMER_COUNT - lastdec;
+		gd->arch.tbu += now + TIMER_COUNT - gd->arch.tbl;
 	}
 	/* save last */
-	lastdec = now;
+	gd->arch.tbl = now;
 
-	debug("now=%lu, last=%lu, timestamp=%lu\n", now, lastdec, timestamp);
-	return (unsigned long)timestamp;
+	debug("now=%lu, last=%lu, timestamp=%lu\n", now, gd->arch.tbl, gd->arch.tbu);
+	return (unsigned long)gd->arch.tbu;
 }
 
 void __udelay(unsigned long usec)
