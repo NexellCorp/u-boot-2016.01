@@ -263,8 +263,12 @@ int rsa_mod_exp_sw(const uint8_t *sig, uint32_t sig_len,
 	if (!prop->public_exponent)
 		key.exponent = RSA_DEFAULT_PUBEXP;
 	else
+#ifdef USE_HOSTCC
 		key.exponent =
 			fdt64_to_cpu(*((uint64_t *)(prop->public_exponent)));
+#else
+		key.exponent = fdtdec_get_number(prop->public_exponent, 2);
+#endif
 
 	if (!key.len || !prop->modulus || !prop->rr) {
 		debug("%s: Missing RSA key info", __func__);
