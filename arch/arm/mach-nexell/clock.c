@@ -187,7 +187,7 @@ struct _core_hz_ {
 #endif
 };
 
-static struct _core_hz_ core_hz;	/* core clock */
+static struct _core_hz_ core_hz __attribute__((section(".data")));	/* core clock */
 #define	CORE_HZ_SIZE	(sizeof(core_hz)/4)
 
 /*
