@@ -760,6 +760,7 @@ static int part_lists_make(const char *ptable_str, int ptable_str_len)
 			err = -1;
 			break;
 		}
+		memset(fp, 0, sizeof(*fp));
 
 		for (p_fnc_ptr = parse_part_seqs; *p_fnc_ptr; ++p_fnc_ptr) {
 			if ((*p_fnc_ptr)(p, &p, &fd, fp) != 0) {
