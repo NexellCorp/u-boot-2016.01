@@ -378,38 +378,47 @@
 	"kernel_offs=0x00080000\0"					\
 	"ramdisk_offs=0x09000000\0"					\
 	"fdt_offs=0x0a000000\0"						\
-	"sd_offset=0x08000000\0"				\
-	"gen_addr="							\
-		"setexpr kerneladdr $sdram_base + $kernel_offs; "	\
-		"setexpr ramdiskaddr $sdram_base + $ramdisk_offs; "	\
-		"setexpr fdtaddr $sdram_base + $fdt_offs\0"		\
-	"gen_sdrecaddr="						\
-		"setexpr sdrecaddr $sdram_base + $sd_offset\0"	\
-	"load_fdt="							\
-		"if test -z \"$fdtfile\"; then "                        \
-		"loop=$board_rev; "					\
-		"number=$board_rev: "					\
-		"success=0; "						\
-		"until test $loop -eq 0 || test $success -ne 0; do "	\
-			"if test $loop -lt 10; then "			\
-				"number=0$loop; "			\
-			"else number=$loop; "				\
-			"fi; "						\
-			"ext4size mmc $rootdev:$bootpart s5p4418-artik${model_id}-raptor-rev${number}.dtb && setexpr success 1; " \
-			"setexpr loop $loop - 1; "			\
-		"done; "					\
-		"if test $success -eq 0; then "				\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik305-raptor-rev00.dtb;"	\
-		"else "							\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik${model_id}-raptor-rev${number}.dtb; "	\
-		"fi; "							\
-		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; " \
-		"fi; setenv success; setenv number; setenv loop;\0"	\
+	"sd_offset=0x08000000\0"					\
+	"gen_addr=\n"							\
+	"    setexpr kerneladdr $sdram_base + $kernel_offs\n"		\
+	"    setexpr ramdiskaddr $sdram_base + $ramdisk_offs\n"		\
+	"    setexpr fdtaddr $sdram_base + $fdt_offs\0"			\
+	"gen_sdrecaddr=setexpr sdrecaddr $sdram_base + $sd_offset\0"	\
+	"load_fdt=\n"							\
+	"    if test -z \"$fdtfile\"; then\n"				\
+	"        loop=$board_rev\n"					\
+	"        number=$board_rev:\n"					\
+	"        success=0"						\
+	"        until test $loop -eq 0 || test $success -ne 0; do\n"	\
+	"            if test $loop -lt 10; then\n"			\
+	"                number=0$loop\n"				\
+	"            else\n"						\
+	"                number=$loop\n"				\
+	"            fi\n"						\
+	"            ext4size mmc $rootdev:$bootpart s5p4418-artik${model_id}-raptor-rev${number}.dtb && setexpr success 1\n" \
+	"            setexpr loop $loop - 1\n"				\
+	"        done\n"						\
+	"        if test $success -eq 0; then\n"			\
+	"            ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik305-raptor-rev00.dtb\n" \
+	"        else\n"						\
+	"            ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-artik${model_id}-raptor-rev${number}.dtb\n" \
+	"        fi\n"							\
+	"    else\n"							\
+	"        ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile\n"	\
+	"    fi\n"							\
+	"    setenv success\n"						\
+	"    setenv number\n"						\
+	"    setenv loop\0"						\
 	"bootdelay=" __stringify(CONFIG_BOOTDELAY) "\0"			\
 	"console=" CONFIG_DEFAULT_CONSOLE "\0"				\
-	"consoleon=setenv console " CONFIG_DEFAULT_CONSOLE		\
-		"; saveenv; reset\0"					\
-	"consoleoff=setenv console console=ram; saveenv; reset\0"	\
+	"consoleon=\n"							\
+	"    setenv console " CONFIG_DEFAULT_CONSOLE "\n"		\
+	"    saveenv\n"							\
+	"    reset\0"							\
+	"consoleoff=\n"							\
+	"    setenv console console=ram\n"				\
+	"    saveenv\n"							\
+	"    reset\0"							\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"rootpart=" __stringify(CONFIG_ROOT_PART) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
@@ -422,55 +431,78 @@
 	"loglevel=loglevel=4 splash\0"					\
 	"rootfs_type=ext4\0"						\
 	"selinux=0\0"							\
-	"sdrecovery=run boot_cmd_sdboot;"				\
-		"sd_recovery mmc 1:3 $sdrecaddr partmap_emmc.txt\0"	\
+	"sdrecovery=\n"							\
+	"    run boot_cmd_sdboot\n"					\
+	"    sd_recovery mmc 1:3 $sdrecaddr partmap_emmc.txt\0"		\
 	"factory_load=factory_info load mmc 0 "				\
 		__stringify(CONFIG_FACTORY_INFO_START) " "		\
 		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
 	"factory_save=factory_info save mmc 0 "				\
 		__stringify(CONFIG_FACTORY_INFO_START) " "		\
 		__stringify(CONFIG_FACTORY_INFO_SIZE) "\0"		\
-	"factory_set_ethaddr=run factory_load; gen_eth_addr ;"		\
-		"factory_info write ethaddr $ethaddr;"			\
-		"run factory_save\0"					\
-	"load_args=run factory_load; setenv bootargs ${console} "	\
+	"factory_set_ethaddr=\n"					\
+	"    run factory_load\n"					\
+	"    gen_eth_addr\n"						\
+	"    factory_info write ethaddr $ethaddr\n"			\
+	"    run factory_save\0"					\
+	"load_args=\n"							\
+	"    run factory_load\n"					\
+	"    setenv bootargs ${console} "				\
 		"root=/dev/mmcblk${rootdev}p${rootpart} ${root_rw} "	\
 		"rootfstype=${rootfs_type} ${recoverymode} ${ota} "	\
 		"nr_cpus=${nr_cpus} ${loglevel} ${opts} "		\
 		"bootfrom=${bootpart} rescue=${rescue} "		\
 		"selinux=${selinux};\0"					\
-	"load_kernel="							\
-		"ret=0; "						\
-		"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file && setexpr ret 1; " \
-		"if test $ret -eq 0; then "				\
-			"if test $bootpart -eq 2; then "		\
-				"setenv bootpart 3; "			\
-			"else setenv bootpart 2; "			\
-			"fi; "						\
-			"setenv rescue 1; "				\
-			"ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file; " \
-			"run load_args; "				\
-		"fi;\0"							\
+	"load_kernel=\n"						\
+	"    ret=0\n"							\
+	"    ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file && setexpr ret 1\n" \
+	"    if test $ret -eq 0; then\n"				\
+	"        if test $bootpart -eq 2; then\n"			\
+	"            setenv bootpart 3\n"				\
+	"        else\n"						\
+	"            setenv bootpart 2\n"				\
+	"        fi\n"							\
+	"        setenv rescue 1\n"					\
+	"        ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file\n" \
+	"        run load_args\n"					\
+	"    fi\0"							\
 	"load_initrd=ext4load mmc ${rootdev}:${bootpart} $ramdiskaddr $ramdisk_file\0" \
-	"boot_cmd_initrd="						\
-		"run load_kernel; run load_fdt; run load_initrd;"	\
-		"bootz $kerneladdr $ramdiskaddr $fdtaddr\0"		\
-	"boot_cmd_mmcboot="						\
-		"run load_kernel; run load_fdt;"			\
-		"bootz $kerneladdr - $fdtaddr\0"			\
-	"boot_cmd_sdboot="						\
-		"setenv bootpart " __stringify(CONFIG_BOOT_PART_SD)"; "	\
-		"setenv modulespart " __stringify(CONFIG_MODULES_PART_SD)"; "	\
-		"setenv rootpart " __stringify(CONFIG_ROOT_PART_SD)";\0"	\
-	"ramfsboot=run gen_addr; run load_args; run boot_cmd_initrd\0"	\
-	"mmcboot=run gen_addr; run load_args; run boot_cmd_mmcboot\0"	\
-	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
-	"recoveryboot=run gen_sdrecaddr; run recovery_cmd; run ramfsboot\0"	\
-	"hwtestboot=setenv rootdev 1;"					\
-		"setenv opts rootfstype=ext4 rootwait loglevel=4;"	\
-		"setenv fdtfile s5p4418-artik${model_id}-explorer.dtb;"		\
-		"run mmcboot\0"						\
-	"hwtest_recoveryboot=run recovery_cmd; run hwtestboot\0"        \
+	"boot_cmd_initrd=\n"						\
+	"    run load_kernel\n"						\
+	"    run load_fdt\n"						\
+	"    run load_initrd\n"						\
+	"    bootz $kerneladdr $ramdiskaddr $fdtaddr\0"			\
+	"boot_cmd_mmcboot=\n"						\
+	"    run load_kernel\n"						\
+	"    run load_fdt\n"						\
+	"    bootz $kerneladdr - $fdtaddr\0"				\
+	"boot_cmd_sdboot=\n"						\
+	"    setenv bootpart " __stringify(CONFIG_BOOT_PART_SD) "\n"	\
+	"    setenv modulespart " __stringify(CONFIG_MODULES_PART_SD) "\n" \
+	"    setenv rootpart " __stringify(CONFIG_ROOT_PART_SD) "\0"	\
+	"ramfsboot=\n"							\
+	"    run gen_addr\n"						\
+	"    run load_args\n"						\
+	"    run boot_cmd_initrd\0"					\
+	"mmcboot=\n"							\
+	"    run gen_addr\n"						\
+	"    run load_args\n"						\
+	"    run boot_cmd_mmcboot\0"					\
+	"recovery_cmd=\n"						\
+	"    run sdrecovery\n"						\
+	"    setenv recoverymode recovery\0"				\
+	"recoveryboot=\n"						\
+	"    run gen_sdrecaddr\n"					\
+	"    run recovery_cmd\n"					\
+	"    run ramfsboot\0"						\
+	"hwtestboot=\n"							\
+	"    setenv rootdev 1\n"					\
+	"    setenv opts rootfstype=ext4 rootwait loglevel=4\n"		\
+	"    setenv fdtfile s5p4418-artik${model_id}-explorer.dtb\n"	\
+	"    run mmcboot\0"						\
+	"hwtest_recoveryboot=\n"					\
+	"    run recovery_cmd\n"					\
+	"    run hwtestboot\0"						\
 	"bootcmd=run ramfsboot\0"
 
 #endif /* __CONFIG_H__ */
