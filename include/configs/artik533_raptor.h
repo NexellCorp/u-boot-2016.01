@@ -331,7 +331,7 @@
  */
 #define CONFIG_REVISION_TAG
 
-#define CONFIG_DEFAULT_CONSOLE		"console=ttyAMA3,115200n8\0"
+#define CONFIG_DEFAULT_CONSOLE		"console=ttyAMA3,115200n8"
 
 #define CONFIG_ROOT_DEV		0
 #define CONFIG_BOOT_PART_SD	1
@@ -413,7 +413,7 @@
 		"fi; setenv success; setenv number; setenv loop;"	\
 		"fi;\0"							\
 	"bootdelay=" __stringify(CONFIG_BOOTDELAY) "\0"			\
-	"console=" CONFIG_DEFAULT_CONSOLE				\
+	"console=" CONFIG_DEFAULT_CONSOLE "\0"				\
 	"consoleon=setenv console " CONFIG_DEFAULT_CONSOLE		\
 		"; saveenv; reset\0"					\
 	"consoleoff=setenv console console=ram; saveenv; reset\0"	\

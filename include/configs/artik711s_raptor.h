@@ -62,7 +62,7 @@
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; " \
 		"fi; setenv success; setenv number; setenv loop;\0"	\
 	"bootdelay=" __stringify(CONFIG_BOOTDELAY) "\0"			\
-	"console=" CONFIG_DEFAULT_CONSOLE				\
+	"console=" CONFIG_DEFAULT_CONSOLE "\0"				\
 	"consoleon=setenv console " CONFIG_DEFAULT_CONSOLE		\
 		"; saveenv; reset\0"					\
 	"consoleoff=setenv console console=ram; saveenv; reset\0"	\
