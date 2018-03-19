@@ -121,6 +121,7 @@
 		"setenv fdtfile s5p6818-artik711s-explorer.dtb; "	\
 		"run mmcboot\0"						\
 	"hwtest_recoveryboot=run recovery_cmd; run hwtestboot\0"	\
+	"bootargs=none\0"						\
 	"bootcmd=run ramfsboot\0"
 
 #endif /* __ARTIK711S_RAPTOR_CONFIG_H__ */
