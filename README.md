@@ -86,14 +86,16 @@ tools/mkenvimage -s 16384 -o params.bin default_envs.txt
 ```
 
 ### 2.5 Generate fip/nexell compatable image
-The u-boot.bin cannot be loaded by bl1/bl2 bootloaders. You have to generate
+The u-boot.bin (or u-boot-dtb.bin) cannot be loaded by bl1/bl2 bootloaders. You have to generate
 a fip image and boot image for nexell bl1.
 
 #### ARTIK710
-- generate a fip-nonsecure.bin image using fip_create tool(input: u-boot.bin, output:fip-nonsecure.bin)
+- generate a fip-nonsecure.bin image using fip_create tool(input: u-boot.bin or u-boot-dtb.bin, output:fip-nonsecure.bin)
+- Please prefer to use u-boot-dtb.bin over u-boot.bin if it exists. It depends on the version of U-BOOT you are using.
 ```
+[ -e u-boot-dtb.bin ] && UBOOT=u-boot-dtb.bin || UBOOT=u-boot.bin
 tools/fip_create/fip_create \
-	--dump --bl33 u-boot.bin \
+	--dump --bl33 $(UBOOT) \
 	fip-nonsecure.bin
 ```
 - generate a fip-nonsecure.img using SECURE_BINGEN tool(input: fip-nonsecure.bin, output: fip-nonsecure.img)
