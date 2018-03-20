@@ -285,7 +285,6 @@
  * OF_CONTROL
  */
 
-#define CONFIG_FIT_BEST_MATCH
 #define CONFIG_OF_LIBFDT
 
 /*-----------------------------------------------------------------------
