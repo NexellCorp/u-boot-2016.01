@@ -480,6 +480,9 @@
 	"recoveryboot=\n"						\
 	"    run recovery_cmd\n"					\
 	"    run ramfsboot\0"						\
+	"recoveryvboot=\n"						\
+	"    run recovery_cmd\n"					\
+	"    run vboot\0"						\
 	"hwtestboot=\n"							\
 	"    setenv rootdev 1\n"					\
 	"    setenv opts rootfstype=ext4 rootwait loglevel=4\n"		\
@@ -488,6 +491,30 @@
 	"hwtest_recoveryboot=\n"					\
 	"    run recovery_cmd\n"					\
 	"    run hwtestboot\0"						\
-	"bootcmd=run ramfsboot\0"
+	"bootcmd=run ramfsboot\0"					\
+	"fitname=kernel_fdt.itb\0"					\
+	"fitaddr=0x43000000\0"						\
+	"load_fit=\n"							\
+	"    ext4load mmc ${rootdev}:${bootpart} ${fitaddr} ${fitname} && setexpr ret 1\n" \
+	"    if test $ret -eq 0; then\n"				\
+	"        if test $bootpart -eq 2; then\n"			\
+	"            setenv bootpart 3\n"				\
+	"        else\n"						\
+	"            setenv bootpart 2\n"				\
+	"        fi\n"							\
+	"        setenv rescue 1\n"					\
+	"        ext4load mmc ${rootdev}:${bootpart} ${fitaddr} ${fitname}\n" \
+	"        run load_args\n"					\
+	"    fi\0"							\
+	"configure_fit=\n"						\
+	"    env delete fitconf\n"					\
+	"    test $board_rev -le 2 && setenv fitconf #rev01\n"		\
+	"    test $board_rev -le 0 && setenv fitconf #rev00\0"		\
+	"boot_cmd_fit=\n"						\
+	"    run configure_fit\n"					\
+	"    run load_args\n"						\
+	"    run load_fit\n"						\
+	"    bootm ${fitaddr}${fitconf}\0"				\
+	"vboot=run boot_cmd_fit\0"
 
 #endif /* __CONFIG_H__ */
