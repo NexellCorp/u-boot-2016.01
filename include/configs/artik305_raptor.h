@@ -388,7 +388,7 @@
 	"    if test -z \"$fdtfile\"; then\n"				\
 	"        loop=$board_rev\n"					\
 	"        number=$board_rev:\n"					\
-	"        success=0"						\
+	"        success=0\n"						\
 	"        until test $loop -eq 0 || test $success -ne 0; do\n"	\
 	"            if test $loop -lt 10; then\n"			\
 	"                number=0$loop\n"				\
