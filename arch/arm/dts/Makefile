@@ -23,7 +23,8 @@ dtb-$(CONFIG_ARCH_S5P4418) += s5p4418-drone.dtb \
 	s5p4418-daudio-cona.dtb\
 	s5p4418-ff-voice.dtb \
 	s5p4418-clova.dtb \
-	s5p4418-svm-ref.dtb
+	s5p4418-svm-ref.dtb \
+	s5p4418-cluster-ref.dtb
 
 dtb-$(CONFIG_ARCH_S5P6818) += s5p6818-drone.dtb \
 	s5p6818-artik710-raptor.dtb \
