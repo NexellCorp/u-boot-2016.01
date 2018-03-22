@@ -66,6 +66,11 @@ config TARGET_S5P4418_DAUDIO_CONA
 	help
 	  Support for s5p4418 daudio_cona platform.
 
+config TARGET_S5P4418_CLUSTER_REF
+	bool "S5P4418_CLUSTER_REF"
+	help
+		Support for s5p4418 cluster_ref platform.
+
 endchoice
 config SYS_VENDOR
 	default "s5p4418"
@@ -90,3 +95,4 @@ source "board/s5p4418/daudio_covi/Kconfig"
 source "board/s5p4418/clova/Kconfig"
 source "board/s5p4418/svm_ref/Kconfig"
 source "board/s5p4418/daudio_cona/Kconfig"
+source "board/s5p4418/cluster_ref/Kconfig"

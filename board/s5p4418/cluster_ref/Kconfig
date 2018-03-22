@@ -1,0 +1,7 @@
+if TARGET_S5P4418_CLUSTER_REF
+
+config SYS_BOARD
+	default "cluster_ref"
+
+endif
+
