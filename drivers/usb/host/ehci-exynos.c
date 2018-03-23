@@ -327,7 +327,7 @@ static int ehci_usb_probe(struct udevice *dev)
 		dm_gpio_set_value(&plat->vbus_gpio, 1);
 
 	setup_usb_phy(ctx->usb);
-	hcor = (struct ehci_hcor *)(ctx->hcd +
+	hcor = (struct ehci_hcor *)((uintptr_t)ctx->hcd +
 			HC_LENGTH(ehci_readl(&ctx->hcd->cr_capbase)));
 
 	return ehci_register(dev, ctx->hcd, hcor, NULL, 0, USB_INIT_HOST);
