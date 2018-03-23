@@ -830,7 +830,7 @@ int board_usb_init(int index, enum usb_init_type init)
 	struct uclass *uc;
 	int ret;
 
-	ret = uclass_get(UCLASS_USB, &uc);
+	ret = uclass_get(UCLASS_USB_DEV_GENERIC, &uc);
 
 	uclass_foreach_dev(bus, uc) {
 		/* init low_level USB */
@@ -947,7 +947,7 @@ static const struct udevice_id dwc2_udc_ids[] = {
 
 U_BOOT_DRIVER(usb_dwc2_udc) = {
 	.name	= "dwc2_udc",
-	.id	= UCLASS_USB,
+	.id	= UCLASS_USB_DEV_GENERIC,
 	.of_match = dwc2_udc_ids,
 	.ofdata_to_platdata = dwc2_udc_ofdata_to_platdata,
 	.probe	= dwc2_udc_probe,
