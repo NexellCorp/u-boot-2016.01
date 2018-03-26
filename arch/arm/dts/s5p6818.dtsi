@@ -7,8 +7,6 @@
 
 #include "skeleton.dtsi"
 / {
-	#include "s5p6818-pinctrl.dtsi"
-
 	aliases {
 		mmc0 = "/mmc0:mmc@c0062000";
 		mmc1 = "/mmc1@c0068000";
@@ -172,9 +170,11 @@
 		#gpio-cells = <2>;
 	};
 
-	pinctrl@C0010000 {
+	pinctrl: pinctrl@C0010000 {
 		compatible = "nexell,s5pxx18-pinctrl";
 		reg = <0xc0010000 0xf000>;
 		u-boot,dm-pre-reloc;
 	};
 };
+
+#include "s5p6818-pinctrl.dtsi"
