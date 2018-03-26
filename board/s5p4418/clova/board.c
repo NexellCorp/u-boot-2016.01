@@ -303,6 +303,7 @@ power_off:
 #endif
 
 #endif
+	return 0;
 
 }
 #endif
