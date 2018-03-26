@@ -64,4 +64,76 @@
 		nexell,pin-pull = <NX_PIN_PULL_NONE>;
 		nexell,pin-strength = <NX_PIN_STR2>;
 	};
+
+	/* MMC0 */
+	sdmmc0_cclk: sdmmc0-cclk {
+		nexell,pins = "gpioa-29";
+		nexell,pin-function = <NX_PIN_FUNC1>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR2>;
+	};
+
+	sdmmc0_cmd: sdmmc0-cmd {
+		nexell,pins = "gpioa-31";
+		nexell,pin-function = <NX_PIN_FUNC1>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR1>;
+	};
+
+	sdmmc0_bus4: sdmmc0-bus-width4 {
+		nexell,pins = "gpiob-1", "gpiob-3", "gpiob-5", "gpiob-7";
+		nexell,pin-function = <NX_PIN_FUNC1>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR1>;
+	};
+	/* MMC1 */
+	sdmmc1_cclk: sdmmc1-cclk {
+		nexell,pins = "gpiod-22";
+		nexell,pin-function = <NX_PIN_FUNC1>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR2>;
+	};
+
+	sdmmc1_cmd: sdmmc1-cmd {
+		nexell,pins = "gpiod-23";
+		nexell,pin-function = <NX_PIN_FUNC1>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR1>;
+	};
+
+	sdmmc1_bus4: sdmmc1-bus-width4 {
+		nexell,pins = "gpiod-24", "gpiod-25", "gpiod-26", "gpiod-27";
+		nexell,pin-function = <NX_PIN_FUNC1>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR1>;
+	};
+
+	/* MMC2 */
+	sdmmc2_cclk: sdmmc2-cclk {
+		nexell,pins = "gpioc-18";
+		nexell,pin-function = <NX_PIN_FUNC2>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR2>;
+	};
+
+	sdmmc2_cmd: sdmmc2-cmd {
+		nexell,pins = "gpioc-19";
+		nexell,pin-function = <NX_PIN_FUNC2>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR1>;
+	};
+
+	sdmmc2_bus4: sdmmc2-bus-width4 {
+		nexell,pins = "gpioc-20", "gpioc-21", "gpioc-22", "gpioc-23";
+		nexell,pin-function = <NX_PIN_FUNC2>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR1>;
+	};
+
+	sdmmc2_bus8: sdmmc2-bus-width8 {
+		nexell,pins = "gpioe-21", "gpioe-22", "gpioe-23", "gpioe-24";
+		nexell,pin-function = <NX_PIN_FUNC2>;
+		nexell,pin-pull = <NX_PIN_PULL_NONE>;
+		nexell,pin-strength = <NX_PIN_STR1>;
+	};
 };
