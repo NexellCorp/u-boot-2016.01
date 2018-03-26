@@ -125,7 +125,7 @@ int check_powerkey(struct udevice *dev_charger)
 
 	if (node < 0) {
 		printf("Cannot Founc board-pwrkey \n");
-		return;
+		return -1;
 	}
 
 	gpio_request_by_name_nodev(gd->fdt_blob, node, "pwrkey-gpio", 0, &gpio,
@@ -133,7 +133,7 @@ int check_powerkey(struct udevice *dev_charger)
 
 	if (!dm_gpio_is_valid(&gpio)) {
 		printf("pwrkey-gpio not valid \n");
-		return;
+		return -1;
 	}
 
 	while(1) {
