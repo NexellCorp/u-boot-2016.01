@@ -183,3 +183,17 @@
 &otg {
 	status = "okay";
 };
+
+&pinctrl {
+	sdmmc2_cclk: sdmmc2-cclk {
+		nexell,pin-strength = <NX_PIN_STR3>;
+	};
+
+	sdmmc2_cmd: sdmmc2-cmd {
+		nexell,pin-strength = <NX_PIN_STR2>;
+	};
+
+	sdmmc2_bus4: sdmmc2-bus-width4 {
+		nexell,pin-strength = <NX_PIN_STR2>;
+	};
+};
