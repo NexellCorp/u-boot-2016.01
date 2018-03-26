@@ -56,7 +56,8 @@ static void _dcs_write(struct px0701c *ctx, const void *data, size_t len)
 	}
 }
 
-static void _dcs_read(struct px0701c *ctx, u8 cmd, void *data, size_t len)
+static void __maybe_unused _dcs_read(struct px0701c *ctx, u8 cmd, void *data,
+				     size_t len)
 {
 	struct mipi_dsi_device *dsi = ctx->dsi;
 	ssize_t ret;
