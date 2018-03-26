@@ -28,19 +28,19 @@ static const struct udevice_id bq25895m_ids[] = {
 
 static int bq25895m_get_value_vbatt(struct udevice *dev)
 {
-	char data=0;
+	uint8_t data = 0;
+
 	dm_i2c_read(dev, 0xE, &data, 1);
 	data &= ~(0x80);
-
 	return 2304 + (data * 20);
 
 }
 
 static int bq25895m_get_charge_type(struct udevice *dev)
 {
-	char value=0;
-	dm_i2c_read(dev, REG0B, &value, 1);
+	uint8_t value = 0;
 
+	dm_i2c_read(dev, REG0B, &value, 1);
 	return (int) value;
 }
 
@@ -57,7 +57,6 @@ static int bq25895m_chg_bind(struct udevice *dev)
 static int bq25895m_chg_probe(struct udevice *dev)
 {
 	unsigned char data=0, value=0;
-	struct dm_i2c_chip *chip = dev_get_parent_platdata(dev);
 	struct dm_bq25895m_chg_platdata *pdata = dev->platdata;
 
 	/*i2c md 6A 0 0x15 */
@@ -163,7 +162,7 @@ static int bq25895m_chg_ofdata_to_platdata(struct udevice *dev)
 
 	if (!dm_gpio_is_valid(&(pdata->gpio_stat))) {
 		printf("stat-gpio not valid \n");
-		return;
+		return -1;
 	}
 
 	gpio_request_by_name(
@@ -171,7 +170,7 @@ static int bq25895m_chg_ofdata_to_platdata(struct udevice *dev)
 
 	if (!dm_gpio_is_valid(&(pdata->gpio_irq))) {
 		printf("irq-gpio not valid \n");
-		return;
+		return -1;
 	}
 
 	return 0;
