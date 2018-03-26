@@ -156,7 +156,6 @@ int board_late_init(void)
 {
 	int ret = -ENODEV;
 	uint32_t reset_signature;
-	int node;
 #ifdef CONFIG_DM_CHARGER
 	struct udevice *dev_charger;
 	int charger_status, vbatt_value;
@@ -169,8 +168,6 @@ int board_late_init(void)
 
 #ifdef CONFIG_I2C_EEPROM
 	struct udevice *dev;
-	struct dm_eeprom_uclass_platdata *i2c_eeprom_pdata;
-	struct udevice *i2c_eeprom;
 	uint8_t buf[CONFIG_DBG_UNLOCK_SIZE] = {0, };
 	uint32_t data;
 	char *penv;
