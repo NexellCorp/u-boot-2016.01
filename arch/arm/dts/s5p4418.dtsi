@@ -32,6 +32,8 @@
 		reg = <0xc0069000 0x1000>;
 		nexell,bus-width = <4>;
 		index = <2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sdmmc2_cclk &sdmmc2_cmd &sdmmc2_bus4>;
 		status = "disabled";
 	};
 #endif
@@ -42,6 +44,8 @@
 		reg = <0xc0068000 0x1000>;
 		nexell,bus-width = <4>;
 		index = <1>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sdmmc1_cclk &sdmmc1_cmd &sdmmc1_bus4>;
 		status = "disabled";
 	};
 
@@ -63,6 +67,8 @@
 		reg = <0xc0062000 0x1000>;
 		nexell,bus-width = <4>;
 		index = <0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sdmmc0_cclk &sdmmc0_cmd &sdmmc0_bus4>;
 		status = "disabled";
 	};
 #endif
