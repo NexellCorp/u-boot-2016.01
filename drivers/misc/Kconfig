@@ -142,4 +142,10 @@ config I2C_EEPROM
 	depends on DM
 	help
 	  Enable a generic driver for EEPROMs attached via I2C.
+
+config NX_I2C_GPIO
+	bool "Enable driver for nexell I2C gpio driver"
+	depends on DM_I2C_GPIO
+	help
+	  Enable a nexell i2c gpio driver for using i2c via gpio.
 endmenu

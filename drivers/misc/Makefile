@@ -43,3 +43,4 @@ obj-$(CONFIG_SENSORID_ARTIK) += sensorid_artik.o
 obj-$(CONFIG_USB_CHARGE) += usb_charge.o
 obj-$(CONFIG_UB927928) += ub927928.o
 obj-y += nexell_i2c.o
+obj-$(CONFIG_NX_I2C_GPIO) += nx_i2c_gpio.o
