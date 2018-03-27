@@ -13,7 +13,7 @@
 #include <pwm.h>
 #include <asm/io.h>
 #include <asm/arch/clk.h>
-#include "pwm-nexell.h"
+#include <pwm-nexell.h>
 
 #if defined(CONFIG_ARCH_NEXELL)
 #include <asm/arch/nexell.h>

@@ -25,6 +25,10 @@
 #undef QUICKBOOT
 #endif
 
+#ifdef CONFIG_TARGET_S5P4418_DAUDIO_REF
+#undef QUICKBOOT
+#endif
+
 static struct list_head mmc_devices;
 static int cur_dev_num = -1;
 
