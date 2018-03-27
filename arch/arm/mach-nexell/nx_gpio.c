@@ -26,8 +26,6 @@ static struct {
 	{ (struct nx_gpio_register_set *)PHY_BASEADDR_GPIOE },
 };
 
-enum { nx_gpio_max_bit = 32 };
-
 void nx_gpio_set_bit(u32 *value, u32 bit, int enable)
 {
 	register u32 newvalue;

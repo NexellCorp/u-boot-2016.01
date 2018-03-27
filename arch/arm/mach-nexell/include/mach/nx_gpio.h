@@ -38,6 +38,8 @@ struct nx_gpio_register_set {
 	u8 __reserved1[0x1000 - 0x70];
 };
 
+enum { nx_gpio_max_bit = 32 };
+
 enum {
 	nx_gpio_padfunc_0 = 0ul,
 	nx_gpio_padfunc_1 = 1ul,
