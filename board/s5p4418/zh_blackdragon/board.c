@@ -13,7 +13,7 @@
 #include <asm/arch/nx_gpio.h>
 
 #include <asm-generic/gpio.h>
-#include <nexell_i2c.h>
+#include <nx_i2c_gpio.h>
 
 #ifdef CONFIG_DM_PMIC_NXE2000
 #include <dm.h>
@@ -65,6 +65,7 @@ static struct pwm_device pwm_dev[] = {
 #endif
 
 #ifdef QUICKBOOT
+
 static u8 camera_sensor_reg[] = {0x40, 0x07, 0x0b, 0x39, 0x4d, 0x4e, 0xc8, 0x73, 0xb9, 0x4e, 0x02, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1c, 0x1d, 0x0c, 0x0d, 0x20, 0x26, 0x2b, 0x2d, 0x2d, 0x2e, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0xff};
 static u8 camera_sensor_val[] = {0x00, 0xc0, 0xc0, 0x8c, 0x03, 0x17, 0x21, 0x01, 0x01, 0x17, 0xcf, 0x13, 0x4e, 0x80, 0x13, 0xf0, 0x07,0x09, 0x38, 0x53, 0x10, 0xa0, 0x12, 0x70, 0x70, 0x68, 0x5e, 0x62, 0xbb, 0x96, 0xc0, 0x25, 0x84, 0xff};
 static const char boot_args[] = "setenv bootargs console=ttyAMA3,115200n8 loglevel=7 printk.time=1 androidboot.hardware=zh_blackdragon androidboot.console=ttyAMA3 androidboot.serialno=s5p4418_zh_blackdragon nx_rearcam.sensor_init_parm=1 quiet androidboot.selinux=permissive";
@@ -84,11 +85,30 @@ int board_rearcam_check(void)
 
 static int board_camera_sensor_init(void)
 {
-	nx_i2c_init_s(camera_sensor_reg, camera_sensor_val);
-	run_command_list(boot_args, sizeof(boot_args), 0);
+	struct udevice *dev = NULL;
+	int ret = 0, i = 0;
+
+	dev = nx_i2c_gpio_init();
+	if (!dev) {
+		printf("failed to get nx i2c gpio device\n");
+		ret = -1;
+		goto exit;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(camera_sensor_reg); i++) {
+		ret = nx_i2c_gpio_write(dev, camera_sensor_reg[i],
+				&camera_sensor_val[i],
+				1);
+		if (ret)
+			goto exit;
+	}
+exit:
+	if (!ret)
+		run_command_list(boot_args, sizeof(boot_args), 0);
+	else
+		printf("failed to init camera sensor:%d\n", ret);
 	return 0;
 }
-
 #endif
 
 static void board_backlight_disable(void)
