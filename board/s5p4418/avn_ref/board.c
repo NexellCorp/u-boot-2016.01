@@ -11,9 +11,8 @@
 
 #include <asm/arch/nexell.h>
 #include <asm/arch/nx_gpio.h>
-
 #include <asm-generic/gpio.h>
-#include <nexell_i2c.h>
+#include <nx_i2c_gpio.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -39,8 +38,9 @@ static struct pwm_device pwm_dev[] = {
 #endif
 
 #ifdef QUICKBOOT
-static u8 camera_sensor_reg[] = {0x02, 0x1c, 0x03, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x10, 0x11, 0x19, 0x1b, 0x1a, 0xaf};
-static u8 camera_sensor_val[] = {0x40, 0x00, 0xa6, 0x80, 0x02, 0x15, 0xf0, 0x09, 0xc0, 0xec, 0x68, 0x50, 0x00, 0x0f, 0x40};
+
+static u8 camera_sensor_reg[] = {0x02, 0x1c, 0x03, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x10, 0x11, 0x19, 0x1b, 0x1a, 0xaf, 0xb1};
+static u8 camera_sensor_val[] = {0x40, 0x00, 0xa6, 0x80, 0x02, 0x15, 0xf0, 0x09, 0xc0, 0xec, 0x68, 0x50, 0x00, 0x0f, 0x40, 0x20};
 static const char boot_args[] = "setenv bootargs console=ttyAMA3,115200n8 loglevel=7 printk.time=1 androidboot.hardware=avn_ref androidboot.console=ttyAMA3 androidboot.serialno=0123456789ABCDEF nx_rearcam.sensor_init_parm=1 quiet";
 
 int board_rearcam_check(void)
@@ -97,8 +97,28 @@ static int board_camera_sensor_power_enable(void)
 
 static int board_camera_sensor_init(void)
 {
-	nx_i2c_init_s(camera_sensor_reg, camera_sensor_val);
-	run_command_list(boot_args, sizeof(boot_args), 0);
+	struct udevice *dev = NULL;
+	int ret = 0, i = 0;
+
+	dev = nx_i2c_gpio_init();
+	if (!dev) {
+		printf("failed to get nx i2c gpio device\n");
+		ret = -1;
+		goto exit;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(camera_sensor_reg); i++) {
+		ret = nx_i2c_gpio_write(dev, camera_sensor_reg[i],
+				&camera_sensor_val[i],
+				1);
+		if (ret)
+			goto exit;
+	}
+exit:
+	if (!ret)
+		run_command_list(boot_args, sizeof(boot_args), 0);
+	else
+		printf("failed to init camera sensor:%d\n", ret);
 	return 0;
 }
 #endif
