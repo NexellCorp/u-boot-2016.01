@@ -73,7 +73,6 @@ enum uclass_id {
 	UCLASS_SENSOR_ID,	/* Sensor type detecting device */
 	UCLASS_USBCHARGE_ID,	/* USB Charger */
 	UCLASS_UB927928_ID,     /* Serdes */
-	UCLASS_NX_I2C_ID,
 	UCLASS_NX_I2C_GPIO,
 	UCLASS_COUNT,
 	UCLASS_INVALID = -1,
