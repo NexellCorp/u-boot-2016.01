@@ -71,7 +71,7 @@
 		ti,charge-current = <960>;
 		ti,termination-current = <50>;
 		ti,precharge-current = <128>;
-		ti,minimum-sys-voltage = <3600>;
+		ti,minimum-sys-voltage = <3000>;
 		ti,boost-voltage = <4998>;
 
 		ti,use-ilim-pin;
