@@ -207,13 +207,14 @@ int board_late_init(void)
 
 	printf("charger_status = 0x%x \n", charger_status);
 	printf("online = 0x%x \n", online);
-
+/*
 	if(!online) {
 		printf("AC adaptor Not detected \n");
 		goto power_off;
 	} else {
 		printf("AC adaptor detected \n");
 	}
+*/
 
 #endif /* CONFIG_DM_CHARGER */
 
@@ -245,13 +246,15 @@ int board_late_init(void)
 #endif
 
 #ifdef CONFIG_DM_CHARGER
-	vbatt_value = charger_get_value_vbatt(dev_charger);
-	printf("vbatt_value = %d \n", vbatt_value);
-	if(vbatt_value < 3600) {
-		printf("LOW vbatt(%d) \n", vbatt_value);
-		ret = check_powerkey(dev_charger);
-		if (ret < 0)
-			goto power_off;
+	if(!online) {
+		vbatt_value = charger_get_value_vbatt(dev_charger);
+		printf("vbatt_value = %d \n", vbatt_value);
+		if(vbatt_value < 3400) {
+			printf("LOW vbatt(%d) \n", vbatt_value);
+			ret = check_powerkey(dev_charger);
+			if (ret < 0)
+				goto power_off;
+		}
 	}
 #endif /* CONFIG_DM_CHARGER */
 
