@@ -126,6 +126,10 @@ static int bq25895m_chg_probe(struct udevice *dev)
 		data |= (1 << 6);
 		dm_i2c_write(dev,0xa, &data ,1);
 	}
+	/* CONV_START, CONTINUOUS Conversion */
+	dm_i2c_read(dev, 0x2, &data, 1);
+	data |= (3 << 6);
+	dm_i2c_write(dev,0x2, &data ,1);
 
 	return 0;
 }
