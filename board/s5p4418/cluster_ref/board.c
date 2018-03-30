@@ -33,103 +33,72 @@ static struct pwm_device pwm_dev[] = {
 };
 #endif
 
-#if 0
 static void board_backlight_disable(void)
 {
 #ifdef CONFIG_PWM_NX
-	int gp = pwm_dev[CONFIG_BACKLIGHT_CH].grp;
-	int io = pwm_dev[CONFIG_BACKLIGHT_CH].bit;
-	int fn = pwm_dev[CONFIG_BACKLIGHT_CH].io_fn;
+	int gp_dual = pwm_dev[CONFIG_BACKLIGHT_CH].grp;
+	int io_dual = pwm_dev[CONFIG_BACKLIGHT_CH].bit;
+	int fn_dual = pwm_dev[CONFIG_BACKLIGHT_CH].io_fn;
 
-	/*
-	 * pwm backlight OFF: HIGH, ON: LOW
-	 */
+	int gp = pwm_dev[CONFIG_SBACKLIGHT_CH].grp;
+	int io = pwm_dev[CONFIG_SBACKLIGHT_CH].bit;
+	int fn = pwm_dev[CONFIG_SBACKLIGHT_CH].io_fn;
+
+	/*****************************************************/
+	/* Primary(RGBtoDualLVDS) : PWM0_LVDSLED*/
+	nx_gpio_set_pad_function(gp_dual, io_dual, fn_dual);
+	nx_gpio_set_output_value(gp_dual, io_dual, 0);
+	nx_gpio_set_output_enable(gp_dual, io_dual, 1);
+
+	/* Primary(RGBtoDualLVDS) : LVDSLEDEN */
+	nx_gpio_set_pad_function(gpio_e, 1, 0);
+	nx_gpio_set_output_value(gpio_e, 1, 0);
+	nx_gpio_set_output_enable(gpio_e, 1, 1);
+
+	/* Primary(RGBtoDualLVDS) : LVDSSTBY */
+	nx_gpio_set_pad_function(gpio_e, 0, 0);
+	nx_gpio_set_output_value(gpio_e, 0, 0);
+	nx_gpio_set_output_enable(gpio_e, 0, 1);
+
+	/* Primary(RGBtoDualLVDS) : LVDSRST */
+	nx_gpio_set_pad_function(gpio_d, 28, 0);
+	nx_gpio_set_output_value(gpio_d, 28, 0);
+	nx_gpio_set_output_enable(gpio_d, 28, 1);
+
+	/* Primary(RGBtoDualLVDS) : 12VEN */
+	nx_gpio_set_pad_function(gpio_e, 12, 0);
+	nx_gpio_set_output_value(gpio_e, 12, 1);
+	nx_gpio_set_output_enable(gpio_e, 12, 1);
+
+
+	/****************************************/
+	/* Secondary(LVDS) : PWM3_SLED */
 	nx_gpio_set_pad_function(gp, io, fn);
-	nx_gpio_set_output_value(gp, io, 1);
+	nx_gpio_set_output_value(gp, io, 0);
 	nx_gpio_set_output_enable(gp, io, 1);
 
-	/*
-	 * set lcd enable
-	 */
-	nx_gpio_set_pad_function(gpio_c, 11, 1);
-	nx_gpio_set_pad_function(gpio_b, 25, 1);
-	nx_gpio_set_pad_function(gpio_b, 27, 1);
+	/* Secondary(LVDS) : SLED_EN */
+	nx_gpio_set_pad_function(gpio_c, 31, 0);
+	nx_gpio_set_output_value(gpio_c, 31, 0);
+	nx_gpio_set_output_enable(gpio_c, 31, 1);
 
-	nx_gpio_set_output_value(gpio_c, 11, 1);
-	nx_gpio_set_output_value(gpio_b, 25, 1);
-	nx_gpio_set_output_value(gpio_b, 27, 1);
+	/* Secondary(LVDS) : SLVDSSTB */
+	nx_gpio_set_pad_function(gpio_d, 7, 0);
+	nx_gpio_set_output_value(gpio_d, 7, 0);
+	nx_gpio_set_output_enable(gpio_d, 7, 1);
 
-	nx_gpio_set_output_enable(gpio_c, 11, 1);
-	nx_gpio_set_output_enable(gpio_b, 25, 1);
-	nx_gpio_set_output_enable(gpio_b, 27, 1);
+	/* Secondary(LVDS) : SVLDSRST */
+	nx_gpio_set_pad_function(gpio_d, 6, 0);
+	nx_gpio_set_output_value(gpio_d, 6, 0);
+	nx_gpio_set_output_enable(gpio_d, 6, 1);
 #endif
+
 }
-#else	//NX-CLUSTER
-static void board_backlight_disable(void)
-{
-#ifdef CONFIG_PWM_NX
-        int gp = pwm_dev[3].grp;
-        int io = pwm_dev[3].bit;
-        int fn = pwm_dev[3].io_fn;
-
-        int gp_dual = pwm_dev[0].grp;
-        int io_dual = pwm_dev[0].bit;
-        int fn_dual = pwm_dev[0].io_fn;
-
-        /*
-         * pwm backlight OFF: HIGH, ON: LOW
-         */
-
-        /* SINGLE LVDS LCD */
-        nx_gpio_set_pad_function(gp, io, fn);
-        nx_gpio_set_output_value(gp, io, 1);
-        nx_gpio_set_output_enable(gp, io, 1);
-
-        nx_gpio_set_pad_function(gpio_c, 31, 0);        //SINGLE LVDS BL
-        nx_gpio_set_pad_function(gpio_d, 6, 0);         //SINGLE LVDS LCD RESET
-        nx_gpio_set_pad_function(gpio_d, 7, 0);         //SINGLE LVDS STBY
-
-        nx_gpio_set_output_value(gpio_c, 31, 1);        //SINGLE LVDS BL
-        nx_gpio_set_output_value(gpio_d, 6, 1);         //SINGLE LVDS LCD RESET
-        nx_gpio_set_output_value(gpio_d, 7, 1);         //SINGLE LVDS STBY
-
-        nx_gpio_set_output_enable(gpio_c, 31, 1);       //SINGLE LVDS BL
-        nx_gpio_set_output_enable(gpio_d, 7, 1);        //SINGLE LVDS STBY
-
-        nx_gpio_set_output_enable(gpio_d, 6, 0);        //SINGLE LVDS LCD RESET
-        mdelay(130);
-        nx_gpio_set_output_enable(gpio_d, 6, 1);        //SINGLE LVDS LCD RESET
-
-        /* DUAL LVDS LCD */
-        nx_gpio_set_pad_function(gpio_e, 1, 0);         //DUAL LVDS BL ENABLE
-        nx_gpio_set_pad_function(gpio_d, 1, 0);         //DUAL LVDS PWM
-        nx_gpio_set_pad_function(gpio_e, 12, 0);        //DUAL LVDS 12V_LED
-
-        nx_gpio_set_output_value(gpio_e, 1, 0);         //DUAL LVDS BL ENABLE
-        nx_gpio_set_output_value(gpio_d, 1, 1);         //DUAL LVDS PWM
-        nx_gpio_set_output_value(gpio_e, 12, 1);        //DUAL LVDS 12V_LED
-
-        nx_gpio_set_output_enable(gpio_d, 1, 1);        //DUAL LVDS PWM AS HIGH
-        nx_gpio_set_output_enable(gpio_e, 1, 1);        //DUAL LVDS BL ENABLE
-        nx_gpio_set_output_enable(gpio_e, 12, 1);       //DUAL LVDS 12V_LED
-
-#if 0
-        nx_gpio_set_output_enable(gpio_e, 0, 1);        //DUAL LVDS STBY
-
-        nx_gpio_set_output_enable(gpio_d, 28, 0);       //DUAL LVDS LCD RESET
-        mdelay(130);
-        nx_gpio_set_output_enable(gpio_d, 28, 1);       //DUAL LVDS LCD RESET
-#endif
-#endif
-}
-#endif
 
 static void board_backlight_enable(void)
 {
 #ifdef CONFIG_PWM_NX
-	/*
-	 * pwm backlight ON: HIGH, ON: LOW
-	 */
+	/* Primary(RGBtoDualLVDS) : PWM0_LVDSLED*/
 	pwm_init(
 		CONFIG_BACKLIGHT_CH,
 		CONFIG_BACKLIGHT_DIV, CONFIG_BACKLIGHT_INV
@@ -138,6 +107,17 @@ static void board_backlight_enable(void)
 		CONFIG_BACKLIGHT_CH,
 		TO_DUTY_NS(CONFIG_BACKLIGHT_DUTY, CONFIG_BACKLIGHT_HZ),
 		TO_PERIOD_NS(CONFIG_BACKLIGHT_HZ)
+		);
+
+	/* Secondary(LVDS) : PWM3_SLED */
+	pwm_init(
+		CONFIG_SBACKLIGHT_CH,
+		CONFIG_SBACKLIGHT_DIV, CONFIG_SBACKLIGHT_INV
+		);
+	pwm_config(
+		CONFIG_SBACKLIGHT_CH,
+		TO_DUTY_NS(CONFIG_SBACKLIGHT_DUTY, CONFIG_SBACKLIGHT_HZ),
+		TO_PERIOD_NS(CONFIG_SBACKLIGHT_HZ)
 		);
 #endif
 }
@@ -163,6 +143,49 @@ int board_late_init(void)
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
+
+	/* RGB Alternate Function setting */
+	nx_gpio_set_pad_function(gpio_a, 0, 1);
+	nx_gpio_set_pad_function(gpio_a, 1, 1);
+	nx_gpio_set_pad_function(gpio_a, 2, 1);
+	nx_gpio_set_pad_function(gpio_a, 3, 1);
+	nx_gpio_set_pad_function(gpio_a, 4, 1);
+	nx_gpio_set_pad_function(gpio_a, 5, 1);
+	nx_gpio_set_pad_function(gpio_a, 6, 1);
+	nx_gpio_set_pad_function(gpio_a, 7, 1);
+	nx_gpio_set_pad_function(gpio_a, 8, 1);
+	nx_gpio_set_pad_function(gpio_a, 9, 1);
+	nx_gpio_set_pad_function(gpio_a, 10, 1);
+	nx_gpio_set_pad_function(gpio_a, 11, 1);
+	nx_gpio_set_pad_function(gpio_a, 12, 1);
+	nx_gpio_set_pad_function(gpio_a, 13, 1);
+	nx_gpio_set_pad_function(gpio_a, 14, 1);
+	nx_gpio_set_pad_function(gpio_a, 15, 1);
+	nx_gpio_set_pad_function(gpio_a, 16, 1);
+	nx_gpio_set_pad_function(gpio_a, 17, 1);
+	nx_gpio_set_pad_function(gpio_a, 18, 1);
+	nx_gpio_set_pad_function(gpio_a, 19, 1);
+	nx_gpio_set_pad_function(gpio_a, 20, 1);
+	nx_gpio_set_pad_function(gpio_a, 21, 1);
+	nx_gpio_set_pad_function(gpio_a, 22, 1);
+	nx_gpio_set_pad_function(gpio_a, 23, 1);
+	nx_gpio_set_pad_function(gpio_a, 24, 1);
+	nx_gpio_set_pad_function(gpio_a, 25, 1);
+	nx_gpio_set_pad_function(gpio_a, 26, 1);
+	nx_gpio_set_pad_function(gpio_a, 27, 1);
+
+	/* Primary(RGBtoDualLVDS) : Ready */
+	nx_gpio_set_output_value(gpio_e, 12, 1);	/* 12VEN */
+	udelay(20);
+	nx_gpio_set_output_value(gpio_d, 28, 1);	/* LVDSRST */
+	nx_gpio_set_output_value(gpio_e, 0, 1);		/* LVDSSTBY */
+	nx_gpio_set_output_value(gpio_e, 1, 0);		/* LVDSLEDEN */
+
+	/* Secondary(LVDS) : Ready */
+	nx_gpio_set_output_value(gpio_c, 31, 1);	/* SLED_EN */
+	nx_gpio_set_output_value(gpio_d, 6, 1);		/* SVLDSRST */
+	nx_gpio_set_output_value(gpio_d, 7, 1);		/* SLVDSSTB */
+
 	board_backlight_enable();
 
 #ifdef CONFIG_RECOVERY_BOOT

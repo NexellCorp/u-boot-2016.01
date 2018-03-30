@@ -26,7 +26,7 @@
 #define CONFIG_SYS_MONITOR_BASE             CONFIG_SYS_TEXT_BASE
 
 #define	CONFIG_SYS_SDRAM_BASE		    0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE		    0x70000000
+#define	CONFIG_SYS_SDRAM_SIZE		    0x30000000
 
 #define CONFIG_SYS_MALLOC_LEN               (32*1024*1024)
 
@@ -169,13 +169,23 @@
 #define CONFIG_PWM_NX
 
 /*-----------------------------------------------------------------------
- * BACKLIGHT
+ * BACKLIGHT Primary(RGBtoDualLVDS)
  */
-#define CONFIG_BACKLIGHT_CH			3
-#define CONFIG_BACKLIGHT_DIV			0
-#define CONFIG_BACKLIGHT_INV			0
-#define CONFIG_BACKLIGHT_DUTY			50
-#define CONFIG_BACKLIGHT_HZ			1000
+#define CONFIG_BACKLIGHT_CH		0
+#define CONFIG_BACKLIGHT_DIV	0
+#define CONFIG_BACKLIGHT_INV	0
+#define CONFIG_BACKLIGHT_DUTY	50
+#define CONFIG_BACKLIGHT_HZ		1000
+
+/*-----------------------------------------------------------------------
+ * BACKLIGHT Secondary(LVDS)
+ */
+#define CONFIG_SBACKLIGHT_CH	3
+#define CONFIG_SBACKLIGHT_DIV	0
+#define CONFIG_SBACKLIGHT_INV	0
+#define CONFIG_SBACKLIGHT_DUTY	50
+#define CONFIG_SBACKLIGHT_HZ	1000
+
 
 /*-----------------------------------------------------------------------
  * SD/MMC
