@@ -11,6 +11,8 @@
 #include <asm/gpio.h>
 #include <asm/arch/nexell.h>
 #include <asm/arch/nx_gpio.h>
+#include <lcd.h>
+#include <bmp_layout.h>
 
 #ifdef CONFIG_DM_PMIC_NXE2000
 #include <dm.h>
@@ -108,6 +110,40 @@ int board_init(void)
 
 	return 0;
 }
+#define LCD_resolution_X 800
+#define LCD_resolution_y 1280
+
+static int bmp_load(ulong addr, char * filename)
+{
+	struct bmp_image *bmp = (struct bmp_image *)addr;
+	void *bmp_alloc_addr = NULL;
+	unsigned long len;
+	char cmd[255];
+	unsigned int x_offset, y_offset;
+
+	sprintf(cmd,"ext4load mmc 0:2 %lx %s", addr,filename);
+	run_command(cmd, 0);
+
+	if (!((bmp->header.signature[0]=='B') &&
+		(bmp->header.signature[1]=='M')))
+		bmp = gunzip_bmp(addr, &len, &bmp_alloc_addr);
+
+	if (bmp == NULL) {
+		printf("There is no valid bmp file at the given address\n");
+		return 1;
+	}
+
+	x_offset = (unsigned int) (LCD_resolution_X - le32_to_cpu(bmp->header.width)) / 2;
+	y_offset = (unsigned int) (LCD_resolution_y - le32_to_cpu(bmp->header.height)) / 2;
+
+	if (bmp_alloc_addr)
+		free(bmp_alloc_addr);
+
+	sprintf(cmd, "bmp display %lx %d %d", addr, x_offset, y_offset);
+	run_command(cmd, 0);
+
+	return(0);
+}
 
 int check_powerkey(struct udevice *dev_charger)
 {
@@ -117,8 +153,7 @@ int check_powerkey(struct udevice *dev_charger)
 	int charger_status;
 	char online;
 
-	run_command("ext4load mmc 0:2 48000000 media/Charging.bmp B71E6",0);
-	run_command("bmp display 48000000 150 390", 0);
+	bmp_load(CONFIG_SYS_LOAD_ADDR, "media/Charging.bmp");
 
 	node = fdt_node_offset_by_compatible(gd->fdt_blob, 0,
 		"nexell,board-pwrkey");
@@ -140,6 +175,7 @@ int check_powerkey(struct udevice *dev_charger)
 		key_value = (*(unsigned int *)(0xC001091C)) & 0x1;
 		if(!key_value) {
 			printf("power key pressed \n");
+			bmp_load(CONFIG_SYS_LOAD_ADDR, "media/logo.bmp");
 			return 1;
 		}
 		charger_status = charger_get_charge_type(dev_charger);
