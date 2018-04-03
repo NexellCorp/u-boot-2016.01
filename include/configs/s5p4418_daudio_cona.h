@@ -96,7 +96,9 @@
 /* board_init_f->init_sequence, call print_cpuinfo */
 #define CONFIG_DISPLAY_CPUINFO
 /* board_init_f, CONFIG_SYS_ICACHE_OFF */
+#ifndef QUICKBOOT
 #define CONFIG_SYS_DCACHE_OFF
+#endif
 /* board_init_r, call arch_misc_init */
 #define CONFIG_ARCH_MISC_INIT
 /*#define	CONFIG_SYS_ICACHE_OFF*/
@@ -104,7 +106,7 @@
 /*-----------------------------------------------------------------------
  *	U-Boot default cmd
  */
-#define CONFIG_CMD_MEMTEST
+/*#define CONFIG_CMD_MEMTEST*/
 
 /*-----------------------------------------------------------------------
  *	U-Boot Environments
@@ -131,6 +133,9 @@
 /* Boot Argument Buffer Size    */
 #define CONFIG_SYS_BARGSIZE CONFIG_SYS_CBSIZE
 
+#ifdef QUICKBOOT
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
+#endif
 /*-----------------------------------------------------------------------
  * allow to overwrite serial and ethaddr
  */
@@ -217,6 +222,9 @@
 #define CONFIG_SYS_MMC_ENV_DEV 0
 #define CONFIG_ENV_OFFSET (0x2E0200)
 #define CONFIG_ENV_SIZE (0x4000) /* env size */
+#ifdef QUICKBOOT
+#define CONFIG_BOOST_MMC
+#endif
 #endif
 
 #if defined(CONFIG_MMC)
@@ -292,12 +300,13 @@
 
 /* Support bootlogo */
 #define CONFIG_VIDEO_LOGO
-#undef	CONFIG_VIDEO_LOGO
+/*#undef	CONFIG_VIDEO_LOGO*/
 #define CONFIG_SPLASH_SCREEN
-#undef	CONFIG_SPLASH_SCREEN
+/*#undef	CONFIG_SPLASH_SCREEN*/
 
 /* Support bootanimation */
 #define CONFIG_BOOTANIM
+#undef CONFIG_BOOTANIM
 
 #ifdef CONFIG_VIDEO_LOGO
 #define CONFIG_CMD_BMP

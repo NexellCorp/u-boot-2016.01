@@ -15,6 +15,7 @@
 #include <asm/arch/nx_gpio.h>
 
 #include <usb/dwc2_udc.h>
+#include <pwm-nexell.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -71,7 +72,9 @@ int board_late_init(void)
 #define ALIVE_SCRATCH1_READ_REGISTER    (0xc00108b4)
 #define ALIVE_SCRATCH1_RESET_REGISTER   (0xc00108ac)
 #define RECOVERY_SIGNATURE              (0x52455343)    /* (ASCII) : R.E.S.C */
+#ifndef QUICKBOOT
 	printf("signature --> 0x%x\n", readl(ALIVE_SCRATCH1_READ_REGISTER));
+#endif
 	if (readl(ALIVE_SCRATCH1_READ_REGISTER) == RECOVERY_SIGNATURE) {
 		printf("reboot recovery!!!!\n");
 		writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
@@ -135,7 +138,8 @@ void dram_init_banksize(void)
 
 void daudio_cona_gpio_default_setting(void)
 {
-	/*CPU_OK*/
+	printf("yibhan:cona update check~~\n");
+/*CPU_OK*/
 	nx_gpio_set_pad_function(gpio_e, 18, 0);
 	nx_gpio_set_output_value(gpio_e, 18, 1);
 	nx_gpio_set_output_enable(gpio_e, 18, 1);
@@ -184,3 +188,51 @@ void daudio_cona_gpio_default_setting(void)
 	nx_gpio_set_output_value(gpio_b, 31, 1);
 	nx_gpio_set_output_enable(gpio_b, 31, 1);
 }
+
+#ifdef QUICKBOOT
+#include <mmc.h>
+
+#if 0
+int board_set_mmc_pre(struct mmc *mmc)
+{
+	mmc->version = 1074069504;
+	mmc->high_capacity = 1;
+	mmc->bus_width = 4;
+	mmc->clock = 50000000;
+	mmc->card_caps = 0x7;
+	mmc->ocr = 0xc0ff8080;
+	mmc->dsr = 0xffffffff;
+	mmc->dsr_imp = 0x0;
+	mmc->scr[0] = 0x0;
+	mmc->scr[1] = 0x0;
+	mmc->csd[0] = 0xd0270132;
+	mmc->csd[1] = 0x0f5903ff;
+	mmc->csd[2] = 0xf6dbffef;
+	mmc->csd[3] = 0x8e40400d;
+	mmc->cid[0] = 0x15010038;
+	mmc->cid[1] = 0x474e4433;
+	mmc->cid[2] = 0x5201aaf8;
+	mmc->cid[3] = 0x51b724ef;
+	mmc->rca = 0x1;
+	mmc->part_support = 7;
+	mmc->part_num = 0;
+	mmc->tran_speed = 52000000;
+	mmc->read_bl_len = 512;
+	mmc->write_bl_len = 512;
+	mmc->erase_grp_size = 1024;
+	mmc->hc_wp_grp_size = 16384;
+	mmc->capacity = 7818182656;
+	mmc->capacity_user = 7818182656;
+	mmc->capacity_rpmb = 524288;
+	mmc->capacity_gp[0] = 0;
+	mmc->capacity_gp[1] = 0;
+	mmc->capacity_gp[2] = 0;
+	mmc->capacity_gp[3] = 0;
+	mmc->enh_user_start = 0;
+	mmc->enh_user_size = 0;
+	mmc->ddr_mode = 0;
+
+	return 1;
+}
+#endif
+#endif
