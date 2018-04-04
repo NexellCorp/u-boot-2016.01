@@ -95,7 +95,7 @@ a fip image and boot image for nexell bl1.
 ```
 [ -e u-boot-dtb.bin ] && UBOOT=u-boot-dtb.bin || UBOOT=u-boot.bin
 tools/fip_create/fip_create \
-	--dump --bl33 $(UBOOT) \
+	--dump --bl33 $UBOOT \
 	fip-nonsecure.bin
 ```
 - generate a fip-nonsecure.img using SECURE_BINGEN tool(input: fip-nonsecure.bin, output: fip-nonsecure.img)
@@ -110,11 +110,13 @@ tools/nexell/SECURE_BINGEN \
 
 #### ARTIK530
 - generate a bootloader.img using BOOT_BINGEN tool
+- Please prefer to use u-boot-dtb.bin if it exists.
 ```
+[ -e u-boot-dtb.bin ] && UBOOT=u-boot-dtb.bin || UBOOT=u-boot.bin
 tools/nexell/SECURE_BINGEN \
 	-c S5P4418 -t 3rdboot \
 	-n tools/nexell/nsih/raptor-sd.txt \
-	-i u-boot.bin \
+	-i $UBOOT \
 	-o bootloader.img \
 	-l 0x94c00000 -e 0x94c00000
 ```
