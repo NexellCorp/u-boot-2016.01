@@ -1,0 +1,6 @@
+S5P4418 ALLO_DISPLAY BOARD
+M:  ybpark <ybpark@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/allo_display/
+F:  include/configs/s5p4418_allo_display.h
+F:  configs/s5p4418_allo_display_defconfig
