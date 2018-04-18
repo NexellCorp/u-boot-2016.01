@@ -10,6 +10,8 @@
 
 #include "artik710_raptor.h"
 
+#define CONFIG_OF_BOARD_SETUP
+
 #undef CONFIG_DFU_ALT
 #define CONFIG_DFU_ALT \
 	"bl1-emmcboot.img raw 0x1 0x80;" \
