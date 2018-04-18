@@ -32,6 +32,10 @@
 #include <artik_mac.h>
 #endif
 
+#ifdef CONFIG_RECOVERY_BOOT
+#include <recoveryboot.h>
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_REVISION_TAG
@@ -238,6 +242,10 @@ int board_late_init(void)
 #endif
 #ifdef CONFIG_ARTIK_OTA
 	check_ota_update();
+#endif
+#ifdef CONFIG_RECOVERY_BOOT
+	if (check_recoveryboot())
+		setenv("bootcmd", "run recoveryboot");
 #endif
 	return 0;
 }
