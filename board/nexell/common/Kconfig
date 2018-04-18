@@ -4,3 +4,9 @@ config ARTIK_OTA
 	  This feature provides OTA(Over-The-Air) function.
 	  It updates kernel & modules partition without
 	  the need of physical access.
+
+config RECOVERY_BOOT
+	bool "Nexell Recovery Boot feature"
+	help
+	  This feature provides Recoveryboot function.
+	  Recoveryboot feature is needed by Android recovery boot.

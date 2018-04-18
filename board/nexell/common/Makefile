@@ -7,3 +7,4 @@
 
 obj-$(CONFIG_ARTIK_OTA)		+= ota.o
 obj-$(CONFIG_ARTIK_MAC)		+= mac.o
+obj-$(CONFIG_RECOVERY_BOOT)	+= recoveryboot.o
