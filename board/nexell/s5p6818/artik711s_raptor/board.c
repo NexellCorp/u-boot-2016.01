@@ -119,6 +119,48 @@ int mmc_get_env_dev(void)
 	return -1;
 }
 
+#if defined(CONFIG_OF_LIBFDT) && defined(CONFIG_OF_BOARD_SETUP)
+int ft_board_setup(void *blob, bd_t *bd)
+{
+	int rc;
+	int boot_dev = mmc_get_env_dev();
+	const char *okay = "okay";
+	const char *disabled = "disabled";
+	char *sdcard_status, *clipper1_status;
+
+	if (boot_dev == 0) {
+		/* eMMC boot, let's disable sdcard and enable clipper1 */
+		sdcard_status = disabled;
+		clipper1_status = okay;
+	} else if (boot_dev == 1) {
+		/* SDCard boot, let's enable sdcard and disable clipper1 */
+		sdcard_status = okay;
+		clipper1_status = disabled;
+	} else {
+		return 0;
+	}
+
+	rc = fdt_find_and_setprop(blob, "/soc/dw_mmc@c0062000", "status",
+				  sdcard_status, strlen(sdcard_status) + 1, 1);
+	if (rc) {
+		printf("Unable to update property status of sdcard,err=%s\n",
+		       fdt_strerror(rc));
+		return rc;
+	}
+
+	rc = fdt_find_and_setprop(blob, "/soc/clipper1@c0064000", "status",
+				  clipper1_status, strlen(clipper1_status) + 1,
+				  1);
+	if (rc) {
+		printf("Unable to update property status of clipper1,err=%s\n",
+		       fdt_strerror(rc));
+		return rc;
+	}
+
+	return 0;
+}
+#endif
+
 int board_init(void)
 {
 #ifdef CONFIG_REVISION_TAG
