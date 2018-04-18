@@ -328,7 +328,6 @@
 */
 #define CONFIG_ANDROID_BOOT_IMAGE
 #define CONFIG_SUPPORT_RAW_INITRD
-#define CONFIG_RECOVERY_BOOT
 
 /*-----------------------------------------------------------------------
  * BOOTCOMMAND
