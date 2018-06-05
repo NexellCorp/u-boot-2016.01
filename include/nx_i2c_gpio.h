@@ -12,5 +12,7 @@
 struct udevice* nx_i2c_gpio_init(void);
 int nx_i2c_gpio_write(struct udevice *dev,
 		unsigned int cmd, unsigned char *buf, int len);
+int nx_i2c_gpio_read(struct udevice *dev,
+		     unsigned int cmd, unsigned char *buf, int len);
 #endif
 

@@ -45,21 +45,27 @@ int nx_i2c_gpio_write(struct udevice *dev, unsigned int cmd,
 {
 	struct nx_i2c_gpio *i2c = dev_get_priv(dev);
 	struct udevice *bus = dev_get_parent(dev);
-	struct dm_i2c_ops *ops = i2c_get_ops(bus);
-	struct i2c_msg msg;
-	uint8_t buf[2];
-	int ret = 0;;
+	struct udevice *chip;
 
-	msg.addr = i2c->addr;
-	msg.buf = buf;
-	msg.len = 2;
-	msg.flags = DM_I2C_CHIP_WR_ADDRESS;
+	if (i2c_get_chip(bus, i2c->addr, 1, &chip)) {
+		printf("%s: i2c_get_chip failed\n", __func__);
+		return -ENODEV;
+	}
+	return dm_i2c_write(dev, cmd, buffer, len);
+}
 
-	buf[0] = cmd;
-	buf[1] = buffer[0];
+int nx_i2c_gpio_read(struct udevice *dev, unsigned int cmd,
+		     unsigned char *buffer, int len)
+{
+	struct nx_i2c_gpio *i2c = dev_get_priv(dev);
+	struct udevice *bus = dev_get_parent(dev);
+	struct udevice *chip;
 
-	ret = ops->xfer(bus, &msg, 1);
-	return ret;
+	if (i2c_get_chip(bus, i2c->addr, 1, &chip)) {
+		printf("%s: i2c_get_chip failed\n", __func__);
+		return -ENODEV;
+	}
+	return dm_i2c_read(dev, cmd, buffer, len);
 }
 
 struct udevice* nx_i2c_gpio_init(void)
