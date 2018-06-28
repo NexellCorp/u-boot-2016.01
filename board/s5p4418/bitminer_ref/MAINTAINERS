@@ -1,0 +1,6 @@
+S5P4418 BITMINER_REF BOARD
+M:  Jinyong Lee <justin@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/bitminer_ref/
+F:  include/configs/s5p4418_bitminer_ref.h
+F:  configs/s5p4418_bitminer_ref_defconfig
