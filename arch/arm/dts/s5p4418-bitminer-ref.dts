@@ -53,6 +53,21 @@
 		};
 	};
 
+	nx_i2c_gpio:i2c_gpio@5 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "i2c-gpio";
+		gpios = <&gpio_c 27 0>,
+			<&gpio_c 25 0>;
+		i2c-gpio,delay-us = <1>;
+		nx_i2c_gpio@44 {
+			compatible = "nexell,nx_i2c_gpio";
+			reg = <0x44>;
+			sda_pad = <1>;
+			scl_pad = <1>;
+		};
+	};
+
 	voltage-regulators {
 		dcdc0: BUCK0 {
 			regulator-name = "dcdc1";
