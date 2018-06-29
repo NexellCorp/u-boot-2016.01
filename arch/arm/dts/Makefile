@@ -15,6 +15,7 @@ dtb-$(CONFIG_ARCH_S5P4418) += s5p4418-drone.dtb \
 	s5p4418-artik530-raptor.dtb \
 	s5p4418-avn-ref.dtb \
 	s5p4418-navi-ref.dtb\
+	s5p4418-bitminer-ref.dtb\
 	s5p4418-daudio-ref.dtb\
 	s5p4418-smart-voice.dtb\
 	s5p4418-zh-dragon.dtb\
