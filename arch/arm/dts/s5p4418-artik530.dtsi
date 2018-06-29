@@ -13,7 +13,7 @@
 		nexell,drive_shift = <0x03>;
 		nexell,sample_dly = <0x00>;
 		nexell,sample_shift = <0x02>;
-		frequency = <50000000>;
+		frequency = <100000000>;
 		status = "okay";
 	};
 };

@@ -15,7 +15,7 @@
 		   "nexell,s5p4418";
 
 	mmc0:mmc@c0062000 {
-		frequency = <50000000>;
+		frequency = <100000000>;
 		nexell,drive_dly = <0x0>;
 		nexell,drive_shift = <0x03>;
 		nexell,sample_dly = <0x00>;
