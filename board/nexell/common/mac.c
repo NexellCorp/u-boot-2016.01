@@ -96,16 +96,29 @@ static const struct artik_info_t *get_board_info(
 
 static int convert_number(const char *cp, size_t len)
 {
-	int value, result = 0;
+	int value, delta = 0, result = 0;
 
 	while (len-- > 0) {
 		if (isdigit(*cp)) {
 			value = *cp - '0';
 		} else if (isupper(*cp)) {
-			value = *cp - 'A' + 10;
+			switch (*cp) {
+			case 'A' ... 'H':
+				delta = 0;
+				break;
+			case 'J' ... 'N':
+				delta = 1;
+				break;
+			case 'P' ... 'Z':
+				delta = 2;
+				break;
+			default:
+				goto err_unsupported;
+			}
+
+			value = *cp - 'A' + 10 - delta;
 		} else {
-			printf("Artik MAC : Unsupported Type(%c)\n", *cp);
-			return -EINVAL;
+			goto err_unsupported;
 		}
 
 		result = (result * 10) + value;
@@ -113,6 +126,10 @@ static int convert_number(const char *cp, size_t len)
 	}
 
 	return result;
+
+err_unsupported:
+	printf("Artik MAC : Unsupported Type(%c)\n", *cp);
+	return -EINVAL;
 }
 
 void generate_mac(void)
