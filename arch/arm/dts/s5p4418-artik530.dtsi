@@ -10,9 +10,9 @@
 / {
 	mmc2:mmc@c0069000 {
 		nexell,drive_dly = <0x0>;
-		nexell,drive_shift = <0x01>;
+		nexell,drive_shift = <0x00>;
 		nexell,sample_dly = <0x00>;
-		nexell,sample_shift = <0x00>;
+		nexell,sample_shift = <0x01>;
 		frequency = <100000000>;
 		status = "okay";
 	};
