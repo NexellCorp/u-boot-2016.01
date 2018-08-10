@@ -162,9 +162,9 @@
 &mmc2 {
 	frequency = <100000000>;
 	nexell,drive_dly = <0x0>;
-	nexell,drive_shift = <0x01>;
+	nexell,drive_shift = <0x00>;
 	nexell,sample_dly = <0x00>;
-	nexell,sample_shift = <0x00>;
+	nexell,sample_shift = <0x01>;
 	nexell,bus-width = <4>;
 	index = <0>;
 	status = "okay";
