@@ -662,7 +662,7 @@ static int booti_setup(bootm_headers_t *images)
 		puts("Bad Linux ARM64 Image magic!\n");
 		return 1;
 	}
-	
+
 	if (ih->image_size == 0) {
 		puts("Image lacks image_size field, assuming 16MiB\n");
 		ih->image_size = (16 << 20);

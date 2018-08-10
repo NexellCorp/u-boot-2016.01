@@ -145,6 +145,9 @@ serial_initfunc(ns16550_serial_initialize);
 serial_initfunc(oc_serial_initialize);
 serial_initfunc(p3mx_serial_initialize);
 serial_initfunc(pl01x_serial_initialize);
+#ifdef CONFIG_SERIAL_MCU
+serial_initfunc(pl01x_serial_mcu_initialize);
+#endif
 serial_initfunc(pxa_serial_initialize);
 serial_initfunc(s3c24xx_serial_initialize);
 serial_initfunc(s5p_serial_initialize);
@@ -236,6 +239,9 @@ void serial_initialize(void)
 	oc_serial_initialize();
 	p3mx_serial_initialize();
 	pl01x_serial_initialize();
+#ifdef CONFIG_SERIAL_MCU
+	pl01x_serial_mcu_initialize();
+#endif
 	pxa_serial_initialize();
 	s3c24xx_serial_initialize();
 	s5p_serial_initialize();
@@ -517,6 +523,58 @@ void default_serial_puts(const char *s)
 	while (*s)
 		dev->putc(*s++);
 }
+
+#ifdef CONFIG_SERIAL_MCU
+static struct serial_device *get_current_mcu(void)
+{
+	struct serial_device *dev;
+
+	dev = default_serial_mcu_console();
+
+	if (!dev)
+		printf("aron get_current_mcu fail.\n");
+
+	return dev;
+}
+
+void default_serial_mcu_puts(const char *s)
+{
+	struct serial_device *dev = get_current_mcu();
+
+	while (*s)
+		dev->putc(*s++);
+}
+
+int serial_mcu_init(void)
+{
+	return get_current_mcu()->start();
+}
+
+void serial_mcu_setbrg(void)
+{
+	get_current_mcu()->setbrg();
+}
+
+int serial_mcu_getc(void)
+{
+	return get_current_mcu()->getc();
+}
+
+int serial_mcu_tstc(void)
+{
+	return get_current_mcu()->tstc();
+}
+
+void serial_mcu_putc(const char c)
+{
+	get_current_mcu()->putc(c);
+}
+
+void serial_mcu_puts(const char *s)
+{
+	get_current_mcu()->puts(s);
+}
+#endif /* CONFIG_SERIAL_MCU */
 
 #if CONFIG_POST & CONFIG_SYS_POST_UART
 static const int bauds[] = CONFIG_SYS_BAUDRATE_TABLE;

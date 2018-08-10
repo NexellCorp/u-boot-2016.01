@@ -460,7 +460,7 @@ static int parse_part_device(const char *parts, const char **ret,
 {
 	struct fastboot_device *fd = *fdev;
 	const char *p, *id, *c;
-	char str[32];
+	char str[128];
 	int i = 0, id_len;
 
 	p = parts;
@@ -623,7 +623,7 @@ static int parse_part_address(const char *parts, const char **ret,
 			struct fastboot_part *fpart)
 {
 	const char *p, *id;
-	char str[64] = { 0, };
+	char str[128] = { 0, };
 	int id_len;
 
 	p = parts;

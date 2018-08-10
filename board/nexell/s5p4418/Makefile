@@ -15,6 +15,7 @@ obj-$(CONFIG_TARGET_S5P4418_SMART_VOICE)	+= smart_voice/
 obj-$(CONFIG_TARGET_S5P4418_FF_VOICE)	+= ff_voice/
 obj-$(CONFIG_TARGET_S5P4418_ZH_DRAGON)	+= zh_dragon/
 obj-$(CONFIG_TARGET_S5P4418_ZH_BLACKDRAGON)	+= zh_blackdragon/
+obj-$(CONFIG_TARGET_S5P4418_ZH_HMDRAGON)	+= zh_hmdragon/
 obj-$(CONFIG_TARGET_S5P4418_DAUDIO_COVI)	+= daudio_covi/
 obj-$(CONFIG_TARGET_S5P4418_CLOVA)	+= clova/
 obj-$(CONFIG_TARGET_S5P4418_SVM_REF)	+= svm_ref/

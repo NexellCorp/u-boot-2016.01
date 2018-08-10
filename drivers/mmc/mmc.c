@@ -28,7 +28,8 @@
 #ifdef CONFIG_TARGET_S5P4418_DAUDIO_REF
 #undef QUICKBOOT
 #endif
-#ifdef CONFIG_TARGET_S5P4418_DAUDIO_CONA
+
+#ifndef MMC_INIT_CANCEL
 #undef QUICKBOOT
 #endif
 
@@ -132,6 +133,7 @@ int mmc_send_status(struct mmc *mmc, int timeout)
 	if (!mmc_host_is_spi(mmc))
 		cmd.cmdarg = mmc->rca << 16;
 
+#ifndef QUICKBOOT
 	while (1) {
 		err = mmc_send_cmd(mmc, &cmd, NULL);
 		if (!err) {
@@ -154,6 +156,7 @@ int mmc_send_status(struct mmc *mmc, int timeout)
 
 		udelay(1000);
 	}
+#endif
 
 #ifdef CONFIG_MMC_TRACE
 	status = (cmd.response[0] & MMC_STATUS_CURR_STATE) >> 9;
@@ -288,8 +291,9 @@ static int mmc_go_idle(struct mmc *mmc)
 {
 	struct mmc_cmd cmd;
 	int err;
-
+#ifndef QUICKBOOT
 	udelay(1000);
+#endif
 
 	cmd.cmdidx = MMC_CMD_GO_IDLE_STATE;
 	cmd.cmdarg = 0;
@@ -299,8 +303,9 @@ static int mmc_go_idle(struct mmc *mmc)
 
 	if (err)
 		return err;
-
+#ifndef QUICKBOOT
 	udelay(2000);
+#endif
 
 	return 0;
 }
@@ -348,7 +353,9 @@ static int sd_send_op_cond(struct mmc *mmc)
 		if (timeout-- <= 0)
 			return UNUSABLE_ERR;
 
+#ifndef QUICKBOOT
 		udelay(1000);
+#endif
 	}
 
 	if (mmc->version != SD_VERSION_2)
@@ -433,7 +440,9 @@ static int mmc_complete_op_cond(struct mmc *mmc)
 				break;
 			if (get_timer(start) > timeout)
 				return UNUSABLE_ERR;
+#ifndef QUICKBOOT
 			udelay(100);
+#endif
 		}
 	}
 

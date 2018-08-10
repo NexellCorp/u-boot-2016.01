@@ -105,6 +105,30 @@ static void serial_device_init(void)
 }
 #endif
 
+#ifdef CONFIG_SERIAL_MCU
+static void serial_mcu_device_init(void)
+{
+	char dev[10];
+	int id;
+
+	sprintf(dev, "nx-uart.%d", CONFIG_CONS_INDEX_MCU);
+	id = RESET_ID_UART0 + CONFIG_CONS_INDEX_MCU;
+
+	struct clk *clk = clk_get((const char *)dev);
+
+	/* reset control: Low active ___|---   */
+	nx_rstcon_setrst(id, RSTCON_ASSERT);
+	udelay(10);
+	nx_rstcon_setrst(id, RSTCON_NEGATE);
+	udelay(10);
+
+	/* set clock   */
+	clk_disable(clk);
+	clk_set_rate(clk, CONFIG_PL011_CLOCK);
+	clk_enable(clk);
+}
+#endif
+
 int arch_cpu_init(void)
 {
 	flush_dcache_all();
@@ -113,6 +137,9 @@ int arch_cpu_init(void)
 
 #ifdef CONFIG_PL011_SERIAL
 	serial_device_init();
+#endif
+#ifdef CONFIG_SERIAL_MCU
+	serial_mcu_device_init();
 #endif
 	return 0;
 }

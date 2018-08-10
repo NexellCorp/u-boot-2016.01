@@ -39,12 +39,17 @@ config TARGET_S5P4418_FF_VOICE
 config TARGET_S5P4418_ZH_DRAGON
 	bool "S5P4418_ZH_DRAGON"
 	help
-	  Support for s5p4418 zonghong dragon platform.
+	  Support for s5p4418 zhonghong dragon platform.
 
 config TARGET_S5P4418_ZH_BLACKDRAGON
 	bool "S5P4418_ZH_BLACKDRAGON"
 	help
 	  Support for s5p4418 zhonghong blackdragon platform.
+
+config TARGET_S5P4418_ZH_HMDRAGON
+	bool "S5P4418_ZH_HMDRAGON"
+	help
+	  Support for s5p4418 zhonghong hmdragon platform.
 
 config TARGET_S5P4418_DAUDIO_COVI
 	bool "S5P4418_DAUDIO_COVI"

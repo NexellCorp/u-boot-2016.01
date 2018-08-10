@@ -871,6 +871,9 @@ static init_fnc_t init_sequence_f[] = {
 #endif
 	init_baud_rate,		/* initialze baudrate settings */
 	serial_init,		/* serial communications setup */
+#ifdef CONFIG_SERIAL_MCU
+	serial_mcu_init,    /* serial communications setup for mcu */
+#endif
 	console_init_f,		/* stage 1 init of console */
 #ifdef CONFIG_SANDBOX
 	sandbox_early_getopt_check,

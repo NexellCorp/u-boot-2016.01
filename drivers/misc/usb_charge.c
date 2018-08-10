@@ -37,12 +37,14 @@ static void e522xx_en_pin_ctrl(struct udevice *dev, int state)
 	else
 		dm_gpio_set_value(&pdata->gpio_en, 1);
 }
-
+enum gpio_group1 {
+	gpio_a,	gpio_b, gpio_c, gpio_d, gpio_e,
+};
 static void e522xx_state_ctrl(struct udevice *dev , int state)
 {
 	switch (state) {
 	case E_E522XX_STATE_SLEEP:
-		e522xx_en_pin_ctrl(dev, 0);
+		nx_gpio_set_output_value(gpio_c, 30, 0);//e522xx_en_pin_ctrl(dev, 0);
 		break;
 
 	case E_E522XX_STATE_STANDBY:
@@ -50,13 +52,14 @@ static void e522xx_state_ctrl(struct udevice *dev , int state)
 		e522xx_en_pin_ctrl(dev, 0);
 		mdelay(100);
 		*/
-		e522xx_en_pin_ctrl(dev, 1);
+		nx_gpio_set_output_value(gpio_c, 30, 1);//e522xx_en_pin_ctrl(dev, 1);//
 		udelay(500);
-		e522xx_en_pin_ctrl(dev, 0);
+		nx_gpio_set_output_value(gpio_c, 30, 0);//e522xx_en_pin_ctrl(dev, 0);//
+
 		break;
 
 	case E_E522XX_STATE_RUN:
-		e522xx_en_pin_ctrl(dev, 1);
+		nx_gpio_set_output_value(gpio_c, 30, 1);//e522xx_en_pin_ctrl(dev, 1);//
 		break;
 
 	case E_E522XX_STATE_ERROR:
@@ -93,9 +96,11 @@ int e522xx_set_mode(struct udevice *dev , int mode)
 	e522xx_state_ctrl(dev, E_E522XX_STATE_STANDBY);
 
 	/* status */
+#ifndef QUICKBOOT
 	cmd = 0x10;
 	ret = e522xx_i2c_read(dev, cmd, buf, 1);
 	printf("read status reg 0x%x value=0x%x\n", cmd, buf[0]);
+#endif
 
 	/* SMPS */
 	cmd = 0x1A;

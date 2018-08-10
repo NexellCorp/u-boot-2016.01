@@ -624,6 +624,16 @@ void	serial_puts   (const char *);
 int	serial_getc   (void);
 int	serial_tstc   (void);
 
+#ifdef CONFIG_SERIAL_MCU
+void default_serial_mcu_puts(const char *s);
+int serial_mcu_init(void);
+void serial_mcu_setbrg(void);
+int serial_mcu_getc(void);
+int serial_mcu_tstc(void);
+void serial_mcu_putc(const char c);
+void serial_mcu_puts(const char *s);
+#endif
+
 /* These versions take a stdio_dev pointer */
 struct stdio_dev;
 int serial_stub_getc(struct stdio_dev *sdev);

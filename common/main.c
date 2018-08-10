@@ -12,6 +12,9 @@
 #include <cli.h>
 #include <console.h>
 #include <version.h>
+#ifdef CONFIG_SERIAL_MCU
+#include <linux/arm_serial_mcu.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -58,6 +61,9 @@ void main_loop(void)
 {
 	const char *s;
 
+#ifdef CONFIG_SERIAL_MCU
+	mcu_informed_uart_arm_start();
+#endif
 	bootstage_mark_name(BOOTSTAGE_ID_MAIN_LOOP, "main_loop");
 
 #ifndef CONFIG_SYS_GENERIC_BOARD
@@ -83,6 +89,22 @@ void main_loop(void)
 	if (cli_process_fdt(&s))
 		cli_secure_boot_cmd(s);
 
+#ifdef CONFIG_SERIAL_MCU
+	if (mcu_serial_is_recovery() > 0)
+		mcu_serial_do_recovery();
+#endif
+
+/*
+#if defined(CONFIG_SERIAL_MCU)
+	mcu_get_max9286();
+#endif
+*/
+
+/*
+#ifdef CONFIG_SERIAL_MCU
+    mcu_informed_uart_arm_late_start();
+#endif
+*/
 	autoboot_command(s);
 
 	cli_loop();

@@ -148,4 +148,11 @@ config NX_I2C_GPIO
 	depends on DM_I2C_GPIO
 	help
 	  Enable a nexell i2c gpio driver for using i2c via gpio.
+
+config ADV7613
+	bool "Enable support for HDMItoLVDS(adv7613) driver"
+	depends on DM_I2C_GPIO
+	help
+	  Enable HDMItoLVDS(adv7613) driver
+
 endmenu

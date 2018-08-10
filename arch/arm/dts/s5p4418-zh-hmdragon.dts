@@ -1,0 +1,94 @@
+/*
+ * (C) Copyright 2018 Nexell
+ * Jongshin, Park <pjsin865@nexell.co.kr>
+ *
+ * SPDX-License-Identifier:      GPL-2.0+
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include "s5p4418.dtsi"
+#include "s5p4418-zh-hmdragon-nxe2000.dtsi"
+
+/ {
+	model = "zonghong hmdragon board based on s5p4418";
+	cpu-model = "S5p4418";
+
+	compatible = "nexell,s5p4418";
+
+	mmc0:mmc@c0062000 {
+		nexell,drive_dly = <0x0>;
+		nexell,drive_shift = <0x03>;
+		nexell,sample_dly = <0x00>;
+		nexell,sample_shift = <0x02>;
+		frequency = <50000000>;
+		status = "okay";
+	};
+
+	ehci:usbhost@c0030000 {
+		status = "okay";
+	};
+
+	dwc2otg@c0040000 {
+		status = "okay";
+	};
+
+
+	dp0:dp@c0102800 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-display";
+		reg = <0xc0102800 0x100>;
+		index = <0>;
+		status = "okay";
+
+        module = <0>;
+        lcd-type = "hdmi";
+
+		dp-device {
+			format = <0>;
+			preset = <2>;
+		};
+
+		dp-sync {
+			h_active_len = <1920>;
+			h_front_porch = <30>;
+			h_back_porch = <30>;
+			h_sync_width = <4>;
+
+			v_active_len = <720>;
+			v_front_porch = <10>;
+			v_back_porch = <10>;
+			v_sync_width = <2>;
+
+			h_sync_invert = <1>;
+			v_sync_invert = <1>;
+			pixelclk-active = <1>;
+			de-active = <1>;
+		};
+
+		dp-ctrl {
+			clk_src_lv0 = <3>;
+			clk_div_lv0 = <10>;
+			clk_src_lv1 = <7>;
+			clk_div_lv1 = <1>;
+			out_format = <3>;
+		};
+
+		dp-planes {
+			layer_top {
+				screen_width = <1920>;
+				screen_height = <720>;
+				back_color = <0x0>;
+			};
+
+			layer_1 {
+				fb_base = <0x7E000000>;
+				width = <1920>;
+				height = <720>;
+				format = <0x06530000>;
+				pixel_byte = <4>;
+			};
+		};
+	};
+};
