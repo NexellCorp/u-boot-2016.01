@@ -22,6 +22,10 @@ DECLARE_GLOBAL_DATA_PTR;
 
 void cpu_base_init(void)
 {
+#if defined(CONFIG_S5P6818_WATCHDOG)
+    	void *wdt_reg = (void*)PHY_BASEADDR_WDT;
+#endif
+
 	/*
 	 * NOTE> ALIVE Power Gate must enable for Alive register access.
 	 *	     must be clear wfi jump address
@@ -31,6 +35,12 @@ void cpu_base_init(void)
 
 	/* write 0xf0 on alive scratchpad reg for boot success check */
 	writel(readl(SCR_SIGNAGURE_READ) | 0xF0, (SCR_SIGNAGURE_SET));
+
+#if defined(CONFIG_S5P6818_WATCHDOG)
+	/* Kick watchdog from earlier boot stage */
+	writel(0xffff, wdt_reg + 0x8);
+	writel(0x0, wdt_reg + 0xc);
+#endif
 }
 
 #if defined(CONFIG_ARCH_CPU_INIT)
@@ -46,6 +56,16 @@ int arch_cpu_init(void)
 #if defined(CONFIG_DISPLAY_CPUINFO)
 int print_cpuinfo(void)
 {
+#if defined(CONFIG_S5P6818_WATCHDOG)
+	void *clkpwr_reg = (void *)PHY_BASEADDR_CLKPWR;
+	int resetstatus = 0x218;
+	u32 read_value;
+
+	read_value = readl((void *)(clkpwr_reg + resetstatus));
+
+	printf("Reset : %x\n", read_value);
+#endif
+
 	return 0;
 }
 #endif
@@ -69,6 +89,17 @@ void reset_cpu(ulong ignored)
 	writel(read_value, (void *)(clkpwr_reg + pwrcont));
 	writel(sw_rst_mask, (void *)(clkpwr_reg + pwrmode));
 }
+
+#if defined(CONFIG_S5P6818_WATCHDOG)
+void watchdog_reset()
+{
+    	void *wdt_reg = (void*)PHY_BASEADDR_WDT;
+
+	/* Disable watchdog */
+	writel(0x0, wdt_reg);
+	writel(0x0, wdt_reg + 0xc);
+}
+#endif
 
 #if defined(CONFIG_ARCH_MISC_INIT)
 int arch_misc_init(void)

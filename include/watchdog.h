@@ -100,4 +100,8 @@ int init_func_watchdog_reset(void);
 #if defined(CONFIG_MPC85xx) && !defined(__ASSEMBLY__)
 	void init_85xx_watchdog(void);
 #endif
+
+#if defined(CONFIG_S5P6818_WATCHDOG)
+	void watchdog_reset(void);
+#endif
 #endif /* _WATCHDOG_H_ */
