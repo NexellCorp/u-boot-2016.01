@@ -11,6 +11,7 @@
 #include "artik710_raptor.h"
 
 #define CONFIG_OF_BOARD_SETUP
+#define CONFIG_S5P6818_WATCHDOG
 
 #undef CONFIG_DFU_ALT
 #define CONFIG_DFU_ALT \
