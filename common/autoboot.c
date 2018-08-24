@@ -14,6 +14,9 @@
 #include <menu.h>
 #include <post.h>
 #include <u-boot/sha256.h>
+#if defined(CONFIG_S5P6818_WATCHDOG)
+#include <watchdog.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -371,6 +374,12 @@ void autoboot_command(const char *s)
 		disable_ctrlc(prev);	/* restore Control C checking */
 #endif
 	}
+#if defined(CONFIG_S5P6818_WATCHDOG)
+	else {
+		/* We should stop watchdog in case of abort */
+		watchdog_reset();
+	}
+#endif
 
 #ifdef CONFIG_MENUKEY
 	if (menukey == CONFIG_MENUKEY) {
