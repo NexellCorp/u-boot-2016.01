@@ -40,6 +40,8 @@ struct ext4_chunk_header {
 #define EXT4_FILE_HEADER_MAJOR	0x0001
 #define EXT4_FILE_HEADER_MINOR	0x0000
 #define EXT4_FILE_BLOCK_SIZE	0x1000
+#define EXT4_FILE_BLOCK_SIZE_2048	0x800
+#define EXT4_FILE_BLOCK_SIZE_1024	0x400
 
 #define EXT4_FILE_HEADER_SIZE	(sizeof(struct ext4_file_header))
 #define EXT4_CHUNK_HEADER_SIZE	(sizeof(struct ext4_chunk_header))
@@ -95,11 +97,15 @@ int check_compress_ext4(char *img_base, unsigned long long parti_size)
 		return -1;
 	}
 
-	if (file_header->block_size != EXT4_FILE_BLOCK_SIZE) {
+	if ( (file_header->block_size != EXT4_FILE_BLOCK_SIZE) &&
+	     (file_header->block_size != EXT4_FILE_BLOCK_SIZE_2048) &&
+	     (file_header->block_size != EXT4_FILE_BLOCK_SIZE_1024))
+	{
 		printf("Invalid Block Size! 0x%8x\n", file_header->block_size);
 		return -1;
 	}
 
+#if 0
 	if ((parti_size/file_header->block_size)  < file_header->total_blocks) {
 		printf("Invalid Volume Size!");
 		printf("Image is bigger than partition size!\n");
@@ -111,6 +117,7 @@ int check_compress_ext4(char *img_base, unsigned long long parti_size)
 		while (1)
 			;
 	}
+#endif
 
 	/* image is compressed ext4 */
 	return 0;

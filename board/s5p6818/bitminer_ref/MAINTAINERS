@@ -1,0 +1,6 @@
+BITMINER BOARD
+M:  JinyongLee <justin@nexell.co.kr>
+S:  Maintained
+F:  board/s5p6818/bitminer_ref/
+F:  include/configs/s5p6818_bitminer_ref.h
+F:  configs/s5p6818_bitminer_ref_defconfig
