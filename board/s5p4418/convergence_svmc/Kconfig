@@ -1,0 +1,7 @@
+if TARGET_S5P4418_CONVERGENCE_SVMC
+
+config SYS_BOARD
+	default "convergence_svmc"
+
+endif
+
