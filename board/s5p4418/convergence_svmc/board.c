@@ -79,7 +79,7 @@ static void board_backlight_disable(void)
 	nx_gpio_set_output_enable(gp, io, 1);
 
 	/* Secondary(LVDS) : SLED_EN */
-	nx_gpio_set_pad_function(gpio_b, 21, 0);
+	nx_gpio_set_pad_function(gpio_b, 21, 1);
 	nx_gpio_set_output_value(gpio_b, 21, 0);
 	nx_gpio_set_output_enable(gpio_b, 21, 1);
 
