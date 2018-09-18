@@ -728,6 +728,10 @@ static int run_main_loop(void)
 #ifdef CONFIG_SANDBOX
 	sandbox_main_loop_init();
 #endif
+
+#ifdef QUICKBOOT_DBG
+	printf("board_init_r ---\n");
+#endif
 	/* main_loop() can return to retry autoboot, if so just run it again */
 	for (;;)
 		main_loop();
@@ -823,7 +827,9 @@ init_fnc_t init_sequence_r[] = {
 #ifdef CONFIG_ARCH_EARLY_INIT_R
 	arch_early_init_r,
 #endif
+#ifndef QUICKBOOT
 	power_init_board,
+#endif
 #ifndef CONFIG_SYS_NO_FLASH
 	initr_flash,
 #endif
@@ -959,6 +965,10 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 {
 #ifdef CONFIG_NEEDS_MANUAL_RELOC
 	int i;
+#endif
+
+#ifdef QUICKBOOT_DBG
+	printf("board_init_r +++\n");
 #endif
 
 #ifdef CONFIG_AVR32

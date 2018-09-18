@@ -343,10 +343,15 @@ static int do_mmc_read(cmd_tbl_t *cmdtp, int flag,
 	addr = (void *)simple_strtoul(argv[1], NULL, 16);
 	blk = simple_strtoul(argv[2], NULL, 16);
 	cnt = simple_strtoul(argv[3], NULL, 16);
-
+#ifdef QUICKBOOT_DBG
+	printf("init_mmc +++\n");
+#endif
 	mmc = init_mmc_device(curr_device, false);
 	if (!mmc)
 		return CMD_RET_FAILURE;
+#ifdef QUICKBOOT_DBG
+	printf("init_mmc ---\n");
+#endif
 
 #ifndef QUICKBOOT
 	printf("\nMMC read: dev # %d, block # %d, count %d ... ",
@@ -356,7 +361,7 @@ static int do_mmc_read(cmd_tbl_t *cmdtp, int flag,
 	n = mmc->block_dev.block_read(curr_device, blk, cnt, addr);
 	/* flush cache after read */
 	flush_cache((ulong)addr, cnt * 512); /* FIXME */
-#ifndef QUICKBOOT
+#if defined(QUICKBOOT_DBG) || !defined(QUICKBOOT)
 	printf("%d blocks read: %s\n", n, (n == cnt) ? "OK" : "ERROR");
 #endif
 

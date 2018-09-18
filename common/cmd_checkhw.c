@@ -40,7 +40,9 @@ static int parse_dts_revision_gpio(void)
 	ret = fdtdec_find_aliases_for_id(gd->fdt_blob, "board_rev",
 				compat_id, &node, 1);
 	if (!ret) {
+#ifndef QUICKBOOT
 		printf("not exist board_rev dts node!\n");
+#endif
 		return -1;
 	}
 

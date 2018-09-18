@@ -1652,6 +1652,14 @@ static void cb_getvar(struct usb_ep *ep, struct usb_request *req)
 		printf("reg value : 0x%llx(0x%x)\n", addr, buf);
 		sprintf(s,"%x", buf);
 		strncat(response, s, chars_left);
+	} else if (!strcmp_l1("slot-count", cmd)) {
+		strncat(response, "2", chars_left);
+	} else if (!strcmp_l1("slot-suffixes", cmd)) {
+		strncat(response, "_a,_b", chars_left);
+	} else if (!strcmp_l1("current-slot", cmd)) {
+		strncat(response, "_a", chars_left);
+	} else if (!strcmp_l1("has-slot", cmd)) {
+		strncat(response, "no", chars_left);
 	} else {
 		error("unknown variable: %s\n", cmd);
 		strcpy(response, "FAILVariable not implemented");

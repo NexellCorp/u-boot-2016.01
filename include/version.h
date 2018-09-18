@@ -18,8 +18,12 @@
 #define CONFIG_IDENT_STRING ""
 #endif
 
+#ifndef QUICKBOOT
 #define U_BOOT_VERSION_STRING U_BOOT_VERSION " (" U_BOOT_DATE " - " \
 	U_BOOT_TIME " " U_BOOT_TZ ")" CONFIG_IDENT_STRING
+#else
+#define U_BOOT_VERSION_STRING U_BOOT_VERSION
+#endif
 
 #ifndef __ASSEMBLY__
 extern const char version_string[];

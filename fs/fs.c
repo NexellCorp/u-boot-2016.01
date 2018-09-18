@@ -418,7 +418,7 @@ int do_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[],
 	time = get_timer(time);
 	if (ret < 0)
 		return 1;
-
+#ifndef QUICKBOOT
 	printf("%llu bytes read in %lu ms", len_read, time);
 	if (time > 0) {
 		puts(" (");
@@ -426,9 +426,14 @@ int do_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[],
 		puts(")");
 	}
 	puts("\n");
+#endif
 
 	setenv_hex("fileaddr", addr);
 	setenv_hex("filesize", len_read);
+
+#ifdef QUICKBOOT_DBG
+	printf("do_load [%s]---\n",argv[4]);
+#endif
 
 	return 0;
 }

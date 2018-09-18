@@ -319,8 +319,9 @@ static int dwmci_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd,
 			bounce_buffer_stop(&bbstate);
 		}
 	}
-
+#ifndef QUICKBOOT_2
 	udelay(100);
+#endif
 
 	return ret;
 }

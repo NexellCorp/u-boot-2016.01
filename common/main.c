@@ -94,12 +94,9 @@ void main_loop(void)
 		mcu_serial_do_recovery();
 #endif
 
-/*
-#if defined(CONFIG_SERIAL_MCU)
+#if defined(CONFIG_SERIAL_MCU) && !defined(QUICKBOOT)
 	mcu_get_max9286();
 #endif
-*/
-
 /*
 #ifdef CONFIG_SERIAL_MCU
     mcu_informed_uart_arm_late_start();

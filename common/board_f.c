@@ -1043,6 +1043,9 @@ void board_init_f(ulong boot_flags)
 
 	if (initcall_run_list(init_sequence_f))
 		hang();
+#ifdef QUICKBOOT_DBG
+	printf("\nboard_init_f ---\n");
+#endif
 
 #if !defined(CONFIG_ARM) && !defined(CONFIG_SANDBOX) && \
 		!defined(CONFIG_EFI_APP)

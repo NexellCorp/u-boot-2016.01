@@ -2163,9 +2163,13 @@ static int video_init(void)
 		fgx =	(CONSOLE_FG_COL << 16) |
 			(CONSOLE_FG_COL <<  8) |
 			 CONSOLE_FG_COL;
+#ifdef CONFIG_TARGET_S5P4418_ZH_HMDRAGON
+		bgx = 0x000b1f;
+#else
 		bgx =	(CONSOLE_BG_COL << 16) |
 			(CONSOLE_BG_COL <<  8) |
 			 CONSOLE_BG_COL;
+#endif
 		break;
 	case GDF_24BIT_888RGB:
 		fgx =	(CONSOLE_FG_COL << 24) |

@@ -96,6 +96,9 @@ static int do_bootm_subcommand(cmd_tbl_t *cmdtp, int flag, int argc,
 
 int do_bootm(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
+#ifdef QUICKBOOT_DBG
+	printf("bootm +++\n");
+#endif
 #ifdef CONFIG_NEEDS_MANUAL_RELOC
 	static int relocated = 0;
 
@@ -589,6 +592,9 @@ static int bootz_start(cmd_tbl_t *cmdtp, int flag, int argc,
 int do_bootz(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	int ret;
+#ifdef QUICKBOOT_DBG
+	printf("do_bootz +++\n");
+#endif
 
 	/* Consume 'bootz' */
 	argc--; argv++;

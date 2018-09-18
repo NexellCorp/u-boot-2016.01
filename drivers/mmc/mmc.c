@@ -133,7 +133,7 @@ int mmc_send_status(struct mmc *mmc, int timeout)
 	if (!mmc_host_is_spi(mmc))
 		cmd.cmdarg = mmc->rca << 16;
 
-#ifndef QUICKBOOT
+#ifndef QUICKBOOT_2
 	while (1) {
 		err = mmc_send_cmd(mmc, &cmd, NULL);
 		if (!err) {
@@ -291,7 +291,7 @@ static int mmc_go_idle(struct mmc *mmc)
 {
 	struct mmc_cmd cmd;
 	int err;
-#ifndef QUICKBOOT
+#ifndef QUICKBOOT_2
 	udelay(1000);
 #endif
 
@@ -303,7 +303,7 @@ static int mmc_go_idle(struct mmc *mmc)
 
 	if (err)
 		return err;
-#ifndef QUICKBOOT
+#ifndef QUICKBOOT_2
 	udelay(2000);
 #endif
 
@@ -353,7 +353,7 @@ static int sd_send_op_cond(struct mmc *mmc)
 		if (timeout-- <= 0)
 			return UNUSABLE_ERR;
 
-#ifndef QUICKBOOT
+#ifndef QUICKBOOT_2
 		udelay(1000);
 #endif
 	}
@@ -440,7 +440,7 @@ static int mmc_complete_op_cond(struct mmc *mmc)
 				break;
 			if (get_timer(start) > timeout)
 				return UNUSABLE_ERR;
-#ifndef QUICKBOOT
+#ifndef QUICKBOOT_2
 			udelay(100);
 #endif
 		}
@@ -1913,7 +1913,7 @@ int mmc_initialize(bd_t *bis)
 	if (ret)
 		return ret;
 
-#ifndef QUICKBOOT
+#ifndef QUICKBOOT_2
 #ifndef CONFIG_SPL_BUILD
 	print_mmc_devices(',');
 #endif

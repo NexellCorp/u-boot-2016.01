@@ -868,7 +868,7 @@ static int dwc2_udc_get_status(struct dwc2_udc *dev,
 
 	debug_cond(DEBUG_SETUP != 0,
 		   "%s: *** USB_REQ_GET_STATUS\n", __func__);
-	printf("crq->brequest:0x%x\n", crq->bRequestType & USB_RECIP_MASK);
+	debug_cond(DEBUG_SETUP != 0,"crq->brequest:0x%x\n", crq->bRequestType & USB_RECIP_MASK);
 	switch (crq->bRequestType & USB_RECIP_MASK) {
 	case USB_RECIP_INTERFACE:
 		g_status = 0;

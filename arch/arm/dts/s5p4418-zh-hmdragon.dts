@@ -16,6 +16,32 @@
 
 	compatible = "nexell,s5p4418";
 
+	pinctrl@C0010000 {
+		/delete-node/ gmac_txd;
+		/delete-node/ gmac_rxd;
+		/delete-node/ gmac_txen;
+		/delete-node/ gmac_mdc;
+		/delete-node/ gmac_mdio;
+		/delete-node/ gmac_rxclk;
+		/delete-node/ gmac_txclk;
+
+		/*
+		adv7613_sda: adv7613-sda {
+			nexell,pins = "gpiob-24";
+			nexell,pin-function = <0>;
+			nexell,pin-pull = <1>;
+			nexell,pin-strength = <0>;
+		};
+
+		adv7613_scl: adv7613-scl {
+			nexell,pins = "gpiob-25";
+			nexell,pin-function = <0>;
+			nexell,pin-pull = <1>;
+			nexell,pin-strength = <0>;
+		};
+		*/
+	};
+
 	mmc0:mmc@c0062000 {
 		nexell,drive_dly = <0x0>;
 		nexell,drive_shift = <0x03>;
@@ -25,14 +51,76 @@
 		status = "okay";
 	};
 
-	ehci:usbhost@c0030000 {
-		status = "okay";
-	};
-
 	dwc2otg@c0040000 {
 		status = "okay";
 	};
 
+	/*
+	mmc1:mmc@c0068000 {
+		nexell,drive_dly = <0x0>;
+		nexell,drive_shift = <0x03>;
+		nexell,sample_dly = <0x00>;
+		nexell,sample_shift = <0x02>;
+		frequency = <50000000>;
+		status ="okay";
+	};
+	*/
+
+	/*
+	ehci:usbhost@c0030000 {
+		status = "okay";
+	};
+	*/
+
+	/*
+	nxe2000_gpio:i2c_gpio@0 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_e 8 1>,
+		      <&gpio_e 9 1>;
+
+		i2c-gpio,delay-us = <5>;
+		nxe2000_gpio@32 {
+			compatible = "nexell,nxe2000";
+			reg = <0x32>;
+		};
+	};
+	*/
+
+	/*
+	adv7613_gpio:i2c_gpio@1 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_b 24 0>,
+			<&gpio_b 25 0>;
+		i2c-gpio,delay-us = <20>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&adv7613_sda &adv7613_scl>;
+
+		adv7613_gpio@98{
+			compatible = "ad,adv7613";
+			reg = <0x98>;
+		};
+	};
+	*/
+
+	usbcharge_gpio:i2c_gpio@2 {
+		compatible = "i2c-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&gpio_d 3 1>,	/* SDA */
+		      <&gpio_d 2 1>;	/* SCL */
+
+		i2c-gpio,delay-us = <3>;
+		usbcharge_gpio@13 {
+			compatible = "mediatek,e522xx";
+			gpios-en = <&gpio_d 0 1>;
+			reg = <0x13>;
+		};
+	};
 
 	dp0:dp@c0102800 {
 		#address-cells = <1>;
@@ -91,4 +179,16 @@
 			};
 		};
 	};
+
+	/*
+	board_rev:rev@0 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = < &gpio_a 16 0 >,
+		      < &gpio_a 17 0 >,
+		      < &gpio_a 20 0 >,
+		      < &gpio_a 21 0 >;
+		compatible = "nexell,board_rev";
+	};
+	*/
 };

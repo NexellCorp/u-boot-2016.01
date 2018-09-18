@@ -465,7 +465,9 @@ static struct nx_display_dev *nx_display_setup(void)
 		break;
 #endif
 	default:
+#ifndef QUICKBOOT
 		printf("fail : not support lcd type %d !!!\n", dp->dev_type);
+#endif
 		goto err_setup;
 	};
 

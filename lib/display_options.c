@@ -15,11 +15,24 @@
 
 int display_options (void)
 {
+/*
 #if defined(BUILD_TAG)
+#ifdef QUICKBOOT
+	printf ("%s----\n",version_string);
+#else
 	printf ("\n\n%s, Build: %s\n\n", version_string, BUILD_TAG);
+#endif
+#else
+#ifdef QUICKBOOT
+	//printf ("\n%s", version_string);
+	printf ("\nU-Boot");
 #else
 	printf ("\n\n%s\n\n", version_string);
 #endif
+#endif
+*/
+    printf ("\nU-Boot");
+
 	return 0;
 }
 

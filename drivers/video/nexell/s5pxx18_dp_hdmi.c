@@ -143,7 +143,9 @@ static inline int hdmi_wait_phy_ready(void)
 	do {
 		u32 val = nx_hdmi_get_reg(0, HDMI_LINK_PHY_STATUS_0);
 		if (val & 0x01) {
+#ifndef QUICKBOOT
 			printf("HDMI: phy ready...\n");
+#endif
 			return 1;
 		}
 		mdelay(10);
@@ -549,8 +551,9 @@ void nx_hdmi_display(int module,
 	int count = top->plane_num;
 	int preset = dev->preset;
 	int i = 0;
-
+#ifndef QUICKBOOT
 	printf("HDMI: display.%d\n", module);
+#endif
 
 	switch (preset) {
 	case 0:
@@ -575,9 +578,10 @@ void nx_hdmi_display(int module,
 		printf("hdmi not support preset %d\n", preset);
 		return;
 	}
-
+#ifndef QUICKBOOT
 	printf("HDMI: display.%d, preset %d (%4d * %4d)\n",
 	       module, preset, top->screen_width, top->screen_height);
+#endif
 
 	dp_control_init(module);
 	dp_plane_init(module);

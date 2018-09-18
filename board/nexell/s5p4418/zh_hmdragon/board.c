@@ -117,6 +117,8 @@ int board_init(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
+	char *recovery_bootargs = malloc(512 * sizeof(char));;
+
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
@@ -192,7 +194,10 @@ int board_late_init(void)
 	if (readl(ALIVE_SCRATCH1_READ_REGISTER) == RECOVERY_SIGNATURE) {
 		printf("reboot recovery!!!!\n");
 		writel(0xffffffff, ALIVE_SCRATCH1_RESET_REGISTER);
+		recovery_bootargs = getenv("recovery_bootargs");
+		setenv("bootargs", recovery_bootargs);
 		setenv("bootcmd", "run recoveryboot");
+		free(recovery_bootargs);
 	}
 #endif
 
