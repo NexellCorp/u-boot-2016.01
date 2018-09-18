@@ -263,7 +263,7 @@ int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
 
 	flush_dcache_all();
 
-	uint64_t parts[8][2] = { {0, 0}, };
+	uint64_t parts[32][2] = { {0, 0}, };
 	uint64_t part_len = 0;
 	int partno = (int)dst_addr;
 	int num = 0;
