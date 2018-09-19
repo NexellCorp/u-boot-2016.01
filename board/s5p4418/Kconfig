@@ -81,6 +81,11 @@ config TARGET_S5P4418_CONVERGENCE_SVMC
 	help
 		Support for s5p4418 convergence_svmc platform.
 
+config TARGET_S5P4418_CON_SVMA
+	bool "S5P4418_CON_SVMA"
+	help
+		Support for s5p4418 con_svma platform.
+
 endchoice
 config SYS_VENDOR
 	default "s5p4418"
@@ -108,4 +113,4 @@ source "board/s5p4418/daudio_cona/Kconfig"
 source "board/s5p4418/cluster_ref/Kconfig"
 source "board/s5p4418/allo_display/Kconfig"
 source "board/s5p4418/convergence_svmc/Kconfig"
-
+source "board/s5p4418/con_svma/Kconfig"

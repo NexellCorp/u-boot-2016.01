@@ -1,6 +1,6 @@
 /*
- * (C) Copyright 2018 Nexell
- * gyoungbo, min <mingyoungbo@nexell.co.kr>
+ * (C) Copyright 2016 Nexell
+ * Youngbok, Park <park@nexell.co.kr>
  *
  * SPDX-License-Identifier:      GPL-2.0+
  */
@@ -9,16 +9,164 @@
 #include "s5p4418.dtsi"
 
 / {
-	model = "Nexell svm_ref board based on s5p4418";
+	model = "Nexell con-svma board based on s5p4418";
 	cpu-model = "S5p4418";
 
 	compatible = "nexell,s5p4418";
 
+	pinctrl@C0010000 {
+		/delete-node/ gmac_txd;
+		/delete-node/ gmac_rxd;
+		/delete-node/ gmac_txen;
+		/delete-node/ gmac_mdc;
+		/delete-node/ gmac_mdio;
+		/delete-node/ gmac_rxclk;
+		/delete-node/ gmac_txclk;
+
+		dp_rgb_vclk: dp-rgb-vclk {
+			nexell,pins = "gpioa-0";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <0>;
+		};
+
+		dp_rgb_vsync: dp-rgb-vsync {
+			nexell,pins = "gpioa-25";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <0>;
+		};
+
+		dp_rgb_hsync: dp-rgb-hsync {
+			nexell,pins = "gpioa-26";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <0>;
+		};
+
+		dp_rgb_de: dp-rgb-de {
+			nexell,pins = "gpioa-27";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <0>;
+		};
+
+		dp_rgb_B: dp-rgb-B {
+			nexell,pins = "gpioa-1", "gpioa-2", "gpioa-3", "gpioa-4",
+				      "gpioa-5", "gpioa-6", "gpioa-7", "gpioa-8";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <0>;
+		};
+
+		dp_rgb_G: dp-rgb-G {
+			nexell,pins = "gpioa-9", "gpioa-10", "gpioa-11", "gpioa-12",
+				      "gpioa-13", "gpioa-14", "gpioa-15", "gpioa-16";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <0>;
+		};
+
+		dp_rgb_R: dp-rgb-R {
+			nexell,pins = "gpioa-17", "gpioa-18", "gpioa-19", "gpioa-20",
+				      "gpioa-21", "gpioa-22", "gpioa-23", "gpioa-24";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <0>;
+		};
+		
+		/* MMC0 */
+/*		
+		sdmmc0_cclk: sdmmc0-cclk {
+			nexell,pins = "gpioa-29";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <2>;
+		};
+
+		sdmmc0_cmd: sdmmc0-cmd {
+			nexell,pins = "gpioa-31";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <2>;
+		};
+
+		sdmmc0_bus4: sdmmc0-bus-width4 {
+			nexell,pins = "gpiob-1", "gpiob-3", "gpiob-5", "gpiob-7";
+			nexell,pin-function = <1>;
+			nexell,pin-pull = <2>;
+			nexell,pin-strength = <2>;
+		};
+*/		
+	};
+
+	dp0:dp@c0102800 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,nexell-display";
+		reg = <0xc0102800 0x100>;
+		index = <0>;
+		status = "okay";
+
+		module = <0>;
+		lcd-type = "rgb";
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&dp_rgb_vclk &dp_rgb_vsync &dp_rgb_hsync
+			&dp_rgb_de &dp_rgb_R &dp_rgb_G &dp_rgb_B>;
+		/* enable-gpios = <&gpio_c 2 0>; */
+
+		dp-device {
+			format = <0>;
+		};
+
+		dp-sync {
+			h_active_len = <1920>;
+			h_front_porch = <30>;
+			h_back_porch = <30>;
+			h_sync_width = <4>;
+
+			v_active_len = <720>;
+			v_front_porch = <10>;
+			v_back_porch = <10>;
+			v_sync_width = <2>;
+
+			h_sync_invert = <1>;
+			v_sync_invert = <1>;
+			pixelclk-active = <1>;
+			de-active = <1>;
+		};
+
+		dp-ctrl {
+			clk_src_lv0 = <3>;
+			clk_div_lv0 = <10>;
+			clk_src_lv1 = <7>;
+			clk_div_lv1 = <1>;
+			out_format = <3>;
+		};
+
+		dp-planes {
+			layer_top {
+				screen_width = <1920>;
+				screen_height = <720>;
+				back_color = <0x0>;
+			};
+
+			layer_1 {
+				fb_base = <0x7E000000>;
+				width = <1920>;
+				height = <720>;
+				format = <0x06530000>;
+				pixel_byte = <4>;
+			};
+		};
+	};
+
 	mmc0:mmc@c0062000 {
 		nexell,drive_dly = <0x00>;
-		nexell,drive_shift = <0x03>;
+		nexell,drive_shift = <0x02>;
 		nexell,sample_dly = <0x00>;
-		nexell,sample_shift = <0x02>;
+		nexell,sample_shift = <0x01>;
 		frequency = <50000000>;
 		status = "okay";
 	};
@@ -44,8 +192,8 @@
 		compatible = "i2c-gpio";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		gpios = <&gpio_d 5 1>,	/* SDA */
-			<&gpio_d 4 1>;	/* SCL */
+		gpios = <&gpio_e 8 1>,	/* SDA */
+		      <&gpio_e 9 1>;	/* SCL */
 
 		i2c-gpio,delay-us = <3>;
 		nxe2000_gpio@32 {
@@ -173,66 +321,4 @@
 			regulator-boot-on = <1>;
 		};
 	}; /* voltage-regulators */
-
-	dp0:dp@c0102800 {
-	        status = "okay";
-	        module = <0>;
-	        lcd-type = "lvds";
-
-		dp-device {
-			format = <0>;
-		};
-
-	        dp-sync {
-			h_active_len = <1280>;
-			h_front_porch = <80>;
-			h_back_porch = <40>;
-			h_sync_width = <40>;
-			h_sync_invert = <1>;
-			v_active_len = <800>;
-			v_front_porch = <10>;
-			v_back_porch = <10>;
-			v_sync_width = <3>;
-			v_sync_invert = <1>;
-		};
-
-		dp-ctrl {
-			clk_src_lv0 = <2>;
-			clk_div_lv0 = <10>;
-			clk_src_lv1 = <7>;
-			clk_div_lv1 = <1>;
-			out_format = <2>;
-		};
-
-		dp-planes {
-			layer_top {
-				screen_width = <1280>;
-				screen_height = <800>;
-				back_color = <0x0>;
-			};
-
-			layer_1 {
-				fb_base = <0x50000000>;
-				width = <1280>;
-				height = <800>;
-				format = <0x06530000>;
-				pixel_byte = <4>;
-			};
-		};
-	};
-/*
- *	board_rev:rev@0 {
- *		#address-cells = <1>;
- *		#size-cells = <0>;
- *		gpios = < &gpio_a 21 0 >,
- *		      < &gpio_a 22 0 >,
- *		      < &gpio_a 23 0 >,
- *		      < &gpio_a 24 0 >;
- *		maps = < 0 0 >,
- *		     < 10 1 >,
- *		     < 11 1 >,
- *		     < 15 0 >;
- *		compatible = "nexell,board_rev";
- *	};
- */	
 };

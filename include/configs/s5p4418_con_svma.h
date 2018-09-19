@@ -26,7 +26,7 @@
 #define CONFIG_SYS_MONITOR_BASE             CONFIG_SYS_TEXT_BASE
 
 #define	CONFIG_SYS_SDRAM_BASE		    0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE		    0x40000000
+#define	CONFIG_SYS_SDRAM_SIZE		    0x70000000
 
 #define CONFIG_SYS_MALLOC_LEN               (32*1024*1024)
 
@@ -73,8 +73,10 @@
 #define	CONFIG_BOARD_LATE_INIT
 /* board_init_f->init_sequence, call print_cpuinfo */
 #define	CONFIG_DISPLAY_CPUINFO
+#ifndef QUICKBOOT
 /* board_init_f, CONFIG_SYS_ICACHE_OFF */
 #define	CONFIG_SYS_DCACHE_OFF
+#endif
 /* board_init_r, call arch_misc_init */
 #define	CONFIG_ARCH_MISC_INIT
 /*#define	CONFIG_SYS_ICACHE_OFF*/
@@ -82,7 +84,9 @@
 /*-----------------------------------------------------------------------
  *	U-Boot default cmd
  */
+#ifndef QUICKBOOT
 #define	CONFIG_CMD_MEMTEST
+#endif
 
 /*-----------------------------------------------------------------------
  *	U-Boot Environments
@@ -96,7 +100,7 @@
 #ifdef CONFIG_SYS_PROMPT
 #undef CONFIG_SYS_PROMPT
 /* Monitor Command Prompt   */
-#define CONFIG_SYS_PROMPT			"s5p4418_svm_ref# "
+#define CONFIG_SYS_PROMPT			"s5p4418_con_svma# "
 #endif
 /* undef to save memory	   */
 #define CONFIG_SYS_LONGHELP
@@ -165,13 +169,23 @@
 #define CONFIG_PWM_NX
 
 /*-----------------------------------------------------------------------
- * BACKLIGHT
+ * BACKLIGHT Primary(RGBtoDualLVDS)
  */
-#define CONFIG_BACKLIGHT_CH			0
-#define CONFIG_BACKLIGHT_DIV			0
-#define CONFIG_BACKLIGHT_INV			0
-#define CONFIG_BACKLIGHT_DUTY			50
-#define CONFIG_BACKLIGHT_HZ			20000
+#define CONFIG_BACKLIGHT_CH		0
+#define CONFIG_BACKLIGHT_DIV	0
+#define CONFIG_BACKLIGHT_INV	0
+#define CONFIG_BACKLIGHT_DUTY	50
+#define CONFIG_BACKLIGHT_HZ		1000000
+
+/*-----------------------------------------------------------------------
+ * BACKLIGHT Secondary(LVDS)
+ */
+#define CONFIG_SBACKLIGHT_CH	3
+#define CONFIG_SBACKLIGHT_DIV	0
+#define CONFIG_SBACKLIGHT_INV	0
+#define CONFIG_SBACKLIGHT_DUTY	50
+#define CONFIG_SBACKLIGHT_HZ	100000
+
 
 /*-----------------------------------------------------------------------
  * SD/MMC
@@ -265,10 +279,10 @@
 #define CONFIG_CFB_CONSOLE
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
-
+/*
 #define CONFIG_VIDEO_LOGO
 #define CONFIG_SPLASH_SCREEN
-#define CONFIG_SPLASH_SCREEN_ALIGN
+*/
 
 #ifdef CONFIG_VIDEO_LOGO
 #define CONFIG_CMD_BMP
@@ -291,7 +305,7 @@
 #define CONFIG_BOOT_PART	1
 
 #define	CONFIG_KERNEL_DTB_ADDR	0x49000000
-#define	CONFIG_BMP_LOAD_ADDR	0x50000000
+#define	CONFIG_BMP_LOAD_ADDR	0x80000000
 
 /* need to relocate env address */
 #define CONFIG_SYS_EXTRA_ENV_RELOC
@@ -301,7 +315,6 @@
 	"splashfile=logo.bmp\0"				\
 	"splashsource=mmc_fs\0"				\
 	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
-	"splashpos=m,m\0"					\
 	"fb_addr=\0"						\
 	"dtb_reserve="						\
 	"if test -n \"$fb_addr\"; then "	\
@@ -330,31 +343,37 @@
 				"number=0$loop; "			\
 			"else number=$loop; "				\
 			"fi; "						\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-svm_ref-rev${number}.dtb && setexpr success 1; " \
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-con_svma-rev${number}.dtb && setexpr success 1; " \
 			"setexpr loop $loop - 1; "			\
 			"done; "					\
 		"if test $success -eq 0; then "				\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-svm_ref-rev00.dtb;"	\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-con_svma-rev00.dtb;"	\
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
 		"fi; \0"						\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
-	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=7 rootwait " \
-		"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 systemd.log_level=info systemd.show_status=false\0" \
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait debug " \
+		"printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false " \
+		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 \0" \
 	"boot_cmd_mmcboot="   \
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
 		"bootz $kerneladdr - $fdtaddr\0" \
 	"mmcboot=run boot_cmd_mmcboot \0"           \
         "boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
                            "ext4load mmc 0:1 0x48000000 uInitrd; " \
-                           "ext4load mmc 0:1 0x49000000 s5p4418-svm_ref-rev${number}.dtb; " \
+                           "ext4load mmc 0:1 0x49000000 s5p4418-con_svma-rev${number}.dtb; " \
                            "bootz 0x40008000 0x48000000 0x49000000\0" \
         "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
-                  "root=/dev/ram0 loglevel=7 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
+                  "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
                   "run boot_cmd_ramfsboot \0" \
 	"bootcmd=run mmcboot\0" \
 	CONFIG_RECOVERY_BOOT_CMD \
 	CONFIG_EXTRA_ENV_BOOT_LOGO
+
+#ifdef QUICKBOOT
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
+#define CONFIG_BOOST_MMC
+#endif
 
 #endif /* __CONFIG_H__ */
