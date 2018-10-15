@@ -69,6 +69,7 @@
 /* board_init_f->init_sequence, call arch_cpu_init */
 #define CONFIG_ARCH_CPU_INIT
 
+#define	CONFIG_BOARD_EARLY_INIT_F
 #define	CONFIG_BOARD_LATE_INIT
 /* board_init_f->init_sequence, call print_cpuinfo */
 #define	CONFIG_DISPLAY_CPUINFO
@@ -248,6 +249,39 @@
 #define CONFIG_OF_LIBFDT
 
 /*-----------------------------------------------------------------------
+ * GMAC
+ */
+#define	CONFIG_PHY_REALTEK
+
+#define	CONFIG_ETHPRIME                        "RTL8211"
+#define	CONFIG_PHY_ADDR                        3
+
+#define	CONFIG_DW_ALTDESCRIPTOR
+
+#define	CONFIG_PHY_GIGE
+#define	CONFIG_MII
+#define	CONFIG_CMD_MII
+
+/* NET */
+#define	CONFIG_ETHADDR         00:19:D3:FF:FF:FF
+
+#define	CONFIG_CMD_NET
+#define	CONFIG_CMD_DHCP
+/*
+ * Network Settings
+ */
+#define	CONFIG_NETMASK       255.255.255.0
+#define	CONFIG_IPADDR        192.168.1.67
+#define	CONFIG_GATEWAYIP     192.168.1.254
+#define	CONFIG_SERVERIP      192.168.1.66
+
+#ifdef CONFIG_CMD_DHCP
+# ifndef CONFIG_SYS_AUTOLOAD
+#  define CONFIG_SYS_AUTOLOAD "no"
+# endif
+#endif
+
+/*-----------------------------------------------------------------------
  * ENV
  */
 /* need to relocate env address */
@@ -288,6 +322,7 @@
 
 #define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_EXTRA_ENV_SETTINGS				\
+"ethaddr=" __stringify(CONFIG_ETHADDR) "\0"     \
 	"fdt_high=0xffffffffffffffff\0"				\
 	CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
 	"boot_cmd_mmcboot="					\

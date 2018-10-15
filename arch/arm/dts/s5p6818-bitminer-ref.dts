@@ -34,32 +34,22 @@
 		status = "okay";
 	};
 
+	gmac:ethernet@c0060000 {
+		mac-address = [000000000000]; /* Filled in by U-Boot */
+		status = "okay";
+	};
+
 	nxe2000_gpio:i2c_gpio@0 {
 		compatible = "i2c-gpio";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		gpios = <&gpio_e 8 1>,	/* SDA */
-		      <&gpio_e 9 1>;	/* SCL */
+		gpios = <&gpio_d 2 1>,	/* SDA */
+		      <&gpio_d 3 1>;	/* SCL */
 
 		i2c-gpio,delay-us = <3>;
 		nxe2000_gpio@32 {
 			compatible = "nexell,nxe2000";
 			reg = <0x32>;
-		};
-	};
-
-	nx_i2c_gpio:i2c_gpio@5 {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		compatible = "i2c-gpio";
-		gpios = <&gpio_c 27 0>,
-			<&gpio_c 25 0>;
-		i2c-gpio,delay-us = <1>;
-		nx_i2c_gpio@44 {
-			compatible = "nexell,nx_i2c_gpio";
-			reg = <0x44>;
-			sda_pad = <1>;
-			scl_pad = <1>;
 		};
 	};
 
