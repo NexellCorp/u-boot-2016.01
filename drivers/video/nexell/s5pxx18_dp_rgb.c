@@ -50,6 +50,8 @@ void nx_rgb_display(int module,
 	dp_control_init(module);
 	dp_plane_init(module);
 
+	dp_plane_screen_setup(module, top);
+
 	for (i = 0; count > i; i++, plane++) {
 		if (!plane->enable)
 			continue;
