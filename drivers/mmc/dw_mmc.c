@@ -474,7 +474,7 @@ int add_dwmci(struct dwmci_host *host, u32 max_clk, u32 min_clk)
 	host->cfg.f_min = min_clk;
 	host->cfg.f_max = max_clk;
 
-	host->cfg.voltages = MMC_VDD_32_33 | MMC_VDD_33_34 | MMC_VDD_165_195;
+	host->cfg.voltages = MMC_VDD_32_33/* | MMC_VDD_33_34 | MMC_VDD_165_195*/;
 
 	host->cfg.host_caps = host->caps;
 
