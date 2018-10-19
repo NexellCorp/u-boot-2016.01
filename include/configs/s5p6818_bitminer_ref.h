@@ -330,7 +330,7 @@
 		CONFIG_EXTRA_ENV_DTB_LOAD			\
 		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL			\
 	CONFIG_RECOVERY_BOOT_CMD		    		\
-	"mmcboot=run boot_cmd_mmcboot\0"			\
+	"mmcboot=setenv bootargs \"$bootargs ip=$ipaddr::$gatewayip:$netmask::::8.8.8.8 eth=$ethaddr\"; run boot_cmd_mmcboot\0"			\
 	"bootcmd=run mmcboot\0"					\
         "boot_cmd_ramfsboot="					\
 		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
