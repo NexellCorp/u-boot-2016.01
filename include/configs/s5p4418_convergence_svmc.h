@@ -279,10 +279,10 @@
 #define CONFIG_CFB_CONSOLE
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
-/*
+
 #define CONFIG_VIDEO_LOGO
 #define CONFIG_SPLASH_SCREEN
-*/
+#define CONFIG_SPLASH_SCREEN_ALIGN
 
 #ifdef CONFIG_VIDEO_LOGO
 #define CONFIG_CMD_BMP
@@ -315,6 +315,7 @@
 	"splashfile=logo.bmp\0"				\
 	"splashsource=mmc_fs\0"				\
 	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
+	"splashpos=m,m\0"					\
 	"fb_addr=\0"						\
 	"dtb_reserve="						\
 	"if test -n \"$fb_addr\"; then "	\
@@ -355,7 +356,7 @@
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
 	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait debug " \
 		"printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false " \
-		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 \0" \
+		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 weston=false \0" \
 	"boot_cmd_mmcboot="   \
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
 		"bootz $kerneladdr - $fdtaddr\0" \
