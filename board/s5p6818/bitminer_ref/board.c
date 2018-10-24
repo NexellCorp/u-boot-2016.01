@@ -84,6 +84,23 @@ static void nx_eth_init(void)
 /* call from u-boot */
 int board_early_init_f(void)
 {
+	nx_gpio_set_pad_function  (gpio_a,  4, 0);     /* LED 0  */
+	nx_gpio_set_pull_mode     (gpio_a,  4, 2);
+	nx_gpio_set_drive_strength(gpio_a,  4, 0);
+	nx_gpio_set_output_enable (gpio_a,  4, 1);
+	nx_gpio_set_output_value  (gpio_a,  4, 0);
+
+	nx_gpio_set_pad_function  (gpio_a,  5, 0);     /* LED 1  */
+	nx_gpio_set_pull_mode     (gpio_a,  5, 2);
+	nx_gpio_set_drive_strength(gpio_a,  5, 0);
+	nx_gpio_set_output_enable (gpio_a,  5, 1);
+	nx_gpio_set_output_value  (gpio_a,  5, 0);
+
+	nx_gpio_set_pad_function  (gpio_a,  3, 0);     /* Key   */
+	nx_gpio_set_pull_mode     (gpio_a,  3, 2);
+	nx_gpio_set_drive_strength(gpio_a,  3, 3);
+	nx_gpio_set_output_enable (gpio_a,  3, 0);
+
        nx_eth_init();
        return 0;
 }
