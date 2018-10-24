@@ -21,10 +21,6 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_BOARD_EARLY_INIT_F
-enum gpio_group {
-	gpio_a, gpio_b, gpio_c, gpio_d, gpio_e,
-};
-
 static void nx_eth_init(void)
 {
 	nx_gpio_set_pad_function  (gpio_e,  7, 1);     /* TXD0 */

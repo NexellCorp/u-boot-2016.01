@@ -11,6 +11,10 @@
 #ifndef __nx_gpio_h__
 #define __nx_gpio_h__
 
+enum gpio_group {
+       gpio_a, gpio_b, gpio_c, gpio_d, gpio_e,
+};
+
 struct nx_gpio_register_set {
 	u32 gpioxout;
 	u32 gpioxoutenb;

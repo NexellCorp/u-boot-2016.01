@@ -6,3 +6,7 @@
 #
 
 obj-y	:= board.o
+
+ifndef CONFIG_SPL_BUILD
+obj-y   += cmd_mfgtest.o
+endif

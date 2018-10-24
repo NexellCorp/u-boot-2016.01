@@ -85,6 +85,12 @@
 #define	CONFIG_CMD_MEMTEST
 
 /*-----------------------------------------------------------------------
+ *  production test command
+ */
+#define CONFIG_CMD_MFGTEST
+#define CONFIG_CMD_TFTPPUT
+
+/*-----------------------------------------------------------------------
  *	U-Boot Environments
  */
 /* refer to common/env_common.c	*/
