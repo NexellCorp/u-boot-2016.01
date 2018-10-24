@@ -294,7 +294,7 @@ int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
 
 		ret = write_compressed_ext4((char *)p, blk);
 		printf("%s\n", ret ? "Fail" : "Done");
-		return 1;
+		return ret;
 	}
 	goto do_write;
 
@@ -311,6 +311,7 @@ do_write:
 	ret = mmc_bwrite(dev, blk, cnt, (void const *)p);
 
 	printf("%s\n", ret ? "Done" : "Fail");
+	if(ret) ret = 0;
 	return ret;
 
 usage:
