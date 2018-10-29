@@ -14,6 +14,40 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#ifdef CONFIG_REVISION_TAG
+u32 board_rev;
+
+u32 get_board_rev(void)
+{
+	return board_rev;
+}
+
+static void check_hw_revision(void)
+{
+	u32 val = 00;
+#if 0	// convergence board 2nd TBD
+	val |= nx_gpio_get_input_value(4, 6);
+	val <<= 1;
+
+	val |= nx_gpio_get_input_value(4, 5);
+	val <<= 1;
+
+	val |= nx_gpio_get_input_value(4, 4);
+#else
+	val = 02;
+#endif
+	board_rev = val;
+}
+
+static void set_board_rev(u32 revision)
+{
+	char info[64] = {0, };
+
+	snprintf(info, ARRAY_SIZE(info), "%d", revision);
+	setenv("board_rev", info);
+}
+#endif
+
 #ifdef CONFIG_PWM_NX
 enum gpio_group {
 	gpio_a,	gpio_b, gpio_c, gpio_d, gpio_e,
@@ -125,6 +159,11 @@ static void board_backlight_enable(void)
 
 int board_init(void)
 {
+#ifdef CONFIG_REVISION_TAG
+	check_hw_revision();
+	printf("HW Revision:\t%d\n", board_rev);
+#endif
+
 	board_backlight_disable();
 
 #ifdef CONFIG_SILENT_CONSOLE
@@ -137,6 +176,9 @@ int board_init(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
+#ifdef CONFIG_REVISION_TAG
+	set_board_rev(board_rev);
+#endif
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
