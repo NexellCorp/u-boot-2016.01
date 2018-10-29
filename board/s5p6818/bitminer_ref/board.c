@@ -97,6 +97,28 @@ int board_early_init_f(void)
 	nx_gpio_set_drive_strength(gpio_a,  3, 3);
 	nx_gpio_set_output_enable (gpio_a,  3, 0);
 
+	nx_gpio_set_pad_function  (gpio_d, 31, 0);	// AP_HASH0_RST
+	nx_gpio_set_pull_mode     (gpio_d, 31, 2);
+	nx_gpio_set_drive_strength(gpio_d, 31, 3);
+	nx_gpio_set_output_enable (gpio_d, 31, 1);
+	nx_gpio_set_output_value  (gpio_d, 31, 0);	// reset
+
+	nx_gpio_set_pad_function  (gpio_a, 24, 0);	// AP_HASH0_PLUG
+	nx_gpio_set_pull_mode     (gpio_a, 24, nx_gpio_pull_down);
+	nx_gpio_set_drive_strength(gpio_a, 24, 3);
+	nx_gpio_set_output_enable (gpio_a, 24, 1);
+
+	nx_gpio_set_pad_function  (gpio_e,  4, 0);	// AP_HASH1_RST
+	nx_gpio_set_pull_mode     (gpio_e,  4, 2);
+	nx_gpio_set_drive_strength(gpio_e,  4, 3);
+	nx_gpio_set_output_enable (gpio_e,  4, 0);
+	nx_gpio_set_output_value  (gpio_e,  4, 0);	// reset
+
+	nx_gpio_set_pad_function  (gpio_a, 11, 0);	// AP_HASH1_PLUG
+	nx_gpio_set_pull_mode     (gpio_a, 11, nx_gpio_pull_down);
+	nx_gpio_set_drive_strength(gpio_a, 11, 3);
+	nx_gpio_set_output_enable (gpio_a, 11, 0);
+
        nx_eth_init();
        return 0;
 }
