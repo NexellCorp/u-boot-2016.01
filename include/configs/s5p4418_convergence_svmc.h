@@ -301,6 +301,8 @@
 /*-----------------------------------------------------------------------
  * ENV
  */
+#define CONFIG_REVISION_TAG
+
 #define CONFIG_ROOT_DEV		0
 #define CONFIG_BOOT_PART	1
 
