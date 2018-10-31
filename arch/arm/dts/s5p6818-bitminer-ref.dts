@@ -43,8 +43,8 @@
 		compatible = "i2c-gpio";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		gpios = <&gpio_d 2 1>,	/* SDA */
-		      <&gpio_d 3 1>;	/* SCL */
+		gpios = <&gpio_d 3 1>,	/* SDA */
+		      <&gpio_d 2 1>;	/* SCL */
 
 		i2c-gpio,delay-us = <3>;
 		nxe2000_gpio@32 {
@@ -98,6 +98,10 @@
 			regulator-min-microvolt = <900000>;
 			regulator-max-microvolt = <3500000>;
 			regulator-name = "ldo1";
+
+			ldo,vol = <1800000>;
+			ldo,slp_vol = <1800000>;
+			ldo,on = <1>;
 		};
 
 		ldo1: LDO1 {
@@ -172,5 +176,4 @@
 			regulator-boot-on = <1>;
 		};
 	}; /* voltage-regulators */
-
 };

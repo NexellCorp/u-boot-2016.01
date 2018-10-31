@@ -7,6 +7,19 @@
 
 #include <config.h>
 #include <common.h>
+#ifdef CONFIG_DM_PMIC_NXE2000
+#include <dm.h>
+#include <dm/uclass-internal.h>
+#include <power/pmic.h>
+#include <power/nxe2000.h>
+#endif
+
+#ifdef CONFIG_DM_REGULATOR_NXE2000
+#include <power/regulator.h>
+#endif
+#ifdef CONFIG_DM_CHARGER
+#include <power/charger.h>
+#endif
 #ifdef CONFIG_PWM_NX
 #include <pwm.h>
 #endif
@@ -124,6 +137,25 @@ int board_early_init_f(void)
 }
 #endif
 
+int mmc_get_env_dev(void)
+{
+	int port_num;
+	int boot_mode = readl(PHY_BASEADDR_CLKPWR + SYSRSTCONFIG);
+
+	if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_SDMMC) {
+		port_num = readl(SCR_ARM_SECOND_BOOT_REG1);
+
+		if (port_num == EMMC_PORT_NUM)
+			return 0;
+		else if (port_num == SD_PORT_NUM)
+			return 1;
+	} else if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_USB) {
+		return 0;
+	}
+
+	return -1;
+}
+
 int board_init(void)
 {
 #ifdef CONFIG_SILENT_CONSOLE
@@ -173,3 +205,57 @@ void dram_init_banksize(void)
 	gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE;
 	gd->bd->bi_dram[0].size  = CONFIG_SYS_SDRAM_SIZE;
 }
+
+#ifdef CONFIG_DM_PMIC_NXE2000
+void power_init_board(void)
+{
+	struct udevice *pmic;
+	struct udevice *dev;
+#ifdef CONFIG_DM_REGULATOR
+	struct dm_regulator_uclass_platdata *reg_uc_pdata;
+	struct udevice *regulator;
+#endif
+#ifdef CONFIG_DM_CHARGER
+	struct dm_charger_uclass_platdata *chg_uc_pdata;
+	struct udevice *charger;
+#endif
+	int ret = -ENODEV;
+
+	ret = pmic_get("nxe2000_gpio@32", &pmic);
+	if (ret)
+		printf("Can't get PMIC: %s!\n", "nxe2000_gpio@32");
+
+	if (device_has_children(pmic)) {
+#ifdef CONFIG_DM_REGULATOR
+		for (ret = uclass_find_first_device(UCLASS_REGULATOR, &dev);
+			dev;
+			ret = uclass_find_next_device(&dev)) {
+			if (ret)
+				continue;
+
+			reg_uc_pdata = dev_get_uclass_platdata(dev);
+			if (!reg_uc_pdata)
+				continue;
+
+			uclass_get_device_tail(dev, 0, &regulator);
+		}
+#endif
+#ifdef CONFIG_DM_CHARGER
+		for (ret = uclass_find_first_device(UCLASS_CHARGER, &dev);
+			dev;
+			ret = uclass_find_next_device(&dev)) {
+			if (ret)
+				continue;
+
+			chg_uc_pdata = dev_get_uclass_platdata(dev);
+			if (!chg_uc_pdata)
+				continue;
+
+			uclass_get_device_tail(dev, 0, &charger);
+		}
+
+		/* charger_get_value_vbatt(charger); */
+#endif
+	}
+}
+#endif
