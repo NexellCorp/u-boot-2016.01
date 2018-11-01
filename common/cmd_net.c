@@ -455,7 +455,14 @@ int do_gen_eth_addr(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	if (argc != 1)
 		return -1;
 
+#ifndef CONFIG_TARGET_BITMINER_REF
 	srand(get_timer(0));
+#else
+#include <asm/arch/nexell.h>
+#define ECID0_VAL	(*(unsigned int *)(PHY_BASEADDR_ECID+0))
+#define ECID1_VAL	(*(unsigned int *)(PHY_BASEADDR_ECID+4))
+	srand(get_timer(0)+ECID0_VAL+ECID1_VAL);
+#endif
 
 	/*
 	 * setting the 2nd LSB in the most significant byte of

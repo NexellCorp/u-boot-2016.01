@@ -269,7 +269,8 @@
 #define	CONFIG_CMD_MII
 
 /* NET */
-#define	CONFIG_ETHADDR         00:19:D3:FF:FF:FF
+/*#define	CONFIG_ETHADDR         A4:5F:9B:00:00:00*/
+#define CONFIG_CMD_GEN_ETHADDR
 
 #define	CONFIG_CMD_NET
 #define	CONFIG_CMD_DHCP
@@ -277,9 +278,9 @@
  * Network Settings
  */
 #define	CONFIG_NETMASK       255.255.255.0
-#define	CONFIG_IPADDR        192.168.1.67
+#define	CONFIG_IPADDR        192.168.1.36
 #define	CONFIG_GATEWAYIP     192.168.1.254
-#define	CONFIG_SERVERIP      192.168.1.66
+#define	CONFIG_SERVERIP      192.168.1.67
 
 #ifdef CONFIG_CMD_DHCP
 # ifndef CONFIG_SYS_AUTOLOAD
@@ -327,8 +328,9 @@
 	"recoveryboot=not supported\0"
 
 #define CONFIG_SYS_EXTRA_ENV_RELOC
+
+#ifndef CONFIG_CMD_MFGTEST
 #define CONFIG_EXTRA_ENV_SETTINGS				\
-"ethaddr=" __stringify(CONFIG_ETHADDR) "\0"     \
 	"fdt_high=0xffffffffffffffff\0"				\
 	CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
 	"boot_cmd_mmcboot="					\
@@ -336,7 +338,7 @@
 		CONFIG_EXTRA_ENV_DTB_LOAD			\
 		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL			\
 	CONFIG_RECOVERY_BOOT_CMD		    		\
-	"mmcboot=setenv bootargs \"$bootargs ip=$ipaddr::$gatewayip:$netmask::::8.8.8.8 eth=$ethaddr\"; run boot_cmd_mmcboot\0"			\
+	"mmcboot=setenv bootargs \"$bootargs eth=$ethaddr\"; run boot_cmd_mmcboot\0"			\
 	"bootcmd=run mmcboot\0"					\
         "boot_cmd_ramfsboot="					\
 		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
@@ -346,5 +348,25 @@
         "ramfsboot=" \
 	        CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK		\
                 "run boot_cmd_ramfsboot \0"
+#else
+#define CONFIG_EXTRA_ENV_SETTINGS				\
+	"fdt_high=0xffffffffffffffff\0"				\
+	CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
+	"boot_cmd_mmcboot="					\
+		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
+		CONFIG_EXTRA_ENV_DTB_LOAD			\
+		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL			\
+	CONFIG_RECOVERY_BOOT_CMD		    		\
+	"mmcboot=setenv bootargs \"$bootargs eth=$ethaddr\"; run boot_cmd_mmcboot\0"			\
+	"bootcmd=mfg;run mmcboot\0"					\
+        "boot_cmd_ramfsboot="					\
+		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
+		CONFIG_EXTRA_ENV_RAMDISK_LOAD			\
+		CONFIG_EXTRA_ENV_DTB_LOAD			\
+		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL_FOR_INITRAMFS	\
+        "ramfsboot=" \
+	        CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK		\
+                "run boot_cmd_ramfsboot \0"
+#endif
 
 #endif /* __CONFIG_H__ */

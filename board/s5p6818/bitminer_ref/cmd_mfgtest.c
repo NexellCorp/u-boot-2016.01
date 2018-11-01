@@ -29,17 +29,14 @@ static void test_led_key(void)
 		if(get_key()) break;
 		set_gled_on();
 		set_rled_off();
-		udelay(300000);
+		udelay(200000);
 		if(get_key()) break;
 		set_gled_off();
 		set_rled_on();
-		udelay(300000);
+		udelay(200000);
 	}
 }
 
-#if 1
-#define error_led_no_return() return 0
-#else
 static void error_led_no_return(void)
 {
 	set_gled_off();
@@ -52,28 +49,34 @@ static void error_led_no_return(void)
 		udelay(300000);
 	}
 }
-#endif
+
 static void ok_led_no_return(void)
 {
 	set_rled_off();
 	while(1) {
 		if(get_key()) break;
 		set_gled_on();
-		udelay(300000);
+		udelay(200000);
 		if(get_key()) break;
 		set_gled_off();
-		udelay(300000);
+		udelay(200000);
 	}
 }
 
 /* 0x000 : 0V
  * 0xFFF : 1.8V
  * (1.8/4096)xADC = voltage
+ *
+ * the result must be 0.5V
+ * 1.8*adc/4096 = 0.5
+ * adc = 0.5*(4096/1.8) ~= 1138
+ * min = 0.4*(4096/1.8) ~= 910
+ * max = 0.6*(4096/1.8) ~= 1365
  */
 #define ad2mV(adc)	((adc*1800)/4096)
 
-#define HASH_ADC_MIN	0//1550
-#define HASH_ADC_MAX	1800//1750
+#define HASH_ADC_MIN	910
+#define HASH_ADC_MAX	1365
 
 static int test_adc(int ch, int *val)
 {
@@ -87,8 +90,8 @@ static int test_adc(int ch, int *val)
 	volt = ad2mV(ret);
 	printf("ADC CH%d : %d.%03dV (0x%03X)\n", ch, volt/1000, volt%1000, ret);
 	*val = ret;
-	if(volt<=HASH_ADC_MIN) return -1;
-	if(volt>=HASH_ADC_MAX) return -1;
+	if(ret<HASH_ADC_MIN) return -1;
+	if(ret>HASH_ADC_MAX) return -1;
 	return 0;
 }
 
@@ -219,7 +222,7 @@ static int test_hash_con(void)
 	nx_gpio_set_output_value  (gpio_d, 30, 0);	// AP_HASH0_GLD
 	nx_gpio_set_output_value  (gpio_d, 31, 0);	// AP_HASH0_RST
 
-	udelay(10000);
+	udelay(300000);
 
 	if(
 		nx_gpio_get_input_value  (gpio_c,  9)	// AP_SPI2_CLK
@@ -293,7 +296,7 @@ static int test_hash_con(void)
 	nx_gpio_set_output_value  (gpio_d, 30, 1);	// AP_HASH0_GLD
 	nx_gpio_set_output_value  (gpio_d, 31, 1);	// AP_HASH0_RST
 
-	udelay(10000);
+	udelay(300000);
 
 	if(
 		nx_gpio_get_input_value  (gpio_c,  9)	// AP_SPI2_CLK
@@ -436,9 +439,11 @@ static int do_mfgmac(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	char vars[256];
 	char mac[6], *s;
 	int ii, ret = 0;
-	s = getenv("ethaddr");
+	s = getenv("bootcmd");
 
-	if(strcmp(s, "00:19:D3:FF:FF:FF")) return 0;
+	if(!strcmp(s, "run mmcboot")) return;
+
+	setenv("bootcmd", "run mmcboot");
 
 	run_command("dhcp", 0);
 
@@ -462,6 +467,9 @@ static int do_mfgmac(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	sprintf(vars, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	if(setenv("ethaddr", vars)) error_led_no_return();
 	if(saveenv()) error_led_no_return();
+	printf("------------------------------------------------\n");
+	printf("MAC : %s\n", vars);
+	printf("------------------------------------------------\n");
 
 	if(run_command("fdisk 0 5: 0x400000:0x4000000 0x4400000:0x2000000 0x6400000:0x9000000 0xf500000:0x10000000 0x1f500000:0", 0)) error_led_no_return();
 	if(run_command("tftpboot 40000000 boot.img; ext4_img_write 0 0000000040000000 1 $filesize", 0)) error_led_no_return();
@@ -515,8 +523,12 @@ static int do_mfg(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	if(port_num == -1)
 		return -1;
 
+	run_command("gen_eth_addr", 0);
+	printf("generated eth = %s\n", getenv("ethaddr"));
+
 	// if SDCARD boot
 	if(port_num == SD_PORT_NUM) {
+		run_command("mfgtest", 0);
 		run_command("mfgflash", 0);
 	}
 	// if MMC boot
