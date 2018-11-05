@@ -152,7 +152,7 @@
 				back_color = <0x0>;
 			};
 
-			layer_1 {
+			layer_0 {
 				fb_base = <0x7E000000>;
 				width = <1920>;
 				height = <720>;
