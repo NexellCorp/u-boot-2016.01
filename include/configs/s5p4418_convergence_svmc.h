@@ -326,7 +326,7 @@
 	"fi;\0"
 
 #define CONFIG_RECOVERY_BOOT_CMD	\
-	"recoveryboot=not supported\0"
+	"recoveryboot=run ramfsboot\0"
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"fdt_high=0xffffffff\0"		\
@@ -354,7 +354,7 @@
 		"fi; \0"						\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
-	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait debug " \
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
 		"printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false " \
 		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 weston=false \0" \
 	"boot_cmd_mmcboot="   \
@@ -366,7 +366,8 @@
                            "ext4load mmc 0:1 0x49000000 s5p4418-convergence_svmc-rev${number}.dtb; " \
                            "bootz 0x40008000 0x48000000 0x49000000\0" \
         "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
-                  "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
+                  "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 " \
+                  "nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1; " \
                   "run boot_cmd_ramfsboot \0" \
 	"bootcmd=run mmcboot\0" \
 	CONFIG_RECOVERY_BOOT_CMD \
