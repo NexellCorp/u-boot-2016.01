@@ -279,10 +279,10 @@
 #define CONFIG_CFB_CONSOLE
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SYS_CONSOLE_IS_IN_ENV
-/*
+
 #define CONFIG_VIDEO_LOGO
 #define CONFIG_SPLASH_SCREEN
-*/
+#define CONFIG_SPLASH_SCREEN_ALIGN
 
 #ifdef CONFIG_VIDEO_LOGO
 #define CONFIG_CMD_BMP
@@ -315,6 +315,7 @@
 	"splashfile=logo.bmp\0"				\
 	"splashsource=mmc_fs\0"				\
 	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
+	"splashpos=m,m\0"					\
 	"fb_addr=\0"						\
 	"dtb_reserve="						\
 	"if test -n \"$fb_addr\"; then "	\
