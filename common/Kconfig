@@ -154,6 +154,14 @@ config CMD_BOOTI
 	help
 	  Boot an arm64 linux kernel image from the memory.
 
+config CMD_BOOTL
+	bool "bootl"
+	default y
+	depends on ARCH_S5P4418 || ARCH_S5P6818
+	help
+	 Boot linux image from memory
+
+
 config CMD_ELF
 	bool "bootelf, bootvx"
 	default y
