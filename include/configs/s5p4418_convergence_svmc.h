@@ -367,7 +367,7 @@
                            "bootz 0x40008000 0x48000000 0x49000000\0" \
         "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
                   "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 " \
-                  "nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1; " \
+                  "nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=0; " \
                   "run boot_cmd_ramfsboot \0" \
 	"bootcmd=run mmcboot\0" \
 	CONFIG_RECOVERY_BOOT_CMD \
