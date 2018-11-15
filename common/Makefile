@@ -296,6 +296,11 @@ endif
 
 obj-$(CONFIG_CMD_BLOB) += cmd_blob.o
 
+ifdef CONFIG_MCU_DOWNLOAD
+obj-y += cmd_micom_fusing.o
+endif
+
+
 # We always have this since drivers/ddr/fs/interactive.c needs it
 obj-y += cli_simple.o
 

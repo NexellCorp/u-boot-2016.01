@@ -29,7 +29,7 @@ DECLARE_GLOBAL_DATA_PTR;
 static volatile unsigned char *const port[] = CONFIG_PL01x_PORTS;
 static enum pl01x_type pl01x_type __attribute__ ((section(".data")));
 static struct pl01x_regs *base_regs __attribute__ ((section(".data")));
-#ifdef CONFIG_SERIAL_MCU
+#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 static struct pl01x_regs *base_regs_mcu __attribute__ ((section(".data")));
 #endif
 #define NUM_PORTS (sizeof(port)/sizeof(port[0]))
@@ -100,16 +100,29 @@ static int pl01x_generic_serial_init(struct pl01x_regs *regs,
 	return 0;
 }
 
-static int pl011_set_line_control(struct pl01x_regs *regs)
+static int pl011_set_line_mcu_control(struct pl01x_regs *regs)
 {
 	unsigned int lcr;
 	/*
 	 * Internal update of baud rate register require line
 	 * control register write
 	 */
-	lcr = UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN;
+	//lcr = UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN;
+	lcr = UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN | UART_PL011_LCRH_PEN | UART_PL011_LCRH_EPS;	//Parity:even
 	writel(lcr, &regs->pl011_lcrh);
 	return 0;
+}
+
+static int pl011_set_line_control(struct pl01x_regs *regs)
+{
+    unsigned int lcr;
+    /*
+     * Internal update of baud rate register require line
+     * control register write
+     */
+    lcr = UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN;
+    writel(lcr, &regs->pl011_lcrh);
+    return 0;
 }
 
 static int pl01x_generic_setbrg(struct pl01x_regs *regs, enum pl01x_type type,
@@ -189,6 +202,86 @@ static int pl01x_generic_setbrg(struct pl01x_regs *regs, enum pl01x_type type,
 
 	return 0;
 }
+
+static int pl01x_generic_setbrg_parity(struct pl01x_regs *regs, enum pl01x_type type,
+                int clock, int baudrate)
+{
+    switch (type) {
+    case TYPE_PL010: {
+        unsigned int divisor;
+
+        /* disable everything */
+        writel(0, &regs->pl010_cr);
+
+        switch (baudrate) {
+        case 9600:
+            divisor = UART_PL010_BAUD_9600;
+            break;
+        case 19200:
+            divisor = UART_PL010_BAUD_9600;
+            break;
+        case 38400:
+            divisor = UART_PL010_BAUD_38400;
+            break;
+        case 57600:
+            divisor = UART_PL010_BAUD_57600;
+            break;
+        case 115200:
+            divisor = UART_PL010_BAUD_115200;
+            break;
+        default:
+            divisor = UART_PL010_BAUD_38400;
+        }
+
+        writel((divisor & 0xf00) >> 8, &regs->pl010_lcrm);
+        writel(divisor & 0xff, &regs->pl010_lcrl);
+
+        /*
+         * Set line control for the PL010 to be 8 bits, 1 stop bit,
+         * no parity, fifo enabled
+         */
+        writel(UART_PL010_LCRH_WLEN_8 | UART_PL010_LCRH_FEN,
+               &regs->pl010_lcrh);
+        /* Finally, enable the UART */
+        writel(UART_PL010_CR_UARTEN, &regs->pl010_cr);
+        break;
+    }
+    case TYPE_PL011: {
+        unsigned int temp;
+        unsigned int divider;
+        unsigned int remainder;
+        unsigned int fraction;
+
+        /*
+        * Set baud rate
+        *
+        * IBRD = UART_CLK / (16 * BAUD_RATE)
+        * FBRD = RND((64 * MOD(UART_CLK,(16 * BAUD_RATE)))
+        *       / (16 * BAUD_RATE))
+        */
+        temp = 16 * baudrate;
+        divider = clock / temp;
+        remainder = clock % temp;
+        temp = (8 * remainder) / baudrate;
+        fraction = (temp >> 1) + (temp & 1);
+
+        writel(divider, &regs->pl011_ibrd);
+        writel(fraction, &regs->pl011_fbrd);
+
+        pl011_set_line_mcu_control(regs);
+        /* Finally, enable the UART */
+        writel(UART_PL011_CR_UARTEN | UART_PL011_CR_TXE |
+               UART_PL011_CR_RXE | UART_PL011_CR_RTS, &regs->pl011_cr);
+        break;
+    }
+    default:
+        return -EINVAL;
+    }
+
+    return 0;
+}
+
+
 
 #ifndef CONFIG_DM_SERIAL
 static void pl01x_serial_init_baud(int baudrate)
@@ -282,7 +375,7 @@ __weak struct serial_device *default_serial_console(void)
 
 #endif /* nCONFIG_DM_SERIAL */
 
-#ifdef CONFIG_SERIAL_MCU
+#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 static void pl01x_serial_mcu_init_baud(int baudrate)
 {
 	int clock = 0;
@@ -296,7 +389,8 @@ static void pl01x_serial_mcu_init_baud(int baudrate)
 	base_regs_mcu = (struct pl01x_regs *)port[CONFIG_CONS_INDEX_MCU];
 
 	pl01x_generic_serial_init(base_regs_mcu, pl01x_type);
-	pl01x_generic_setbrg(base_regs_mcu, pl01x_type, clock, baudrate);
+	//pl01x_generic_setbrg(base_regs_mcu, pl01x_type, clock, baudrate);
+	pl01x_generic_setbrg_parity(base_regs_mcu, pl01x_type, clock, baudrate);	//STM32 Parity(even) Mode
 }
 
 int pl01x_serial_mcu_init(void)
@@ -369,7 +463,7 @@ __weak struct serial_device *default_serial_mcu_console(void)
 {
 	return &pl01x_serial_mcu_drv;
 }
-#endif /* CONFIG_SERIAL_MCU */
+#endif /* CONFIG_SERIAL_MCU ||CONFIG_MCU_DOWNLOAD */
 
 #ifdef CONFIG_DM_SERIAL
 
