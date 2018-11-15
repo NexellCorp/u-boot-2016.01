@@ -624,7 +624,7 @@ void	serial_puts   (const char *);
 int	serial_getc   (void);
 int	serial_tstc   (void);
 
-#ifdef CONFIG_SERIAL_MCU
+#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 void default_serial_mcu_puts(const char *s);
 int serial_mcu_init(void);
 void serial_mcu_setbrg(void);

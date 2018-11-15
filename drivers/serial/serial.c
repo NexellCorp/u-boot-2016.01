@@ -145,7 +145,7 @@ serial_initfunc(ns16550_serial_initialize);
 serial_initfunc(oc_serial_initialize);
 serial_initfunc(p3mx_serial_initialize);
 serial_initfunc(pl01x_serial_initialize);
-#ifdef CONFIG_SERIAL_MCU
+#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 serial_initfunc(pl01x_serial_mcu_initialize);
 #endif
 serial_initfunc(pxa_serial_initialize);
@@ -239,7 +239,7 @@ void serial_initialize(void)
 	oc_serial_initialize();
 	p3mx_serial_initialize();
 	pl01x_serial_initialize();
-#ifdef CONFIG_SERIAL_MCU
+#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 	pl01x_serial_mcu_initialize();
 #endif
 	pxa_serial_initialize();
@@ -524,7 +524,7 @@ void default_serial_puts(const char *s)
 		dev->putc(*s++);
 }
 
-#ifdef CONFIG_SERIAL_MCU
+#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 static struct serial_device *get_current_mcu(void)
 {
 	struct serial_device *dev;
@@ -574,7 +574,7 @@ void serial_mcu_puts(const char *s)
 {
 	get_current_mcu()->puts(s);
 }
-#endif /* CONFIG_SERIAL_MCU */
+#endif /* CONFIG_SERIAL_MCU || CONFIG_MCU_DOWNLOAD */
 
 #if CONFIG_POST & CONFIG_SYS_POST_UART
 static const int bauds[] = CONFIG_SYS_BAUDRATE_TABLE;

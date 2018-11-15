@@ -105,7 +105,7 @@ static void serial_device_init(void)
 }
 #endif
 
-#ifdef CONFIG_SERIAL_MCU
+#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 static void serial_mcu_device_init(void)
 {
 	char dev[10];
@@ -138,7 +138,7 @@ int arch_cpu_init(void)
 #ifdef CONFIG_PL011_SERIAL
 	serial_device_init();
 #endif
-#ifdef CONFIG_SERIAL_MCU
+#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 	serial_mcu_device_init();
 #endif
 	return 0;
