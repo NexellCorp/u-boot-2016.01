@@ -133,7 +133,7 @@ int mmc_send_status(struct mmc *mmc, int timeout)
 	if (!mmc_host_is_spi(mmc))
 		cmd.cmdarg = mmc->rca << 16;
 
-#ifndef QUICKBOOT_2
+//#ifndef QUICKBOOT_2
 	while (1) {
 		err = mmc_send_cmd(mmc, &cmd, NULL);
 		if (!err) {
@@ -156,7 +156,7 @@ int mmc_send_status(struct mmc *mmc, int timeout)
 
 		udelay(1000);
 	}
-#endif
+//#endif
 
 #ifdef CONFIG_MMC_TRACE
 	status = (cmd.response[0] & MMC_STATUS_CURR_STATE) >> 9;
