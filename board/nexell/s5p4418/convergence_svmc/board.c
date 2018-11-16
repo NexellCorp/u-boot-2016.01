@@ -210,6 +210,11 @@ int board_late_init(void)
 	}
 #endif
 
+#ifdef CONFIG_SYS_BURNING
+	setenv("bootcmd", "fastboot 0");
+	run_command("run bootcmd", 0);
+#endif
+
 	return 0;
 }
 #endif
