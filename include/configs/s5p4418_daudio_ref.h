@@ -339,45 +339,45 @@
     "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
 #endif
 
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-	"fdt_high=0xffffffff\0"		\
-	"initrd_high=0xffffffff\0"	\
-	"kerneladdr=0x40008000\0"	\
-	"kernel_file=zImage\0"		\
-	"fdtaddr=0x49000000\0"		\
-	"load_fdt="			\
-		"if test -z \"$fdtfile\"; then "                        \
-		"loop=$board_rev; "					\
-		"number=$board_rev: "					\
-		"success=0; "						\
-		"until test $loop -eq 0 || test $success -ne 0; do "	\
-			"if test $loop -lt 10; then "			\
-				"number=0$loop; "			\
-			"else number=$loop; "				\
-			"fi; "						\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-daudio_ref-rev${number}.dtb && setexpr success 1; " \
-			"setexpr loop $loop - 1; "			\
-			"done; "					\
-		"if test $success -eq 0; then "				\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-daudio_ref-rev00.dtb;"	\
-		"fi; "							\
-		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
-		"fi\0"						\
-	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
-	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"fdt_high=0xffffffff\0" \
+	"initrd_high=0xffffffff\0" \
+	"kerneladdr=0x40008000\0" \
+	"kernel_file=zImage\0" \
+	"fdtaddr=0x49000000\0" \
+	"load_fdt=" \
+		"if test -z \"$fdtfile\"; then " \
+			"loop=$board_rev; " \
+			"number=$board_rev: " \
+			"success=0; " \
+			"until test $loop -eq 0 || test $success -ne 0; do " \
+				"if test $loop -lt 10; then " \
+					"number=0$loop; " \
+				"else number=$loop; " \
+				"fi; " \
+				"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-daudio_ref-rev${number}.dtb && setexpr success 1; " \
+				"setexpr loop $loop - 1; " \
+				"done; " \
+			"if test $success -eq 0; then " \
+				"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-daudio_ref-rev00.dtb;" \
+			"fi; " \
+		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; " \
+		"fi\0" \
+	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0" \
+	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0" \
 	CONFIG_BOOTCMD \
-	"boot_cmd_mmcboot="   \
+	"boot_cmd_mmcboot=" \
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file; run load_fdt; run dtb_reserve; " \
 		"bootz $kerneladdr - $fdtaddr\0" \
-	"mmcboot=run boot_cmd_mmcboot \0"           \
-    "boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
-                       "ext4load mmc 0:1 0x48000000 uInitrd; " \
-                       "run load_fdt; " \
-                       "run dtb_reserve; " \
-                       "bootz 0x40008000 0x48000000 0x49000000\0" \
-    "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
-              "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
-              "run boot_cmd_ramfsboot\0" \
+	"mmcboot=run boot_cmd_mmcboot \0" \
+	"boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
+		"ext4load mmc 0:1 0x48000000 uInitrd; " \
+		"run load_fdt; " \
+		"run dtb_reserve; " \
+		"bootz 0x40008000 0x48000000 0x49000000\0" \
+	"ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
+		"root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
+		"run boot_cmd_ramfsboot\0" \
     "bootcmd=run mmcboot\0" \
     CONFIG_RECOVERY_BOOT_CMD \
     CONFIG_EXTRA_ENV_BOOT_LOGO
