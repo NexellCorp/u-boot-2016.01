@@ -42,7 +42,6 @@ static struct pwm_device pwm_dev[] = {
 
 static u8 camera_sensor_reg[] = {0x02, 0x1c, 0x03, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x10, 0x11, 0x19, 0x1b, 0x1a, 0xaf, 0xb1};
 static u8 camera_sensor_val[] = {0x40, 0x00, 0xa6, 0x80, 0x02, 0x15, 0xf0, 0x09, 0xc0, 0xec, 0x68, 0x50, 0x00, 0x0f, 0x40, 0x20};
-static const char boot_args[] = "setenv bootargs console=ttyAMA3,115200n8 loglevel=7 printk.time=1 androidboot.hardware=navi_ref androidboot.console=ttyAMA3 androidboot.serialno=0123456789ABCDEF nx_rearcam.sensor_init_parm=1 quiet";
 
 int board_rearcam_check(void)
 {
@@ -116,10 +115,10 @@ static int board_camera_sensor_init(void)
 			goto exit;
 	}
 exit:
-	if (!ret)
-		run_command_list(boot_args, sizeof(boot_args), 0);
-	else
+	if (ret) {
 		printf("failed to init camera sensor:%d\n", ret);
+	}
+
 	return 0;
 }
 #endif
@@ -272,6 +271,7 @@ void dram_init_banksize(void)
 #ifdef QUICKBOOT
 #include <mmc.h>
 
+#if 0
 int board_set_mmc_pre(struct mmc *mmc)
 {
 	mmc->version = 1074069504;
@@ -313,4 +313,6 @@ int board_set_mmc_pre(struct mmc *mmc)
 
 	return 1;
 }
+#endif
+
 #endif
