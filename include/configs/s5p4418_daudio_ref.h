@@ -84,7 +84,9 @@
 /*-----------------------------------------------------------------------
  *	U-Boot default cmd
  */
-/* #define	CONFIG_CMD_MEMTEST */
+#ifndef QUICKBOOT
+#define	CONFIG_CMD_MEMTEST
+#endif
 
 /*-----------------------------------------------------------------------
  *	U-Boot Environments
@@ -284,7 +286,7 @@
 /*#undef  CONFIG_SPLASH_SCREEN*/
 
 #define CONFIG_BOOTANIM
-#undef  CONFIG_BOOTANIM
+/*#undef  CONFIG_BOOTANIM*/
 
 #ifdef CONFIG_VIDEO_LOGO
 #define CONFIG_CMD_BMP
@@ -330,13 +332,25 @@
     "recoveryboot=run ramfsboot\0"
 
 #ifdef CONFIG_BOOTANIM
+#ifdef QUICKBOOT
 #define CONFIG_BOOTCMD \
-    "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 init=/usr/bin/bootanimation loglevel=4 rootwait quiet " \
-    "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 init=/usr/bin/bootanimation loglevel=4 rootwait quiet " \
+		"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false nx_rearcam.sensor_init_parm=1\0"
 #else
 #define CONFIG_BOOTCMD \
-    "bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
-    "printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 init=/usr/bin/bootanimation loglevel=4 rootwait quiet " \
+		"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
+#endif
+#else
+#ifdef QUICKBOOT
+#define CONFIG_BOOTCMD \
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+		"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false nx_rearcam.sensor_init_parm=1\0"
+#else
+#define CONFIG_BOOTCMD \
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+		"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
+#endif
 #endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
