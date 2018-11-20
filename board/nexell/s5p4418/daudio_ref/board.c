@@ -13,6 +13,9 @@
 #include <asm/arch/nx_gpio.h>
 #include <pwm-nexell.h>
 
+#include <asm-generic/gpio.h>
+#include <nx_i2c_gpio.h>
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_PWM_NX
@@ -32,6 +35,92 @@ static struct pwm_device pwm_dev[] = {
 	[2] = { .grp = gpio_c, .bit = 14, .io_fn = 1 },
 	[3] = { .grp = gpio_d, .bit = 0,  .io_fn = 0 },
 };
+#endif
+
+#ifdef QUICKBOOT
+static u8 camera_sensor_reg[] = {0x02, 0x1c, 0x03, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x10, 0x11, 0x19, 0x1b, 0x1a, 0xaf, 0xb1};
+static u8 camera_sensor_val[] = {0x40, 0x00, 0xa6, 0x80, 0x02, 0x15, 0xf0, 0x09, 0xc0, 0xec, 0x68, 0x50, 0x00, 0x0f, 0x40, 0x20};
+
+int board_rearcam_check(void)
+{
+	int rearcam_on = 0;
+	unsigned int gpio;
+	int ret;
+
+#if defined(CONFIG_DM_GPIO)
+	ret = gpio_lookup_name("gpio_alv0", NULL, NULL, &gpio);
+	if (ret) {
+		printf("gpio_lookup_name: pin gpio_alv0 3 failed\n");
+	}
+#else
+	gpio = name_to_gpio("gpio_alv0");
+	if (gpio < 0) {
+		printf("name_to_gpio: pin gpio_alv0 3 failed\n");
+	}
+#endif
+	gpio += 3;
+	ret = gpio_request(gpio, "rearcam_detect_gpio");
+	if (ret) {
+		printf("gpio: requesting pin %u failed\n", gpio);
+		return -1;
+	}
+	gpio_direction_input(gpio);
+	rearcam_on = (gpio_get_value(gpio)) ? 0 : 1;
+	gpio_free(gpio);
+	return rearcam_on;
+}
+
+static int board_camera_sensor_power_enable(void)
+{
+	nx_gpio_set_pad_function(gpio_e, 12, 1);
+	nx_gpio_set_pad_function(gpio_e, 16, 1);
+	nx_gpio_set_pad_function(gpio_c, 9, 1);
+
+	nx_gpio_set_output_value(gpio_e, 12, 0);
+	nx_gpio_set_output_value(gpio_e, 16, 0);
+	nx_gpio_set_output_value(gpio_c, 9, 0);
+
+	nx_gpio_set_output_enable(gpio_e, 12, 1);
+	nx_gpio_set_output_value(gpio_e, 12, 0);
+	udelay(10000);
+	nx_gpio_set_output_enable(gpio_e, 16, 1);
+	nx_gpio_set_output_value(gpio_e, 16, 0);
+	udelay(10000);
+	nx_gpio_set_output_enable(gpio_c, 9, 1);
+	nx_gpio_set_output_value(gpio_c, 9, 1);
+	udelay(10000);
+	nx_gpio_set_output_enable(gpio_e, 16, 1);
+	nx_gpio_set_output_enable(gpio_c, 9, 1);
+
+	return 0;
+}
+
+static int board_camera_sensor_init(void)
+{
+    struct udevice *dev = NULL;
+    int ret = 0, i = 0;
+
+    dev = nx_i2c_gpio_init();
+    if (!dev) {
+        printf("failed to get nx i2c gpio device\n");
+        ret = -1;
+        goto exit;
+    }
+
+    for (i = 0; i < ARRAY_SIZE(camera_sensor_reg); i++) {
+        ret = nx_i2c_gpio_write(dev, camera_sensor_reg[i],
+                &camera_sensor_val[i],
+                1);
+        if (ret)
+            goto exit;
+    }
+exit:
+    if (ret) {
+        printf("failed to init camera sensor:%d\n", ret);
+    }
+
+    return 0;
+}
 #endif
 
 static void board_backlight_disable(void)
@@ -103,6 +192,15 @@ int board_late_init(void)
 
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
+#endif
+
+#ifdef QUICKBOOT
+    board_camera_sensor_power_enable();
+    board_camera_sensor_init();
+#endif
+
+#ifndef CONFIG_VIDEO_LOGO
+	udelay(25000);
 #endif
 	board_backlight_enable();
 
