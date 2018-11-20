@@ -198,6 +198,10 @@ int board_late_init(void)
 	board_camera_sensor_power_enable();
 	board_camera_sensor_init();
 #endif
+
+#ifndef CONFIG_VIDEO_LOGO
+    udelay(25000);
+#endif
 	board_backlight_enable();
 
 #ifdef CONFIG_RECOVERY_BOOT
