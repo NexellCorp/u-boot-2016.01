@@ -14,21 +14,22 @@ dtb-$(CONFIG_EXYNOS4) += exynos4210-origen.dtb \
 dtb-$(CONFIG_ARCH_S5P4418) += s5p4418-drone.dtb \
 	s5p4418-artik530-raptor.dtb \
 	s5p4418-avn-ref.dtb \
-	s5p4418-navi-ref.dtb\
-	s5p4418-daudio-ref.dtb\
-	s5p4418-smart-voice.dtb\
-	s5p4418-zh-dragon.dtb\
-	s5p4418-zh-blackdragon.dtb\
-	s5p4418-zh-hmdragon.dtb\
-	s5p4418-daudio-covi.dtb\
-	s5p4418-daudio-cona.dtb\
+	s5p4418-navi-ref.dtb \
+	s5p4418-daudio-ref.dtb \
+	s5p4418-smart-voice.dtb \
+	s5p4418-zh-dragon.dtb \
+	s5p4418-zh-blackdragon.dtb \
+	s5p4418-zh-hmdragon.dtb \
+	s5p4418-daudio-covi.dtb \
+	s5p4418-daudio-cona.dtb \
 	s5p4418-ff-voice.dtb \
 	s5p4418-clova.dtb \
 	s5p4418-svm-ref.dtb \
 	s5p4418-cluster-ref.dtb \
-	s5p4418-allo-display.dtb\
+	s5p4418-allo-display.dtb \
 	s5p4418-convergence-svmc.dtb \
 	s5p4418-con-svma.dtb \
+	s5p4418-convergence-daudio.dtb \
 	s5p4418-artik533-raptor.dtb \
 	s5p4418-artik305-raptor.dtb
 
