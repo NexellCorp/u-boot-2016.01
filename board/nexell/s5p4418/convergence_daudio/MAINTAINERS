@@ -1,0 +1,6 @@
+S5P4418 CONVERGENCE_DAUDIO BOARD
+M:  Jongshin Park<pjsin865@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/convergence_daudio/
+F:  include/configs/s5p4418_convergence_daudio.h
+F:  configs/s5p4418_convergence_daudio_defconfig

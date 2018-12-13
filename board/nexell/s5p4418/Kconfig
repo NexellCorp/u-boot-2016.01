@@ -95,6 +95,11 @@ config TARGET_S5P4418_CON_SVMA
 	help
 		Support for s5p4418 con_svma platform.
 
+config TARGET_S5P4418_CONVERGENCE_DAUDIO
+	bool "S5P4418_CONVERGENCE_DAUDIO"
+	help
+		Support for s5p4418 convergence_daudio platform.
+
 endchoice
 config SYS_VENDOR
 	default "nexell"
