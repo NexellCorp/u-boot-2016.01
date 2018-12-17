@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "200282c9_b8437083",
+        "filename": "include/configs/s5p4418_convergence_daudio.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2018-12-17T23:49:49Z",
+      "side": 1,
+      "message": "Please change by your name",
+      "range": {
+        "startLine": 3,
+        "startChar": 3,
+        "endLine": 3,
+        "endChar": 39
+      },
+      "revId": "981b612e89a8d32f2168b4f64621ac51cafee30b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
