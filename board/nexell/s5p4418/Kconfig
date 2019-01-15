@@ -100,6 +100,11 @@ config TARGET_S5P4418_CONVERGENCE_DAUDIO
 	help
 		Support for s5p4418 convergence_daudio platform.
 
+config TARGET_NXP4330_VTK
+	bool "NXP4330_VTK"
+	help
+		Support for nxp4330 vtk board.
+
 endchoice
 config SYS_VENDOR
 	default "nexell"

@@ -25,3 +25,4 @@ obj-$(CONFIG_TARGET_S5P4418_ALLO_DISPLAY)	+= allo_display/
 obj-$(CONFIG_TARGET_S5P4418_CONVERGENCE_SVMC)	+= convergence_svmc/
 obj-$(CONFIG_TARGET_S5P4418_CON_SVMA)	+= con_svma/
 obj-$(CONFIG_TARGET_S5P4418_CONVERGENCE_DAUDIO)	+= convergence_daudio/
+obj-$(CONFIG_TARGET_NXP4330_VTK)	+= nxp4330_vtk/
