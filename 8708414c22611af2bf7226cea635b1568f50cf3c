@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "45920af9_2e6c6894",
+        "filename": "configs/nxp4330_vtk_defconfig",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1015645
+      },
+      "writtenOn": "2019-01-16T09:25:24Z",
+      "side": 1,
+      "message": "is need i2c ?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 13
+      },
+      "revId": "8708414c22611af2bf7226cea635b1568f50cf3c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f4e11c64_d5c2fb7a",
+        "filename": "configs/nxp4330_vtk_defconfig",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1015645
+      },
+      "writtenOn": "2019-01-16T09:25:24Z",
+      "side": 1,
+      "message": "is need pmic ?",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 29
+      },
+      "revId": "8708414c22611af2bf7226cea635b1568f50cf3c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
