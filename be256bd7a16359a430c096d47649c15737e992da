@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "903dad5c_f9a7adc3",
+        "filename": "arch/arm/dts/nxp4330_vtk.dts",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1015645
+      },
+      "writtenOn": "2019-01-16T09:22:25Z",
+      "side": 1,
+      "message": "remove not used drivers",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 190,
+        "endChar": 28
+      },
+      "revId": "be256bd7a16359a430c096d47649c15737e992da",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a4f6f23_4c8d9896",
+        "filename": "arch/arm/dts/nxp4330_vtk.dts",
+        "patchSetId": 2
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1015645
+      },
+      "writtenOn": "2019-01-16T09:22:25Z",
+      "side": 1,
+      "message": "remove this: disable display",
+      "range": {
+        "startLine": 192,
+        "startChar": 0,
+        "endLine": 235,
+        "endChar": 3
+      },
+      "revId": "be256bd7a16359a430c096d47649c15737e992da",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
