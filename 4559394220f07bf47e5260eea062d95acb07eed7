@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e812d46b_3bfd30a8",
+        "filename": "configs/nxp4330_vtk_defconfig",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1015645
+      },
+      "writtenOn": "2019-01-17T11:05:48Z",
+      "side": 1,
+      "message": "remove this too",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 22
+      },
+      "revId": "4559394220f07bf47e5260eea062d95acb07eed7",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
