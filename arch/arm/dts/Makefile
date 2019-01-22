@@ -33,6 +33,8 @@ dtb-$(CONFIG_ARCH_S5P4418) += s5p4418-drone.dtb \
 	s5p4418-artik533-raptor.dtb \
 	s5p4418-artik305-raptor.dtb
 
+dtb-$(CONFIG_CPU_NXP4330) += nxp4330-vtk.dtb
+
 dtb-$(CONFIG_ARCH_S5P6818) += s5p6818-drone.dtb \
 	s5p6818-artik710-raptor.dtb \
 	s5p6818-avn-ref.dtb \
