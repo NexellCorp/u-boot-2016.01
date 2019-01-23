@@ -560,7 +560,7 @@ static int do_update_sdcard(cmd_tbl_t *cmdtp, int flag, int argc,
 
 U_BOOT_CMD(
 	sd_recovery,	5,	1,	do_update_sdcard,
-	"Image Update from SD Card\n",
+	"Image Update from SD Card",
 	"<interface> [<dev[:part]>] <addr> <filename>\n"
 	"  ex> sd_recovery mmc 0:1 48000000 partmap.txt\n"
 	"    - interface : mmc\n"
