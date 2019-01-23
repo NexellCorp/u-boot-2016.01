@@ -313,7 +313,7 @@ usage:
 
 U_BOOT_CMD(
 	ext4_img_write, CONFIG_SYS_MAXARGS, 1,	do_compressed_ext4_write,
-	"Compressed ext4 image write.\n",
+	"Compressed ext4 image write",
 	"img_write <dev no> 'mem' 'part no' 'length'\n"
 	"    - update partition image 'length' on 'mem' to mmc 'part no'.\n\n"
 	"Note.\n"
