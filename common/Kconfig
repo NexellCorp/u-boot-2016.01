@@ -553,6 +553,15 @@ config CMD_CHECK_HW
 	  support check hw revision.
 	  Reading the gpio confirms the HW version.
 
+config CMD_NXRECOVERY
+	bool nxrecovery
+	default n
+	help
+	  support nexell recovery tool. This command can fuse boot device(ex> emmc)
+	  by other device(ex> sd, usb).
+	  This tool is developed to support mass production tool.
+	  Depends on Nexell formating tool.
+
 endmenu
 
 menu "Boot timing"
