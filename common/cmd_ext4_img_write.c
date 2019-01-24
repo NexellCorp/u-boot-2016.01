@@ -58,7 +58,7 @@ int set_write_raw_chunk_cb(WRITE_RAW_CHUNK_CB cb);
 extern ulong mmc_bwrite(int dev_num, lbaint_t start, lbaint_t blkcnt,
 			const void *src);
 
-static int write_raw_chunk(char *data, unsigned int sector,
+int write_raw_chunk(char *data, unsigned int sector,
 			   unsigned int sector_size);
 static WRITE_RAW_CHUNK_CB write_raw_chunk_cb = write_raw_chunk;
 
