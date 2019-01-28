@@ -341,9 +341,7 @@ static int update_ext4sparse(struct nx_recovery *h, struct nx_image *img)
 	u64 soffset = img->src_offset;
 	u64 doffset = img->dest_offset;
 	block_dev_desc_t *sdesc = h->sdesc;
-	block_dev_desc_t *tdesc = h->tdesc;
 	int sdev = h->sdev;
-	int tdev = h->tdev;
 	u32 rw_size;
 	u64 done;
 	u64 wdone;
