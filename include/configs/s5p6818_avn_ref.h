@@ -341,6 +341,9 @@
 #define CONFIG_RECOVERY_BOOT_CMD	\
 	"recoveryboot=not supported\0"
 
+#define CONFIG_AUTORECOVERY_CMD		\
+	"autorecovery_cmd=none\0"
+
 #define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_EXTRA_ENV_SETTINGS				\
 	"fdt_high=0xffffffffffffffff\0"				\
@@ -350,6 +353,7 @@
 		CONFIG_EXTRA_ENV_DTB_LOAD			\
 		CONFIG_EXTRA_ENV_CMD_RUN_KERNEL			\
 	CONFIG_RECOVERY_BOOT_CMD		    		\
+	CONFIG_AUTORECOVERY_CMD					\
 	"mmcboot=run boot_cmd_mmcboot\0"			\
 	"bootcmd=run mmcboot\0"					\
 	CONFIG_EXTRA_ENV_BOOT_LOGO				\

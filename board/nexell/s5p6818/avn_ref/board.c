@@ -20,6 +20,10 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#ifdef CONFIG_AUTORECOVERY_CMD
+#include <nexell_recovery.h>
+#endif
+
 #ifdef CONFIG_PWM_NX
 #include <pwm.h>
 
@@ -198,6 +202,10 @@ int board_late_init(void)
 	board_camera_sensor_init();
 #endif
 	board_backlight_enable();
+
+#ifdef CONFIG_AUTORECOVERY_CMD
+	check_nexell_autorecovery();
+#endif
 
 #ifdef CONFIG_RECOVERY_BOOT
 #define ALIVE_SCRATCH1_READ_REGISTER	(0xc00108b4)
