@@ -1,6 +1,10 @@
 #include <config.h>
 #include <common.h>
 
+extern int serial_mcu_getc(void);
+extern int serial_mcu_tstc(void);
+extern void serial_mcu_putc(const char c);
+
 #define msleep(a) udelay(a * 1000)
 
 /* SOI */
@@ -302,7 +306,7 @@ void mcu_get_max9286(void)
 #ifndef QUICKBOOT
 	int i = 0;
 
-	printf("%s: Send ARM to MCU: cmd:0x%02x, data:0x%02x, size:%d\n",
+	printf("%s: Send ARM to MCU: cmd:0x%02x, data:0x%02x, size:%lu\n",
 		__func__, cmd, s_cdata[0], sizeof(s_cdata));
 #endif
 
