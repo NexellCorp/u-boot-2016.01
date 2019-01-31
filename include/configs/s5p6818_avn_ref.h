@@ -78,7 +78,7 @@
 /* board_init_f->init_sequence, call print_cpuinfo */
 #define	CONFIG_DISPLAY_CPUINFO
 /* board_init_f, CONFIG_SYS_ICACHE_OFF */
-#define	CONFIG_SYS_DCACHE_OFF
+/* #define	CONFIG_SYS_DCACHE_OFF */
 /* board_init_r, call arch_misc_init */
 #define	CONFIG_ARCH_MISC_INIT
 /*#define	CONFIG_SYS_ICACHE_OFF*/
