@@ -361,7 +361,7 @@
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
 	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
-		"printk.time=1 consoleblank=0 systemd.log_level=info systemd.show_status=false " \
+		"printk.time=1 consoleblank=0 coherent_pool=4M systemd.log_level=info systemd.show_status=false " \
 		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 \0" \
 	"boot_cmd_mmcboot="   \
 		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
