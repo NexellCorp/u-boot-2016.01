@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f09fae2_b713ea92",
+        "filename": "include/configs/s5p4418_con_svma.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-02-18T00:30:10Z",
+      "side": 1,
+      "message": "Need \u0027\\\u0027 end of line...",
+      "range": {
+        "startLine": 372,
+        "startChar": 98,
+        "endLine": 372,
+        "endChar": 99
+      },
+      "revId": "f858fa96fbb69b064676dc7c80a12bddc064bb2d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
