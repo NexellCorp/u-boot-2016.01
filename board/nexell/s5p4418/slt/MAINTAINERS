@@ -1,0 +1,6 @@
+NXP4330 SLT BOARD
+M:  youngbok park <ybpark@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/nxp4330_slt/
+F:  include/configs/nxp4330_slt.h
+F:  configs/nxp4330_slt_defconfig
