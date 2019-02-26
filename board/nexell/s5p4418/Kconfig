@@ -105,6 +105,11 @@ config TARGET_NXP4330_VTK
 	help
 		Support for nxp4330 vtk board.
 
+config TARGET_NXP4330_SLT
+	bool "NXP4330_SLT"
+	help
+		Support for nxp4330 slt board.
+
 endchoice
 config SYS_VENDOR
 	default "nexell"
