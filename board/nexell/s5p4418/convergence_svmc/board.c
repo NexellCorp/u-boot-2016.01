@@ -39,11 +39,11 @@ static void board_backlight_disable(void)
 	int gp_dual = pwm_dev[CONFIG_BACKLIGHT_CH].grp;
 	int io_dual = pwm_dev[CONFIG_BACKLIGHT_CH].bit;
 	int fn_dual = pwm_dev[CONFIG_BACKLIGHT_CH].io_fn;
-
+#if SUPPORT_SECONDARY_DISPLAY
 	int gp = pwm_dev[CONFIG_SBACKLIGHT_CH].grp;
 	int io = pwm_dev[CONFIG_SBACKLIGHT_CH].bit;
 	int fn = pwm_dev[CONFIG_SBACKLIGHT_CH].io_fn;
-
+#endif
 	/*****************************************************/
 	/* Primary(RGBtoDualLVDS) : PWM0_LVDSLED*/
 	nx_gpio_set_pad_function(gp_dual, io_dual, fn_dual);
@@ -71,7 +71,7 @@ static void board_backlight_disable(void)
 	nx_gpio_set_output_value(gpio_e, 12, 1);
 	nx_gpio_set_output_enable(gpio_e, 12, 1);
 
-
+#if SUPPORT_SECONDARY_DISPLAY
 	/****************************************/
 	/* Secondary(LVDS) : PWM3_SLED */
 	nx_gpio_set_pad_function(gp, io, fn);
@@ -93,6 +93,7 @@ static void board_backlight_disable(void)
 	nx_gpio_set_output_value(gpio_e, 2, 0);
 	nx_gpio_set_output_enable(gpio_e, 2, 1);
 #endif
+#endif
 
 }
 
@@ -109,7 +110,7 @@ static void board_backlight_enable(void)
 		TO_DUTY_NS(CONFIG_BACKLIGHT_DUTY, CONFIG_BACKLIGHT_HZ),
 		TO_PERIOD_NS(CONFIG_BACKLIGHT_HZ)
 		);
-
+#if SUPPORT_SECONDARY_DISPLAY
 	/* Secondary(LVDS) : PWM3_SLED */
 	pwm_init(
 		CONFIG_SBACKLIGHT_CH,
@@ -120,6 +121,7 @@ static void board_backlight_enable(void)
 		TO_DUTY_NS(CONFIG_SBACKLIGHT_DUTY, CONFIG_SBACKLIGHT_HZ),
 		TO_PERIOD_NS(CONFIG_SBACKLIGHT_HZ)
 		);
+#endif
 #endif
 }
 
@@ -183,12 +185,12 @@ int board_late_init(void)
 	nx_gpio_set_output_value(gpio_e, 0, 1);		/* LVDSSTBY */
 #endif
 	nx_gpio_set_output_value(gpio_d, 31, 0);		/* LVDSLEDEN */
-
+#if SUPPORT_SECONDARY_DISPLAY
 	/* Secondary(LVDS) : Ready */
 	nx_gpio_set_output_value(gpio_b, 21, 1);	/* SLED_EN */
 	nx_gpio_set_output_value(gpio_e, 2, 1);		/* SVLDSRST */
 	nx_gpio_set_output_value(gpio_c, 31, 1);		/* SLVDSSTB */
-
+#endif
 	board_backlight_enable();
 
 #if 1	// AP_GPB26_CAM_PWEN
