@@ -180,7 +180,7 @@
 #define CONFIG_BACKLIGHT_DIV	0
 #define CONFIG_BACKLIGHT_INV	0
 #define CONFIG_BACKLIGHT_DUTY	50
-#define CONFIG_BACKLIGHT_HZ		1000000
+#define CONFIG_BACKLIGHT_HZ		25000
 
 /*-----------------------------------------------------------------------
  * BACKLIGHT Secondary(LVDS)
