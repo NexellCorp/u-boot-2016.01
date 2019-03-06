@@ -168,6 +168,13 @@ int board_init(void)
 #endif
 
 	board_backlight_disable();
+#ifdef	CONFIG_MCU_DOWNLOAD
+    nx_gpio_set_pad_function(gpio_b, 29, 3); /*UART4TXD */
+    nx_gpio_set_output_enable(gpio_b, 29, 1);
+
+    nx_gpio_set_pad_function(gpio_b, 28, 3); /* UART4RXD */
+    nx_gpio_set_output_enable(gpio_b, 28, 1);
+#endif
 
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags |= GD_FLG_SILENT;
