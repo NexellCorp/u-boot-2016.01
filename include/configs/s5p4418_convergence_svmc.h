@@ -141,13 +141,21 @@
 /*-----------------------------------------------------------------------
  * serial console configuration
  */
+/*#define CONFIG_SERIAL_MCU           1*/
+#define CONFIG_MCU_DOWNLOAD       	1 /* set serial_2 (download to mcu) */
+
+#define CONFIG_CONS_INDEX_MCU       4
+/*#define CONFIG_BAUDRATE_MCU         115200*/
+#define CONFIG_BAUDRATE_MCU         57600
+
 #define CONFIG_PL011_SERIAL
 #define CONFIG_CONS_INDEX			3
 #define CONFIG_PL011_CLOCK			50000000
 #define CONFIG_PL01x_PORTS			{(void *)PHY_BASEADDR_UART0, \
 						(void *)PHY_BASEADDR_UART1, \
 						(void *)PHY_BASEADDR_UART2, \
-						(void *)PHY_BASEADDR_UART3}
+						(void *)PHY_BASEADDR_UART3, \
+						(void *)PHY_BASEADDR_UART4}
 
 #define CONFIG_BAUDRATE				115200
 #define CONFIG_SYS_BAUDRATE_TABLE \
