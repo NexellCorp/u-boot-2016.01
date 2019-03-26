@@ -38,6 +38,18 @@ typedef struct block_dev_desc {
 	unsigned long   (*block_erase)(int dev,
 				       lbaint_t start,
 				       lbaint_t blkcnt);
+
+        /* unsigned long   (*block_dread)(struct block_dev_desc *block_dev, */
+        /*                               lbaint_t start, */
+        /*                               lbaint_t blkcnt, */
+        /*                               void *buffer); */
+        /* unsigned long   (*block_dwrite)(struct block_dev_desc *block_dev, */
+        /*                                lbaint_t start, */
+        /*                                lbaint_t blkcnt, */
+        /*                                const void *buffer); */
+        /* unsigned long   (*block_derase)(struct block_dev_desc *block_dev, */
+        /*                                lbaint_t start, */
+        /*                                lbaint_t blkcnt); */
 	void		*priv;		/* driver private struct pointer */
 }block_dev_desc_t;
 
@@ -122,6 +134,14 @@ int get_device(const char *ifname, const char *dev_str,
 int get_device_and_partition(const char *ifname, const char *dev_part_str,
 			     block_dev_desc_t **dev_desc,
 			     disk_partition_t *info, int allow_whole_dev);
+int part_get_info_by_name_type(struct block_dev_desc *dev_desc, const char *name,
+			       disk_partition_t *info, int part_type);
+int part_get_info_by_name(struct block_dev_desc *dev_desc,
+			      const char *name, disk_partition_t *info);
+int part_get_info_by_dev_and_name_or_num(const char *dev_iface,
+					 const char *dev_part_str,
+					 struct block_dev_desc **dev_desc,
+					 disk_partition_t *part_info);
 #else
 static inline block_dev_desc_t *get_dev(const char *ifname, int dev)
 { return NULL; }
@@ -150,6 +170,38 @@ static inline int get_device_and_partition(const char *ifname,
 					   int allow_whole_dev)
 { *dev_desc = NULL; return -1; }
 #endif
+
+struct part_driver {
+	const char *name;
+	int part_type;
+	const int max_entries;	/* maximum number of entries to search */
+
+	/**
+	 * get_info() - Get information about a partition
+	 *
+	 * @dev_desc:	Block device descriptor
+	 * @part:	Partition number (1 = first)
+	 * @info:	Returns partition information
+	 */
+	int (*get_info)(struct block_dev_desc *dev_desc, int part,
+			disk_partition_t *info);
+
+	/**
+	 * print() - Print partition information
+	 *
+	 * @dev_desc:	Block device descriptor
+	 */
+	void (*print)(struct block_dev_desc *dev_desc);
+
+	/**
+	 * test() - Test if a device contains this partition type
+	 *
+	 * @dev_desc:	Block device descriptor
+	 * @return 0 if the block device appears to contain this partition
+	 *	   type, -ve if not
+	 */
+	int (*test)(struct block_dev_desc *dev_desc);
+};
 
 #ifdef CONFIG_MAC_PARTITION
 /* disk/part_mac.c */

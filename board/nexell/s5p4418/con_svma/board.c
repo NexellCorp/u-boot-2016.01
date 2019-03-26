@@ -9,6 +9,9 @@
 #include <common.h>
 #include <asm/io.h>
 
+//SUKER warning fixed
+#include <pwm-nexell.h>
+
 #include <asm/arch/nexell.h>
 #include <asm/arch/nx_gpio.h>
 

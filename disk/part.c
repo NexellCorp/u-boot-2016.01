@@ -11,6 +11,7 @@
 #include <malloc.h>
 #include <part.h>
 #include <ubifs_uboot.h>
+#include <errno.h>
 
 #undef	PART_DEBUG
 
@@ -19,6 +20,8 @@
 #else
 #define PRINTF(fmt,args...)
 #endif
+
+#define PART_TYPE_ALL		-1
 
 struct block_drvr {
 	char *name;
@@ -730,4 +733,117 @@ int get_device_and_partition(const char *ifname, const char *dev_part_str,
 cleanup:
 	free(dup_str);
 	return ret;
+}
+
+static struct part_driver *part_driver_lookup_type(struct block_dev_desc *dev_desc)
+{
+	struct part_driver *drv =
+		ll_entry_start(struct part_driver, part_driver);
+	const int n_ents = ll_entry_count(struct part_driver, part_driver);
+	struct part_driver *entry;
+
+	if (dev_desc->part_type == PART_TYPE_UNKNOWN) {
+		for (entry = drv; entry != drv + n_ents; entry++) {
+			int ret;
+
+			ret = entry->test(dev_desc);
+			if (!ret) {
+				dev_desc->part_type = entry->part_type;
+				return entry;
+			}
+		}
+	} else {
+		for (entry = drv; entry != drv + n_ents; entry++) {
+			if (dev_desc->part_type == entry->part_type)
+				return entry;
+		}
+	}
+
+	/* Not found */
+	return NULL;
+}
+
+int part_get_info_by_name_type(struct block_dev_desc *dev_desc, const char *name,
+			       disk_partition_t *info, int part_type)
+{
+	struct part_driver *part_drv;
+	int ret;
+	int i;
+
+	part_drv = part_driver_lookup_type(dev_desc);
+	if (!part_drv)
+		return -1;
+	for (i = 1; i < part_drv->max_entries; i++) {
+		ret = part_drv->get_info(dev_desc, i, info);
+		if (ret != 0) {
+			/* no more entries in table */
+			break;
+		}
+		if (strcmp(name, (const char *)info->name) == 0) {
+			/* matched */
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+int part_get_info_by_name(struct block_dev_desc *dev_desc, const char *name,
+			  disk_partition_t *info)
+{
+	return part_get_info_by_name_type(dev_desc, name, info, PART_TYPE_ALL);
+}
+
+static int part_get_info_by_dev_and_name(const char *dev_iface,
+					 const char *dev_part_str,
+					 struct block_dev_desc **dev_desc,
+					 disk_partition_t *part_info)
+{
+	char *ep;
+	const char *part_str;
+	int dev_num;
+
+	part_str = strchr(dev_part_str, '#');
+	if (!part_str || part_str == dev_part_str)
+		return -EINVAL;
+
+	dev_num = simple_strtoul(dev_part_str, &ep, 16);
+	if (ep != part_str) {
+		/* Not all the first part before the # was parsed. */
+		return -EINVAL;
+	}
+	part_str++;
+
+	*dev_desc = get_dev(dev_iface, dev_num);
+	if (!*dev_desc) {
+		printf("Could not find %s %d\n", dev_iface, dev_num);
+		return -EINVAL;
+	}
+	if (part_get_info_by_name(*dev_desc, part_str, part_info) < 0) {
+		printf("Could not find \"%s\" partition\n", part_str);
+		return -EINVAL;
+	}
+	return 0;
+}
+
+int part_get_info_by_dev_and_name_or_num(const char *dev_iface,
+					 const char *dev_part_str,
+					 struct block_dev_desc **dev_desc,
+					 disk_partition_t *part_info)
+{
+	/* Split the part_name if passed as "$dev_num#part_name". */
+	if (!part_get_info_by_dev_and_name(dev_iface, dev_part_str,
+					   dev_desc, part_info))
+		return 0;
+	/*
+	 * Couldn't lookup by name, try looking up the partition description
+	 * directly.
+	 */
+	if (get_device_and_partition(dev_iface, dev_part_str,
+				    dev_desc, part_info, 1) < 0) {
+		printf("Couldn't find partition %s %s\n",
+		       dev_iface, dev_part_str);
+		return -EINVAL;
+	}
+	return 0;
 }
