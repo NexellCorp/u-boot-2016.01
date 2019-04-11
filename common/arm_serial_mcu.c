@@ -307,7 +307,7 @@ void mcu_get_max9286(void)
 	int i = 0;
 
 	printf("%s: Send ARM to MCU: cmd:0x%02x, data:0x%02x, size:%lu\n",
-		__func__, cmd, s_cdata[0], sizeof(s_cdata));
+               __func__, cmd, s_cdata[0], (long unsigned int)sizeof(s_cdata));
 #endif
 
 	mcu_serial_tx_data(cmd, s_cdata, sizeof(s_cdata));
