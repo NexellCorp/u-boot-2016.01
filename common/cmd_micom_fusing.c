@@ -1169,26 +1169,25 @@ static int NXCBL_Init_BL(void)
     return ret;
 }
 
+/* static int NXCBL_CHECK_VERSION(char *version) */
+/* { */
+/* 	int ret = 0; */
+/*         u8  buffer[10]; */
 
-static int NXCBL_CHECK_VERSION(char *version)
-{
-	int ret = 0;
-	u8 buffer[10];
+/* 	memset(buffer, 0x00, sizeof(s8)*10); */
 
-	memset(buffer, 0x00, sizeof(u8)*10);
+/* 	UART_Read(buffer, 2, 1000000); */
+/* 	buffer[9] = 0; */
 
-	UART_Read(buffer, 2, 1000000);
-	buffer[9] = 0;
+/* 	printf("micom version : %s \n\n", buffer); */
 
-	printf("micom version : %s \n\n", buffer);
+/* 	if (strncmp(buffer, version, 2) != 0) { */
+/* 		printf("## \e[31m%s():%d Version fail\e[0m : bin_version:%s, read_version:%s \n", __FUNCTION__, __LINE__, version, buffer); */
+/* 		ret = -1; */
+/* 	} */
 
-	if (strncmp(buffer, version, 2) != 0) {
-		printf("## \e[31m%s():%d Version fail\e[0m : bin_version:%s, read_version:%s \n", __FUNCTION__, __LINE__, version, buffer);
-		ret = -1;
-	}
-
-	return ret;
-}
+/* 	return ret; */
+/* } */
 
 static void NXCBL_RESET(void)
 {
@@ -1240,9 +1239,10 @@ static int do_micom_fusing(cmd_tbl_t *cmdtp, int flag, int argc, char * const ar
 	unsigned long addr;
 
 	u8 *p, *pos;
-	char *bin_version;
+	//char *bin_version;
+	//BYTE Version, size, pID;
+        BYTE size, pID;
 
-	BYTE Version, size, pID;
 	//BYTE ROPEnabled, ROPDisabled;
 	BYTE Result = NXCBL_SUCCESS;
 	DWORD Address;
@@ -1269,17 +1269,19 @@ static int do_micom_fusing(cmd_tbl_t *cmdtp, int flag, int argc, char * const ar
 
 	addr = simple_strtoul(argv[1], NULL, 16);
 	p = (u8*)addr;
-	if (p < 0x48000000) {
-		printf("## [%s():%d] \e[31mload address(0x%x) error.\e[0m\n", __func__,__LINE__, addr);
+
+	if (p < (u8*)(0x48000000)) {
+                printf("## [%s():%d] \e[31mload address(0x%x) error.\e[0m\n", __func__,__LINE__, (unsigned int)addr);
 		goto ret_error;
 	}
 
-	bin_version = (char*)p;
+	//bin_version = (char*)p;
 
 	PWM_init(1);								// pwm init
 	NXCBL_BOOTMODE(0);						// STM32 Boot mode
 	NXCBL_RESET();							// STM32 Reset
-	printf("## LOAD address  : 0x%x \n", p);
+
+	printf("## LOAD address  : 0x%x \n", (unsigned int)p);
 /*
 	if(0 == NXCBL_CHECK_VERSION(bin_version))
 		goto normal_boot;

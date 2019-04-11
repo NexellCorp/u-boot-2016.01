@@ -9,6 +9,8 @@
 #include <common.h>
 #include <asm/io.h>
 
+#include <pwm-nexell.h>
+
 #include <asm/arch/nexell.h>
 #include <asm/arch/nx_gpio.h>
 
