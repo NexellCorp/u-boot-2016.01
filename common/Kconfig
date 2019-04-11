@@ -1,3 +1,28 @@
+menu "Android support commands"
+
+config ANDROID_AB
+        bool "Android A/B updates"
+        default n
+        help
+          If enabled, adds support for the new Android A/B update model. This
+          allows the bootloader to select which slot to boot from based on the
+          information provided by userspace via the Android boot_ctrl HAL. This
+          allows a bootloader to try a new version of the system but roll back
+          to previous version if the new one didn't boot all the way.
+
+config CMD_AB_SELECT
+       bool "ab_select"
+       default n
+       depends on ANDROID_AB
+       help
+         On Android devices with more than one boot slot (multiple copies of
+         the kernel and system images) this provides a command to select which
+         slot should be used to boot from and register the boot attempt. This
+         is used by the new A/B update model where one slot is updated in the
+         background while running from the other slot.
+
+endmenu
+
 menu "Command line interface"
 
 config HUSH_PARSER
@@ -373,6 +398,13 @@ config CMD_GPIO
 	bool "gpio"
 	help
 	  GPIO support.
+
+config CMD_PART
+        bool "part"
+        select PARTITION_UUIDS
+        help
+          Read and display information about the partition table on
+          various media.
 
 endmenu
 
