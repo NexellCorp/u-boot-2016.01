@@ -289,6 +289,8 @@
 /*-----------------------------------------------------------------------
  * VIDEO
  */
+
+#ifndef BOOT_LOGO_CANCEL
 #define CONFIG_VIDEO
 #define CONFIG_CFB_CONSOLE
 #define CONFIG_VGA_AS_SINGLE_DEVICE
@@ -297,6 +299,7 @@
 #define CONFIG_VIDEO_LOGO
 #define CONFIG_SPLASH_SCREEN
 #define CONFIG_SPLASH_SCREEN_ALIGN
+#endif
 
 #ifdef CONFIG_VIDEO_LOGO
 #define CONFIG_CMD_BMP
