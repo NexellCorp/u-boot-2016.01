@@ -342,13 +342,57 @@
 #define CONFIG_RECOVERY_BOOT_CMD	\
 	"recoveryboot=not supported\0"
 
+/* partition number infomation */
+/* 1,2 - bootloader_a, bootloader_b */
+/* 3,5 - boot_a, boot_b */
+/* 6,7 - system_a, system_b */
+/* 8,9 - vendor_a, vendor_b */
+/* 10(A)   - misc */
+/* 11(B)   - data */
+#define CONTROL_PARTITION A //"misc"
+
+#if defined(CONFIG_CMD_AB_SELECT)
+#define SET_AB_SELECT \
+       "if ab_select slot_name mmc 0:${misc_partition_num}; " \
+       "then " \
+               "echo ab_select get slot_name success;" \
+       "else " \
+               "echo ab_select get slot_name failed, set slot \"a\";" \
+               "setenv slot_name a;" \
+       "fi;" \
+       "setenv slot_suffix _${slot_name};" \
+       "setenv android_boot_option androidboot.slot_suffix=${slot_suffix};" \
+       "setenv android_boot_ab run bootcmd_${slot_name};" \
+       "if test ${slot_name} = a ; " \
+       "then " \
+               "setenv root_dev_blk_system_ab /dev/mmcblk0p6 ;" \
+       "else " \
+               "setenv root_dev_blk_system_ab /dev/mmcblk0p7 ;" \
+       "fi;" \
+       "setenv bootargs_ab1 root=${root_dev_blk_system_ab};" \
+       "setenv bootargs_ab2 ${android_boot_option};"
+#else
+#define SET_AB_SELECT ""
+#endif //CONFIG_CMD_AB_SELECT
+
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"fdt_high=0xffffffff\0"		\
 	"initrd_high=0xffffffff\0"	\
 	"kerneladdr=0x40008000\0"	\
 	"kernel_file=zImage\0"		\
 	"fdtaddr=0x49000000\0"		\
-	"load_fdt="			\
+        "misc_partition_num=" __stringify(CONTROL_PARTITION) "\0"       \
+        "set_ab_select=" \
+                SET_AB_SELECT \
+                "\0" \
+        "set_bootargs_ab1=setenv bootargs \"${bootargs} ${bootargs_ab1}\" \0" \
+        "set_bootargs_ab2=setenv bootargs \"${bootargs} ${bootargs_ab2}\" \0" \
+        "bootcmd_set_ab=run set_ab_select;" \
+                       "run set_bootargs_ab1;" \
+                       "run set_bootargs_ab2;" \
+                       "\0"                    \
+        "bootcmd=run bootcmd_set_ab;run android_boot_ab\0" \
+        "load_fdt="			\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
 		"number=$board_rev: "					\
@@ -368,7 +412,7 @@
 		"fi; \0"						\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
-	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p6 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
 		"printk.time=1 consoleblank=0 coherent_pool=4M systemd.log_level=info systemd.show_status=false " \
 		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 \0" \
 	"boot_cmd_mmcboot="   \
@@ -382,7 +426,6 @@
         "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
                   "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
                   "run boot_cmd_ramfsboot \0" \
-	"bootcmd=run mmcboot\0" \
 	CONFIG_RECOVERY_BOOT_CMD \
 	CONFIG_EXTRA_ENV_BOOT_LOGO
 
