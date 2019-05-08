@@ -39,8 +39,6 @@ static void ab_control_default(struct andr_bl_control *abc)
 		.reserved = 0
 	};
 
-        printf("[debug][suker][%s]\n", __func__);
-
 	memcpy(abc->slot_suffix, "a\0\0\0", 4);
 	abc->magic = ANDROID_BOOT_CTRL_MAGIC;
 	abc->version = ANDROID_BOOT_CTRL_VERSION;
@@ -128,7 +126,6 @@ static int ab_control_store(struct block_dev_desc *dev_desc,
 {
 	ulong abc_offset, abc_blocks;
 
-        printf("[debug][suker][%s]\n", __func__);
 	abc_offset = offsetof(struct andr_bl_msg_ab, slot_suffix) /
 		     part_info->blksz;
 	abc_blocks = DIV_ROUND_UP(sizeof(struct andr_bl_control),
@@ -155,8 +152,6 @@ static int ab_control_store(struct block_dev_desc *dev_desc,
 static int ab_compare_slots(const struct andr_slot_metadata *a,
 			    const struct andr_slot_metadata *b)
 {
-        printf("[debug][suker][%s]\n", __func__);
-
 	/* Higher priority is better */
 	if (a->priority != b->priority)
 		return b->priority - a->priority;
@@ -180,15 +175,13 @@ int ab_select_slot(struct block_dev_desc *dev_desc, disk_partition_t *part_info)
 	bool store_needed = false;
 	char slot_suffix[4];
 
-        printf("[debug][suker][%s]\n", __func__);
 	ret = ab_control_create_from_disk(dev_desc, part_info, &abc);
-        printf("[debug][suker][%s] ret = %d\n", __func__, ret);
-        printf("[debug][suker][%s] ----abc info---\n", __func__);
-        printf("[debug][suker][%s] abc->slot_suffix  = %s\n",   __func__, abc->slot_suffix );
-        printf("[debug][suker][%s] abc->magic        = 0x%x\n", __func__, abc->magic       );
-        printf("[debug][suker][%s] abc->nb_slot      = %d\n",   __func__, abc->nb_slot     );
-        printf("[debug][suker][%s] abc->crc32_le     = %d\n",   __func__, abc->crc32_le    );
-        printf("[debug][suker][%s] ---------------\n", __func__, ret);
+        printf("[%s] ---- Slot Select INFO DDD ---\n", __func__);
+        printf("[%s] abc->slot_suffix  = %s\n",   __func__, abc->slot_suffix );
+        printf("[%s] abc->magic        = 0x%x\n", __func__, abc->magic       );
+        printf("[%s] abc->nb_slot      = %d\n",   __func__, abc->nb_slot     );
+        printf("[%s] abc->crc32_le     = 0x%x\n", __func__, abc->crc32_le    );
+        printf("[%s] ---------------\n", __func__, ret);
 
 	if (!abc || ret < 0) {
 		/*
@@ -293,7 +286,6 @@ int ab_select_slot(struct block_dev_desc *dev_desc, disk_partition_t *part_info)
 	}
 	free(abc);
 
-        printf("[debug][suker][%s] end slot = %d\n", __func__,slot);
 	if (slot < 0)
 		return -EINVAL;
 
