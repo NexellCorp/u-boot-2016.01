@@ -253,7 +253,7 @@ int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
 		return -1;
 
 	mem_addr = simple_strtoul(argv[2], NULL, 16);
-	dst_addr = simple_strtoull(argv[3], NULL, 16);
+	dst_addr = simple_strtoull(argv[3], NULL, 10);
 	mem_len  = simple_strtoull(argv[4], NULL, 16);
 
 	p   = (unsigned char *)((ulong)mem_addr);

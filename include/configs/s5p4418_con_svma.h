@@ -343,11 +343,13 @@
 	"recoveryboot=not supported\0"
 
 /* partition number infomation */
-/* 1,2 - boot_a, boot_b */
-/* 3,5 - system_a, system_b */
-/* 6,7 - vendor_a, vendor_b */
-/* 8   - misc */
-#define CONTROL_PARTITION 8 //"misc"
+/* 1,2 - bootloader_a, bootloader_b */
+/* 3,5 - boot_a, boot_b */
+/* 6,7 - system_a, system_b */
+/* 8,9 - vendor_a, vendor_b */
+/* 10(A)   - misc */
+/* 11(B)   - data */
+#define CONTROL_PARTITION A //"misc"
 
 #if defined(CONFIG_CMD_AB_SELECT)
 #define SET_AB_SELECT \
@@ -363,9 +365,9 @@
        "setenv android_boot_ab run bootcmd_${slot_name};" \
        "if test ${slot_name} = a ; " \
        "then " \
-               "setenv root_dev_blk_system_ab /dev/mmcblk0p3 ;" \
+               "setenv root_dev_blk_system_ab /dev/mmcblk0p6 ;" \
        "else " \
-               "setenv root_dev_blk_system_ab /dev/mmcblk0p5 ;" \
+               "setenv root_dev_blk_system_ab /dev/mmcblk0p7 ;" \
        "fi;" \
        "setenv bootargs_ab1 root=${root_dev_blk_system_ab};" \
        "setenv bootargs_ab2 ${android_boot_option};"
@@ -410,7 +412,7 @@
 		"fi; \0"						\
 	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
 	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
-	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p3 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
+	"bootargs=console=ttyAMA3,115200n8 root=/dev/mmcblk0p6 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
 		"printk.time=1 consoleblank=0 coherent_pool=4M systemd.log_level=info systemd.show_status=false " \
 		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 \0" \
 	"boot_cmd_mmcboot="   \
