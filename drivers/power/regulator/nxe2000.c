@@ -367,6 +367,7 @@ static int nxe2000_buck_probe(struct udevice *dev)
 {
 	struct dm_nxe2000_buck_platdata *pdata = dev->platdata;
 	struct dm_regulator_uclass_platdata *uc_pdata;
+	int buck = dev->driver_data;
 	uint value;
 
 	uc_pdata = dev_get_uclass_platdata(dev);
@@ -391,7 +392,28 @@ static int nxe2000_buck_probe(struct udevice *dev)
 			| (pdata->cur_limit << NXE2000_POS_DCxCTL2_DCxLIM)
 			| (pdata->limshut_en <<
 			NXE2000_POS_DCxCTL2_DCxLIMSDEN));
-		pmic_reg_write(dev->parent, NXE2000_REG_DC1CTL2, value);
+		switch (buck) {
+		case 0:
+			pmic_reg_write
+				(dev->parent, NXE2000_REG_DC1CTL2, value);
+			break;
+		case 1:
+			pmic_reg_write
+				(dev->parent, NXE2000_REG_DC2CTL2, value);
+			break;
+		case 2:
+			pmic_reg_write
+				(dev->parent, NXE2000_REG_DC3CTL2, value);
+			break;
+		case 3:
+			pmic_reg_write
+				(dev->parent, NXE2000_REG_DC4CTL2, value);
+			break;
+		case 4:
+			pmic_reg_write
+				(dev->parent, NXE2000_REG_DC5CTL2, value);
+			break;
+		}
 	}
 
 	if (
@@ -401,7 +423,28 @@ static int nxe2000_buck_probe(struct udevice *dev)
 		value = ((pdata->slp_mode << NXE2000_POS_DCxCTL_DCxMODE_SLP)
 			| (pdata->mode << NXE2000_POS_DCxCTL_DCxMODE)
 			| (pdata->dsc_ctrl << NXE2000_POS_DCxCTL_DCxDIS));
-		pmic_clrsetbits(dev->parent, NXE2000_REG_DC1CTL, 0xFE, value);
+		switch (buck) {
+		case 0:
+			pmic_clrsetbits
+				(dev->parent, NXE2000_REG_DC1CTL, 0xFE, value);
+			break;
+		case 1:
+			pmic_clrsetbits
+				(dev->parent, NXE2000_REG_DC2CTL, 0xFE, value);
+			break;
+		case 2:
+			pmic_clrsetbits
+				(dev->parent, NXE2000_REG_DC3CTL, 0xFE, value);
+			break;
+		case 3:
+			pmic_clrsetbits
+				(dev->parent, NXE2000_REG_DC4CTL, 0xFE, value);
+			break;
+		case 4:
+			pmic_clrsetbits
+				(dev->parent, NXE2000_REG_DC5CTL, 0xFE, value);
+			break;
+		}
 	}
 
 	/* DCDC - Enable */
