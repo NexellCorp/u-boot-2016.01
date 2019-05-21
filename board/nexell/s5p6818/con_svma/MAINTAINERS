@@ -1,0 +1,6 @@
+S5P6818 CON_SVMA BOARD
+M:  Sungwoo Park <swpark@nexell.co.kr>
+S:  Maintained
+F:  board/s5p6818/con_svma/
+F:  include/configs/s5p6818_con_svma.h
+F:  configs/s5p6818_con_svma_defconfig
