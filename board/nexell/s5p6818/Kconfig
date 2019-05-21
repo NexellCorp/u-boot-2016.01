@@ -26,6 +26,11 @@ config TARGET_ARTIK711S_RAPTOR
 	help
 	  Support for artik711s_raptor platform.
 
+config TARGET_S5P6818_CON_SVMA
+	bool "S5P6818_CON_SVMA"
+	help
+	  Support for s5p6818 con_svma platform.
+
 endchoice
 
 config SYS_VENDOR
