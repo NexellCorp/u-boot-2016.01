@@ -15,7 +15,7 @@
  * Marek Szyprowski <m.szyprowski@samsung.com>
  * Lukasz Majewski <l.majewski@samsumg.com>
  *
- * SPDX-License-Identifier:	GPL-2.0+
+ * SPDX-License-Identifier:    GPL-2.0+
  */
 
 static u8 clear_feature_num;
@@ -110,7 +110,11 @@ static int setdma_rx(struct dwc2_ep *ep, struct dwc2_request *req)
 
 	ctrl =  readl(&reg->out_endp[ep_num].doepctl);
 
-	writel((unsigned int)(uintptr_t)ep->dma_buf, &reg->out_endp[ep_num].doepdma);
+	invalidate_dcache_range((unsigned long) ep->dma_buf,
+				(unsigned long) ep->dma_buf +
+				ROUND(ep->len, CONFIG_SYS_CACHELINE_SIZE));
+
+	writel((unsigned long) ep->dma_buf, &reg->out_endp[ep_num].doepdma);
 	writel(DOEPT_SIZ_PKT_CNT(pktcnt) | DOEPT_SIZ_XFER_SIZE(length),
 	       &reg->out_endp[ep_num].doeptsiz);
 	writel(DEPCTL_EPENA|DEPCTL_CNAK|ctrl, &reg->out_endp[ep_num].doepctl);
@@ -227,15 +231,14 @@ static void complete_rx(struct dwc2_udc *dev, u8 ep_num)
 	invalidate_dcache_range((unsigned long) ep->dma_buf,
 				(unsigned long) ep->dma_buf +
 				ROUND(xfer_size, CONFIG_SYS_CACHELINE_SIZE));
-
 	req->req.actual += min(xfer_size, req->req.length - req->req.actual);
-	is_short = (xfer_size < ep->ep.maxpacket);
+	is_short = !!(xfer_size % ep->ep.maxpacket);
 
 	debug_cond(DEBUG_OUT_EP != 0,
 		   "%s: RX DMA done : ep = %d, rx bytes = %d/%d, "
 		   "is_short = %d, DOEPTSIZ = 0x%x, remained bytes = %d\n",
 		   __func__, ep_num, req->req.actual, req->req.length,
-		   is_short, ep_tsr, xfer_size);
+		   is_short, ep_tsr, req->req.length - req->req.actual);
 
 	if (is_short || req->req.actual == req->req.length) {
 		if (ep_num == EP0_CON && dev->ep0state == DATA_STATE_RECV) {
@@ -292,7 +295,7 @@ static void complete_tx(struct dwc2_udc *dev, u8 ep_num)
 		"%s: TX DMA done : ep = %d, tx bytes = %d/%d, "
 		"is_short = %d, DIEPTSIZ = 0x%x, remained bytes = %d\n",
 		__func__, ep_num, req->req.actual, req->req.length,
-		is_short, ep_tsr, xfer_size);
+		is_short, ep_tsr, req->req.length - req->req.actual);
 
 	if (ep_num == 0) {
 		if (dev->ep0state == DATA_STATE_XMIT) {
@@ -722,7 +725,6 @@ static int dwc2_fifo_read(struct dwc2_ep *ep, u32 *cp, int max)
 {
 	invalidate_dcache_range((unsigned long)cp, (unsigned long)cp +
 				ROUND(max, CONFIG_SYS_CACHELINE_SIZE));
-
 	debug_cond(DEBUG_EP0 != 0,
 		   "%s: bytes=%d, ep_index=%d 0x%p\n", __func__,
 		   max, ep_index(ep), cp);
@@ -868,7 +870,7 @@ static int dwc2_udc_get_status(struct dwc2_udc *dev,
 
 	debug_cond(DEBUG_SETUP != 0,
 		   "%s: *** USB_REQ_GET_STATUS\n", __func__);
-	debug_cond(DEBUG_SETUP != 0,"crq->brequest:0x%x\n", crq->bRequestType & USB_RECIP_MASK);
+	printf("crq->brequest:0x%x\n", crq->bRequestType & USB_RECIP_MASK);
 	switch (crq->bRequestType & USB_RECIP_MASK) {
 	case USB_RECIP_INTERFACE:
 		g_status = 0;
