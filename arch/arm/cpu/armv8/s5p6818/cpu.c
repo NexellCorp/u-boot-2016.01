@@ -11,10 +11,37 @@
 #include <asm/cache.h>
 #include <asm/sections.h>
 #include <asm/io.h>
+#include <asm/armv8/mmu.h>
 #include <asm/arch/nexell.h>
 #include <asm/arch/clk.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+
+static struct mm_region nx_mem_map[] = {
+	{
+		.virt = 0x0UL,
+		.phys = 0x0UL,
+		.size = 0x40000000UL,
+		.attrs = PTE_BLOCK_MEMTYPE(MT_DEVICE_NGNRNE) |
+			 PTE_BLOCK_NON_SHARE
+	}, {
+		.virt = 0x40000000UL,
+		.phys = 0x40000000UL,
+		.size = 0x80000000UL,
+		.attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
+			 PTE_BLOCK_INNER_SHARE
+	}, {
+		.virt = 0xc0000000UL,
+		.phys = 0xc0000000UL,
+		.size = 0x20000000UL,
+		.attrs = PTE_BLOCK_MEMTYPE(MT_DEVICE_NGNRNE) |
+			 PTE_BLOCK_NON_SHARE
+	}, {
+		/* List terminator */
+		0,
+	}
+};
+struct mm_region *mem_map = nx_mem_map;
 
 #ifndef	CONFIG_ARCH_CPU_INIT
 #error must be define the macro "CONFIG_ARCH_CPU_INIT"
