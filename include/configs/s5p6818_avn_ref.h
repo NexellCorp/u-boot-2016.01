@@ -77,8 +77,13 @@
 #define	CONFIG_BOARD_LATE_INIT
 /* board_init_f->init_sequence, call print_cpuinfo */
 #define	CONFIG_DISPLAY_CPUINFO
+#ifndef QUICKBOOT
 /* board_init_f, CONFIG_SYS_ICACHE_OFF */
-/* #define	CONFIG_SYS_DCACHE_OFF */
+#define	CONFIG_SYS_DCACHE_OFF
+#endif
+
+#define CONFIG_CMD_CACHE
+
 /* board_init_r, call arch_misc_init */
 #define	CONFIG_ARCH_MISC_INIT
 /*#define	CONFIG_SYS_ICACHE_OFF*/
@@ -86,7 +91,9 @@
 /*-----------------------------------------------------------------------
  *	U-Boot default cmd
  */
+#ifndef QUICKBOOT
 #define	CONFIG_CMD_MEMTEST
+#endif
 
 /*-----------------------------------------------------------------------
  *	U-Boot Environments
@@ -199,7 +206,9 @@
 #define	CONFIG_ENV_OFFSET		(CONFIG_FIP_OFFSET +\
 					 CONFIG_FIP_SIZE)
 #define CONFIG_ENV_SIZE			(16*1024)	/* env size */
+#endif
 
+#if defined(CONFIG_MMC)
 #define CONFIG_DOS_PARTITION
 #define CONFIG_CMD_FAT
 #define CONFIG_FS_FAT
@@ -365,5 +374,10 @@
         "ramfsboot=" \
 	        CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK		\
                 "run boot_cmd_ramfsboot \0"
+
+#ifdef QUICKBOOT
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
+#define CONFIG_BOOST_MMC
+#endif
 
 #endif /* __CONFIG_H__ */
