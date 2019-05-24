@@ -296,6 +296,41 @@
 #define CONFIG_SUPPORT_RAW_INITRD
 #define CONFIG_RECOVERY_BOOT
 
+/* partition number infomation */
+/* 1,2 - bootloader_a, bootloader_b */
+/* 3,5 - boot_a, boot_b */
+/* 6,7 - system_a, system_b */
+/* 8,9 - vendor_a, vendor_b */
+/* 10(A)   - misc */
+/* 11(B)   - data */
+
+/* #define CONTROL_PARTITION 8 //"misc" */
+#define CONTROL_PARTITION A //"misc"
+
+#if defined(CONFIG_CMD_AB_SELECT)
+#define SET_AB_SELECT \
+       "if ab_select slot_name mmc 0:${misc_partition_num}; " \
+       "then " \
+               "echo ab_select get slot_name success;" \
+       "else " \
+               "echo ab_select get slot_name failed, set slot \"a\";" \
+               "setenv slot_name a;" \
+       "fi;" \
+       "setenv slot_suffix _${slot_name};" \
+       "setenv android_boot_option androidboot.slot_suffix=${slot_suffix};" \
+       "setenv android_boot_ab run bootcmd_${slot_name};" \
+       "if test ${slot_name} = a ; " \
+       "then " \
+               "setenv root_dev_blk_system_ab /dev/mmcblk0p6 ;" \
+       "else " \
+               "setenv root_dev_blk_system_ab /dev/mmcblk0p7 ;" \
+       "fi;" \
+       "setenv bootargs_ab1 root=${root_dev_blk_system_ab};" \
+       "setenv bootargs_ab2 ${android_boot_option};"
+#else
+#define SET_AB_SELECT ""
+#endif //CONFIG_CMD_AB_SELECT
+
 /*-----------------------------------------------------------------------
  * ENV
  */
@@ -354,6 +389,19 @@
 #define CONFIG_AUTORECOVERY_CMD		\
 	"autorecovery_cmd=none\0"
 
+#define CONFIG_EXTRA_OTA_AB_UPDATE \
+        "misc_partition_num=" __stringify(CONTROL_PARTITION) "\0"       \
+        "set_ab_select=" \
+                SET_AB_SELECT \
+                "\0" \
+        "set_bootargs_ab1=setenv bootargs \"${bootargs} ${bootargs_ab1}\" \0" \
+        "set_bootargs_ab2=setenv bootargs \"${bootargs} ${bootargs_ab2}\" \0" \
+        "bootcmd_set_ab=run set_ab_select;" \
+                       "run set_bootargs_ab1;" \
+                       "run set_bootargs_ab2;" \
+                       "\0"                    \
+        "bootcmd=run bootcmd_set_ab;run android_boot_ab\0"
+
 #define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_EXTRA_ENV_SETTINGS				\
 	"fdt_high=0xffffffffffffffff\0"				\
@@ -365,7 +413,7 @@
 	CONFIG_RECOVERY_BOOT_CMD				\
 	CONFIG_AUTORECOVERY_CMD					\
 	"mmcboot=run boot_cmd_mmcboot\0"			\
-	"bootcmd=run mmcboot\0"					\
+	CONFIG_EXTRA_OTA_AB_UPDATE				\
 	CONFIG_EXTRA_ENV_BOOT_LOGO				\
         "boot_cmd_ramfsboot="					\
 		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
