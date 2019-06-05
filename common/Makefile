@@ -201,6 +201,7 @@ obj-$(CONFIG_CMD_USB_MASS_STORAGE) += cmd_usb_mass_storage.o
 obj-$(CONFIG_CMD_THOR_DOWNLOAD) += cmd_thordown.o
 obj-$(CONFIG_NX_USBDOWN)        += cmd_usbdown.o
 obj-$(CONFIG_CMD_XIMG) += cmd_ximg.o
+obj-$(CONFIG_CMD_DTIMG) += cmd_dtimg.o image-android-dt.o
 obj-$(CONFIG_YAFFS2) += cmd_yaffs2.o
 obj-$(CONFIG_CMD_SPL) += cmd_spl.o
 obj-$(CONFIG_CMD_ZIP) += cmd_zip.o
@@ -278,7 +279,7 @@ ifdef CONFIG_SYS_MALLOC_F_LEN
 obj-y += malloc_simple.o
 endif
 obj-y += image.o
-obj-$(CONFIG_ANDROID_BOOT_IMAGE) += image-android.o
+obj-$(CONFIG_ANDROID_BOOT_IMAGE) += cmd_aboot.o image-android.o
 obj-$(CONFIG_OF_LIBFDT) += image-fdt.o
 obj-$(CONFIG_FIT) += image-fit.o
 obj-$(CONFIG_FIT_SIGNATURE) += image-sig.o
