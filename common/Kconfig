@@ -21,6 +21,7 @@ config CMD_AB_SELECT
 	    is used by the new A/B update model where one slot is updated in the
 	    background while running from the other slot.
 
+
 endmenu
 
 menu "Command line interface"
@@ -221,6 +222,14 @@ config CMD_XIMG
 	default y
 	help
 	  Extract a part of a multi-image.
+
+config CMD_DTIMG
+	bool "dtimg"
+	help
+	  Android DTB/DTBO image manipulation commands. Read dtb/dtbo files from
+	  image into RAM, dump image structure information, etc. Those dtb/dtbo
+	  files should be merged in one dtb further, which needs to be passed to
+	  the kernel, as part of a boot process.
 
 endmenu
 
