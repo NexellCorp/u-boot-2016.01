@@ -57,6 +57,7 @@ static int do_aboot_load_mmc(cmd_tbl_t *cmdtp, int flag, int argc,
 	u32 kernel_addr, ramdisk_addr;
 	u32 kernel_size, ramdisk_size;
 	u32 kernel_offset, ramdisk_offset;
+	u32 page_size, mmc_blksz;
 
 	bootimg_blk = simple_strtoul(argv[1], 0, 16);
 	kernel_addr = simple_strtoul(argv[2], 0, 16);
@@ -71,20 +72,26 @@ static int do_aboot_load_mmc(cmd_tbl_t *cmdtp, int flag, int argc,
 
 	kernel_size = hdr->kernel_size;
 	ramdisk_size = hdr->ramdisk_size;
+	page_size = hdr->page_size;
+	mmc_blksz = 512;
 
+	/* hdr size : 2048 byte=4 block */
 	kernel_offset = bootimg_blk + 4;
-	ramdisk_offset = kernel_offset + (kernel_size / 512) + 1;
+	ramdisk_offset =  kernel_offset + (ALIGN(kernel_size, page_size) >> 9);
 
 	unmap_sysmem(hdr);
 
 	/* Step 2 : load kernel to address  */
-	count = (kernel_size / 512) + 1;
+	count = ALIGN(kernel_size, mmc_blksz) >> 9;
+
 	sprintf(command, "mmc read 0x%x 0x%x 0x%x",
 			kernel_addr, kernel_offset, count);
 	run_command(command, 0);
 
 	/* Step 3 : load rammdisk to address  */
-	count = (ramdisk_size / 512) + 1;
+
+	count = ALIGN(ramdisk_size, mmc_blksz) >> 9;
+
 	sprintf(command, "mmc read 0x%x 0x%x 0x%x",
 			ramdisk_addr, ramdisk_offset, count);
 	run_command(command, 0);
