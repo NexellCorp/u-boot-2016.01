@@ -162,6 +162,11 @@
 		};
 	};
 
+    adc@c0053000 {
+		u-boot,dm-pre-reloc;
+		status = "okay";
+	};
+
 	mmc0:mmc@c0062000 {
 		nexell,drive_dly = <0x00>;
 		nexell,drive_shift = <0x03>;
