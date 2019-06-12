@@ -20,6 +20,14 @@ config ADC_EXYNOS
 	  - 12-bit resolution
 	  - 600 KSPS of sample rate
 
+config ADC_S5p4418
+	bool "Enable Nexell s5p4418 ADC driver"
+	help
+	  This enables basic driver for Nexell ADC.
+	  It provides:
+	  - 8 analog input channels
+	  - 12-bit resolution
+
 config ADC_SANDBOX
 	bool "Enable Sandbox ADC test driver"
 	help
