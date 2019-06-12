@@ -14,6 +14,7 @@
 		mmc2 = "/mmc2@c0069000";
 		gmac = "/ethernet@c0060000";
 	};
+
 #ifdef CONFIG_CPU_NXP4330
 	mmc0:mmc@c0062000 {
 		#address-cells = <1>;
