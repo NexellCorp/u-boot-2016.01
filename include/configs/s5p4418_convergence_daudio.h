@@ -307,6 +307,7 @@
 /*-----------------------------------------------------------------------
  * ENV
  */
+#define CONFIG_REVISION_TAG 1
 #define CONFIG_ROOT_DEV		0
 #define CONFIG_BOOT_PART	1
 
@@ -350,11 +351,11 @@
 				"number=0$loop; "			\
 			"else number=$loop; "				\
 			"fi; "						\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-convergence_daudio-rev00.dtb && setexpr success 1; " \
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-convergence_daudio-rev0${board_rev}.dtb && setexpr success 1; " \
 			"setexpr loop $loop - 1; "			\
 			"done; "					\
 		"if test $success -eq 0; then "				\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-convergence_daudio-rev00.dtb;"	\
+			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-convergence_daudio-rev0${board_rev}.dtb;"	\
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
 		"fi; \0"						\
@@ -369,7 +370,7 @@
 	"mmcboot=run boot_cmd_mmcboot \0"           \
         "boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
                            "ext4load mmc 0:1 0x48000000 uInitrd; " \
-                           "ext4load mmc 0:1 0x49000000 s5p4418-convergence_daudio-rev00.dtb; " \
+                           "ext4load mmc 0:1 0x49000000 s5p4418-convergence_daudio-rev0${board_rev}.dtb; " \
                            "bootz 0x40008000 0x48000000 0x49000000\0" \
         "ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
                   "root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 " \
