@@ -128,6 +128,7 @@ static void board_backlight_enable(void)
 }
 
 #ifdef CONFIG_REVISION_TAG
+#define MAX_ADC_SIZE 15
 static void quick_sort(unsigned int *data, int start, int end){
 	if(start >= end){
 		return;
@@ -163,19 +164,19 @@ static void quick_sort(unsigned int *data, int start, int end){
 
 static int get_nexell_adc_val(int channel)
 {
-	unsigned int adcval[100];
-	int ret, i;
+	volatile int i;
+	int start = 5;
+	int end = MAX_ADC_SIZE -1;
+	unsigned int adcval[MAX_ADC_SIZE];
 
-	/* check board revision */
-	for (i = 0; i < 100; i++)
+	for (i = 0; i < MAX_ADC_SIZE; i++)
 	{
-		ret = adc_channel_single_shot("adc", channel, &adcval[i]);
-		if(ret)
-			adcval[i] = 0;
+		udelay(1);
+		if (adc_channel_single_shot("adc", channel, &adcval[i]))
+			*(adcval+i) = 0;
 	}
+
 	/* quick sort */
-	int start = 0;
-	int end = sizeof(adcval)/sizeof(unsigned int) - 1;
 	quick_sort(adcval, start, end);
 
 	return adcval[(start + end) / 2];
@@ -191,9 +192,9 @@ u32 get_board_rev(void)
 static void check_hw_revision(void)
 {
 	u32 val = 0;
+	unsigned int adcval0, adcval1;
 
 	/* adc ch 0 and 1 data */
-	unsigned int adcval0, adcval1;
 	adcval0 = get_nexell_adc_val(0);
 	if(adcval0 > 3000)
 		val |= 1 << 1;
