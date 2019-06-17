@@ -334,6 +334,7 @@
 /*-----------------------------------------------------------------------
  * ENV
  */
+#define CONFIG_REVISION_TAG 1
 /* need to relocate env address */
 #define CONFIG_KERNEL_DTB_ADDR	0x49000000
 #define CONFIG_BMP_LOAD_ADDR	0x80000000

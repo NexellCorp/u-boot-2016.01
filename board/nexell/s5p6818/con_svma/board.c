@@ -15,6 +15,8 @@
 #include <asm/arch/nexell.h>
 #include <asm/arch/nx_gpio.h>
 
+#include <adc.h>
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_PWM_NX
@@ -121,8 +123,100 @@ static void board_backlight_enable(void)
 #endif
 }
 
+#ifdef CONFIG_REVISION_TAG
+#define MAX_ADC_SIZE 15
+static void quick_sort(unsigned int *data, int start, int end){
+	if(start >= end){
+		return;
+	}
+
+	int pivot = start;
+	int i = pivot + 1;
+	int j = end;
+	int temp;
+
+	while(i <= j){
+		while(i <= end && data[i] <= data[pivot]){
+			i++;
+		}
+		while(j > start && data[j] >= data[pivot]){
+			j--;
+		}
+
+		if(i > j){
+			temp = data[j];
+			data[j] = data[pivot];
+			data[pivot] = temp;
+		}else{
+			temp = data[i];
+			data[i] = data[j];
+			data[j] = temp;
+		}
+	}
+
+	quick_sort(data, start, j - 1);
+	quick_sort(data, j + 1, end);
+}
+
+static int get_nexell_adc_val(int channel)
+{
+	volatile int i;
+	int start = 5;
+	int end = MAX_ADC_SIZE -1;
+	unsigned int adcval[MAX_ADC_SIZE];
+
+	for (i = 0; i < MAX_ADC_SIZE; i++)
+	{
+		udelay(1);
+		if (adc_channel_single_shot("adc", channel, &adcval[i]))
+			*(adcval+i) = 0;
+	}
+
+	/* quick sort */
+	quick_sort(adcval, start, end);
+
+	return adcval[(start + end) / 2];
+}
+
+u32 board_rev;
+
+u32 get_board_rev(void)
+{
+	return board_rev;
+}
+
+static void check_hw_revision(void)
+{
+	u32 val = 0;
+	unsigned int adcval0, adcval1;
+
+	/* adc ch 0 and 1 data */
+	adcval0 = get_nexell_adc_val(0);
+	if(adcval0 > 3000)
+		val |= 1 << 1;
+	adcval1 = get_nexell_adc_val(1);
+	if(adcval1 > 3000)
+		val |= 1 << 0;
+
+	board_rev = val;
+}
+
+static void set_board_rev(u32 revision)
+{
+	char info[64] = {0, };
+
+	snprintf(info, ARRAY_SIZE(info), "%d", revision);
+	setenv("board_rev", info);
+}
+#endif
+
 int board_init(void)
 {
+#ifdef CONFIG_REVISION_TAG
+	check_hw_revision();
+	printf("HW Revision:\t%d\n", board_rev);
+#endif
+
 	board_backlight_disable();
 #ifdef CONFIG_MCU_DOWNLOAD
 	nx_gpio_set_pad_function(gpio_b, 29, 3); /*UART4TXD */
@@ -142,6 +236,9 @@ int board_init(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
+#ifdef CONFIG_REVISION_TAG
+	set_board_rev(board_rev);
+#endif
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
