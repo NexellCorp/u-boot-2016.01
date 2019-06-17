@@ -16,3 +16,5 @@ obj-$(CONFIG_CMD_BOOTL)		+= cmd_boot_linux.o
 obj-$(CONFIG_S5P_SERIAL) 	+= serial.o
 obj-$(CONFIG_SPL_BUILD)		+= spl/
 obj-$(CONFIG_USB_GADGET)	+= usbid.o
+obj-$(CONFIG_ADC_S5P4418)	+= nx_adc.o
+obj-$(CONFIG_ADC_S5P6818)	+= nx_adc.o
