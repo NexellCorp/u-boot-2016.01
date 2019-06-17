@@ -162,6 +162,15 @@
 		};
 	};
 
+	adc@c0053000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "nexell,s5p4418-adc";
+		reg = <0xc0053000 0x100>;
+		u-boot,dm-pre-reloc;
+		status = "okay";
+	};
+
 	mmc0:mmc@c0062000 {
 		nexell,drive_dly = <0x00>;
 		nexell,drive_shift = <0x03>;
