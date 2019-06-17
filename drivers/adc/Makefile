@@ -8,4 +8,5 @@
 obj-$(CONFIG_ADC) += adc-uclass.o
 obj-$(CONFIG_ADC_EXYNOS) += exynos-adc.o
 obj-$(CONFIG_ADC_S5P4418) += s5p4418-adc.o
+obj-$(CONFIG_ADC_S5P6818) += s5p6818-adc.o
 obj-$(CONFIG_ADC_SANDBOX) += sandbox.o
