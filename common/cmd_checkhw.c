@@ -65,8 +65,11 @@ static int parse_dts_revision_gpio(void)
 
 static int read_ver(void)
 {
+#if defined(CONFIG_TARGET_S5P4418_CON_SVMA) || defined(CONFIG_TARGET_S5P6818_CON_SVMA)
+	extern int board_rev;
+	rev.board_rev = board_rev;
+#else
 	int i, ret;
-
 	if (!rev.read_ver) {
 		ret = parse_dts_revision_gpio();
 		if (ret)
@@ -84,6 +87,7 @@ static int read_ver(void)
 			}
 		}
 	}
+#endif
 	printf("HW Revision : %d\n", rev.board_rev);
 
 	rev.read_ver = 1;
