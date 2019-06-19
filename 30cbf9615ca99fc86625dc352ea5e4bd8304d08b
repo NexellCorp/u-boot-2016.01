@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32c33124_f899b8df",
+        "filename": "arch/arm/mach-nexell/include/mach/nx_adc.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-06-19T04:11:56Z",
+      "side": 1,
+      "message": "Change to __NX_ADC_H__",
+      "range": {
+        "startLine": 8,
+        "startChar": 8,
+        "endLine": 8,
+        "endChar": 20
+      },
+      "revId": "30cbf9615ca99fc86625dc352ea5e4bd8304d08b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fb83ac36_77c82831",
+        "filename": "arch/arm/mach-nexell/include/mach/nx_adc.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-06-19T04:11:56Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 9,
+        "startChar": 8,
+        "endLine": 9,
+        "endChar": 20
+      },
+      "revId": "30cbf9615ca99fc86625dc352ea5e4bd8304d08b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8f44f32e_d4cde451",
+        "filename": "arch/arm/mach-nexell/nx_adc.c",
+        "patchSetId": 11
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-06-19T04:11:56Z",
+      "side": 1,
+      "message": "Remove this commet",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 17
+      },
+      "revId": "30cbf9615ca99fc86625dc352ea5e4bd8304d08b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
