@@ -389,9 +389,20 @@
                 "\0" \
         "set_bootargs_ab1=setenv bootargs \"${bootargs} ${bootargs_ab1}\" \0" \
         "set_bootargs_ab2=setenv bootargs \"${bootargs} ${bootargs_ab2}\" \0" \
+        "set_camera_input=" \
+		"if test $cam_input -eq 0; then " \
+                "fdt addr $fdtaddr;"	\
+                "fdt set /soc/clipper1 status okay;" \
+                "fdt set /clipper3 status disabled;" \
+        "elif test $cam_input -eq 1; then " \
+                "fdt addr $fdtaddr;"	\
+                "fdt set /soc/clipper1 status disabled;" \
+                "fdt set /clipper3 status okay;" \
+        "fi;\0" \
         "bootcmd_set_ab=run set_ab_select;" \
                        "run set_bootargs_ab1;" \
                        "run set_bootargs_ab2;" \
+                       "run set_camera_input;" \
                        "\0"                    \
         "bootcmd=run bootcmd_set_ab;run android_boot_ab\0" \
         "load_fdt="			\
