@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fc26ceb7_7f27fac7",
+        "filename": "board/nexell/s5p6818/con_svma/board.c",
+        "patchSetId": 15
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-06-19T04:13:32Z",
+      "side": 1,
+      "message": "move to previous line of \"#include \u003cadc.h\u003e\"",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 26
+      },
+      "revId": "3a3e084112c48955870743c0e411593cd85cdf54",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
