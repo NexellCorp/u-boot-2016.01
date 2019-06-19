@@ -164,12 +164,40 @@ static void set_board_rev(u32 revision)
 }
 #endif
 
+u32 cam_input;
+
+static void check_cam_input(void)
+{
+	u32 val = 0;
+	unsigned int adcval0, adcval1;
+
+	/* adc ch 3 and 4 data */
+	adcval0 = get_nexell_adc_val(3);
+	if(adcval0 > 3000)
+		val |= 1 << 1;
+	adcval1 = get_nexell_adc_val(4);
+	if(adcval1 > 3000)
+		val |= 1 << 0;
+
+	cam_input = val;
+}
+
+static void set_cam_input(u32 cam_input)
+{
+	char info[64] = {0, };
+
+	snprintf(info, ARRAY_SIZE(info), "%d", cam_input);
+	setenv("cam_input", info);
+}
+
 int board_init(void)
 {
 #ifdef CONFIG_REVISION_TAG
 	check_hw_revision();
 	printf("HW Revision:\t%d\n", board_rev);
 #endif
+	check_cam_input();
+	printf("Camera input: \t%d\n", cam_input);
 
 	board_backlight_disable();
 #ifdef	CONFIG_MCU_DOWNLOAD
@@ -193,6 +221,7 @@ int board_late_init(void)
 #ifdef CONFIG_REVISION_TAG
 	set_board_rev(board_rev);
 #endif
+	set_cam_input(cam_input);
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
