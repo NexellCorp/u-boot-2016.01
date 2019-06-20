@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier:	GPL-2.0+
 #
-
+TEST = 1
 VERSION = 2016
 PATCHLEVEL = 01
 SUBLEVEL =
