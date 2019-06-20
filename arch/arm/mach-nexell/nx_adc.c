@@ -11,54 +11,27 @@
 #include <adc.h>
 
 #define MAX_ADC_SIZE 15
-static void quick_sort(unsigned int *data, int start, int end)
-{
-	int pivot = start;
-	int i = pivot + 1;
-	int j = end;
-	int temp;
-
-	if (start >= end) {
-		return;
-	}
-
-	while (i <= j) {
-		while (i <= end && data[i] <= data[pivot]) {
-			i++;
-		}
-		while (j > start && data[j] >= data[pivot]) {
-			j--;
-		}
-
-		if (i > j) {
-			temp = data[j];
-			data[j] = data[pivot];
-			data[pivot] = temp;
-		} else {
-			temp = data[i];
-			data[i] = data[j];
-			data[j] = temp;
-		}
-	}
-
-	quick_sort(data, start, j - 1);
-	quick_sort(data, j + 1, end);
-}
 
 int get_nexell_adc_val(int channel)
 {
 	volatile int i;
-	int start = 5;
-	int end = MAX_ADC_SIZE -1;
-	unsigned int adcval[MAX_ADC_SIZE];
+	unsigned int adcval;
 
-	for (i = 0; i < MAX_ADC_SIZE; i++) {
+	for(i = 0;i < 100; i++) {
 		udelay(1);
-		if (adc_channel_single_shot("adc", channel, &adcval[i]))
-			*(adcval+i) = 0;
+		if (adc_channel_single_shot("adc", channel, &adcval))
+			adcval = 0;
+		if (i < 4) {
+		} else {
+			/* high */
+			if (adcval > 3000) {
+				break;
+			/* low */
+			} else {
+				if (i >= MAX_ADC_SIZE)
+					break;
+			}
+		}
 	}
-
-	quick_sort(adcval, start, end);
-
-	return adcval[(start + end) / 2];
+	return adcval;
 }
