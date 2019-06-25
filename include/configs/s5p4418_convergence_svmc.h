@@ -349,6 +349,19 @@
 	"kerneladdr=0x40008000\0"	\
 	"kernel_file=zImage\0"		\
 	"fdtaddr=0x49000000\0"		\
+	"set_camera_input=" \
+	"fdt addr 0x49000000;" \
+	"if test ${cam_input} -eq 0; then " \
+		"fdt set /soc/clipper1 status okay;" \
+		"fdt set /soc/decimator_1 status okay;" \
+		"fdt set /clipper6 status disabled;" \
+		"fdt set /decimator6 status disabled;" \
+	"elif test ${cam_input} -eq 1; then " \
+		"fdt set /soc/clipper1 status disabled;" \
+		"fdt set /soc/decimator_1 status disabled;" \
+		"fdt set /clipper6 status okay;" \
+		"fdt set /decimator6 status okay;" \
+	"fi;\0" \
 	"load_fdt="			\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
@@ -373,7 +386,7 @@
 		"printk.time=1 consoleblank=0 coherent_pool=4M systemd.log_level=info systemd.show_status=false " \
 		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 \0" \
 	"boot_cmd_mmcboot="   \
-		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
+		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run set_camera_input;run load_fdt;" \
 		"bootz $kerneladdr - $fdtaddr\0" \
 	"mmcboot=run boot_cmd_mmcboot \0"           \
         "boot_cmd_ramfsboot=ext4load mmc 0:1 0x40008000 zImage; " \
