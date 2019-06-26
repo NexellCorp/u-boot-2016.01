@@ -23,6 +23,7 @@
 
 #define ADC_V2_STBY_MASK	0x1 << 2
 #define ADC_V2_DAT_MASK	0xfff
+#define ADC_V2_ASEL_MASK 0x7 << 3
 
 #define ADC_V2_CON_DATA_SEL(x)	(((x) & 0xf) << 10)
 #define ADC_V2_CON_CLK_CNT(x)	(((x) & 0xf) << 6)
@@ -81,6 +82,7 @@ static int s5p6818_adc_start_channel(struct udevice *dev, int channel)
 
 	/* Choose channel */
 	cfg = readl(&regs->con);
+	cfg &= ~ADC_V2_ASEL_MASK;
 	cfg |= ADC_V2_CON_ASEL(channel);
 	writel(cfg, &regs->con);
 
