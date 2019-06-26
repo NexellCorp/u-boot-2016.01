@@ -397,6 +397,20 @@
                 "\0" \
         "set_bootargs_ab1=setenv bootargs \"${bootargs} ${bootargs_ab1}\" \0" \
         "set_bootargs_ab2=setenv bootargs \"${bootargs} ${bootargs_ab2}\" \0" \
+	"change_devicetree=run set_camera_input\0" \
+	"set_camera_input=" \
+	"fdt addr 41688000;fdt resize;"	\
+	"if test ${cam_input} -eq 0; then " \
+		"fdt set /soc/clipper2 status okay;" \
+		"fdt set /soc/decimator2 status okay;" \
+		"fdt set /soc/clipper9 status disabled;" \
+		"fdt set /soc/decimator9 status disabled;" \
+	"elif test ${cam_input} -eq 1; then " \
+		"fdt set /soc/clipper2 status disabled;" \
+		"fdt set /soc/decimator2 status disabled;" \
+		"fdt set /soc/clipper9 status okay;" \
+		"fdt set /soc/decimator9 status okay;" \
+	"fi;\0" \
         "bootcmd_set_ab=run set_ab_select;" \
                        "run set_bootargs_ab1;" \
                        "run set_bootargs_ab2;" \
