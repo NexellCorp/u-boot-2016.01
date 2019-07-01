@@ -60,6 +60,20 @@ struct nx_dwmci_dat {
 	struct clk *clk;
 };
 
+#ifdef QUICKBOOT
+int is_usb_bootmode(void)
+{
+	int port_num;
+	int boot_mode = readl(PHY_BASEADDR_CLKPWR + SYSRSTCONFIG);
+
+	if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_USB) {
+		return true;
+	} else if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_SDMMC) {
+		return false;
+	}
+}
+#endif
+
 /* FIXME : This func will be remove after support pinctrl.
  * set mmc pad alternative func.
  */
@@ -215,7 +229,6 @@ static void nx_dw_mmc_clksel(struct dwmci_host *host)
 	dwmci_writel(host, DWMCI_CLKSEL, val);
 }
 
-#ifndef QUICKBOOT
 static void nx_dw_mmc_reset(int ch)
 {
 	int rst_id = RESET_ID_SDMMC0 + ch;
@@ -223,7 +236,6 @@ static void nx_dw_mmc_reset(int ch)
 	nx_rstcon_setrst(rst_id, 0);
 	nx_rstcon_setrst(rst_id, 1);
 }
-#endif
 
 static void nx_dw_mmc_clk_delay(struct dwmci_host *host)
 {
@@ -392,6 +404,9 @@ static int nx_dw_mmc_setup(const void *blob)
 		nx_dw_mmc_set_clk(host, priv->frequency * 4);
 #ifndef QUICKBOOT
 		nx_dw_mmc_reset(host->dev_index);
+#else
+		if( is_usb_bootmode() == true )
+			nx_dw_mmc_reset(host->dev_index);
 #endif
 		nx_dw_mmc_clk_delay(host);
 

@@ -31,6 +31,8 @@
 
 #ifndef MMC_INIT_CANCEL
 #undef QUICKBOOT
+#else
+extern int is_usb_bootmode(void);
 #endif
 
 static struct list_head mmc_devices;
@@ -1746,22 +1748,25 @@ int mmc_init(struct mmc *mmc)
 	unsigned start;
 
 #ifdef QUICKBOOT
-	if (mmc->has_init)
-		return 0;
+	if( is_usb_bootmode() == false )
+	{
+		if (mmc->has_init)
+			return 0;
 
-	if (board_set_mmc_pre(mmc)) {
-		mmc->has_init = 1;
+		if (board_set_mmc_pre(mmc)) {
+			mmc->has_init = 1;
 
-		mmc->block_dev.lun = 0;
-		mmc->block_dev.type = 0;
-		mmc->block_dev.blksz = mmc->read_bl_len;
-		mmc->block_dev.log2blksz = LOG2(mmc->block_dev.blksz);
-		mmc->block_dev.lba = lldiv(mmc->capacity, mmc->read_bl_len);
-		mmc->block_dev.vendor[0] = 0;
-		mmc->block_dev.product[0] = 0;
-		mmc->block_dev.revision[0] = 0;
+			mmc->block_dev.lun = 0;
+			mmc->block_dev.type = 0;
+			mmc->block_dev.blksz = mmc->read_bl_len;
+			mmc->block_dev.log2blksz = LOG2(mmc->block_dev.blksz);
+			mmc->block_dev.lba = lldiv(mmc->capacity, mmc->read_bl_len);
+			mmc->block_dev.vendor[0] = 0;
+			mmc->block_dev.product[0] = 0;
+			mmc->block_dev.revision[0] = 0;
 
-		init_part(&mmc->block_dev);
+			init_part(&mmc->block_dev);
+		}
 	}
 #endif
 

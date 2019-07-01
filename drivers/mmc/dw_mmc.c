@@ -25,6 +25,8 @@
 
 #ifndef MMC_INIT_CANCEL
 #undef QUICKBOOT
+#else
+extern int is_usb_bootmode(void);
 #endif
 
 #define PAGE_SIZE 4096
@@ -290,6 +292,9 @@ static int dwmci_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd,
 		debug("%s: Response Timeout.\n", __func__);
 #ifndef QUICKBOOT
 		return TIMEOUT;
+#else
+		if( is_usb_bootmode() == true )
+			return TIMEOUT;
 #endif
 	} else if (mask & DWMCI_INTMSK_RE) {
 		debug("%s: Response Error.\n", __func__);
