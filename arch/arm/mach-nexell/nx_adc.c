@@ -23,7 +23,7 @@ int get_nexell_adc_val(int channel)
 		udelay(1);
 		if (adc_channel_single_shot("adc", channel, &adcval))
 			adcval = 0;
-		if (i >= 4) {
+		if (i >= 5) {
 			/* high */
 			if (adcval > ADC_THRESHOLD) {
 				break;
