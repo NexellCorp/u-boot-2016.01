@@ -62,9 +62,28 @@ static u32 hw_revision(void)
 #endif
 
 #ifndef QUICKBOOT
-static void nxe2000_print_chgstate(struct udevice *dev)
+static void nxe2000_print_state(struct udevice *dev)
 {
 	uint8_t value = 0;
+	const char *offstatus[] = {
+		"PWRONPOFF",
+		"TSHUTPOFF",
+		"VINDETPOFF",
+		"IODETPOFF",
+		"CPUPOFF",
+		"WDGPOFF",
+		"DCLIMPOFF",
+		"N_OEPOFF",
+		"NONE",
+	};
+	const char *onstatus[] = {
+		"PWRONPON",
+		"REPWRPON",
+		"CHARGEPON",
+		"ON_EXTINPON",
+		"RTCPON",
+		"NONE",
+	};
 	const char *rdstatus[] = {
 		"CHG OFF",
 		"Charge Ready(VADP)",
@@ -86,10 +105,48 @@ static void nxe2000_print_chgstate(struct udevice *dev)
 		"Charge Ready(VUSB)",
 	};
 
+	dm_i2c_read(dev, NXE2000_REG_POFFHIS, &value, 1);
+	value &= 0xFF;
+	if (value & 0x01)
+		value = 0;
+	else if (value & 0x02)
+		value = 1;
+	else if (value & 0x04)
+		value = 2;
+	else if (value & 0x08)
+		value = 3;
+	else if (value & 0x10)
+		value = 4;
+	else if (value & 0x20)
+		value = 5;
+	else if (value & 0x40)
+		value = 6;
+	else if (value & 0x80)
+		value = 7;
+	else
+		value = 8;
+	printf("POFFHIS: %s\n", offstatus[value]);
+
+	dm_i2c_read(dev, NXE2000_REG_PONHIS, &value, 1);
+	value &= 0x1F;
+	if (value & 0x01)
+		value = 0;
+	else if (value & 0x02)
+		value = 1;
+	else if (value & 0x04)
+		value = 2;
+	else if (value & 0x08)
+		value = 3;
+	else if (value & 0x10)
+		value = 4;
+	else
+		value = 5;
+	printf("PONHIS : %s\n", onstatus[value]);
+
 	dm_i2c_read(dev, NXE2000_REG_CHGSTATE, &value, 1);
 	value &= 0x1F;
 	if (value <= 0x11)
-		printf("CHGS:  %s\n", rdstatus[value]);
+		printf("CHGS   : %s\n", rdstatus[value]);
 
 	return;
 }
@@ -387,7 +444,7 @@ static int nxe2000_probe(struct udevice *dev)
 #endif
 
 #ifndef QUICKBOOT
-	nxe2000_print_chgstate(dev);
+	nxe2000_print_state(dev);
 #endif
 
 	return 0;
