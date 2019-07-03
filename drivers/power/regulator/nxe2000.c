@@ -369,6 +369,10 @@ static int nxe2000_buck_probe(struct udevice *dev)
 	struct dm_regulator_uclass_platdata *uc_pdata;
 	int buck = dev->driver_data;
 	uint value;
+#ifndef QUICKBOOT
+	int r_cur_limit;
+	int r_limshut_en;
+#endif
 
 	uc_pdata = dev_get_uclass_platdata(dev);
 
@@ -396,22 +400,81 @@ static int nxe2000_buck_probe(struct udevice *dev)
 		case 0:
 			pmic_reg_write
 				(dev->parent, NXE2000_REG_DC1CTL2, value);
+#ifndef QUICKBOOT
+			r_cur_limit = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC1CTL2);
+			r_cur_limit = (r_cur_limit
+				>> NXE2000_POS_DCxCTL2_DCxLIM) & 0x3;
+
+			r_limshut_en = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC1CTL2);
+			r_limshut_en = (r_limshut_en
+				>> NXE2000_POS_DCxCTL2_DCxLIMSDEN) & 0x1;
+#endif
 			break;
+
 		case 1:
 			pmic_reg_write
 				(dev->parent, NXE2000_REG_DC2CTL2, value);
+#ifndef QUICKBOOT
+			r_cur_limit = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC2CTL2);
+			r_cur_limit = (r_cur_limit
+				>> NXE2000_POS_DCxCTL2_DCxLIM) & 0x3;
+
+			r_limshut_en = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC2CTL2);
+			r_limshut_en = (r_limshut_en
+				>> NXE2000_POS_DCxCTL2_DCxLIMSDEN) & 0x1;
+#endif
 			break;
+
 		case 2:
 			pmic_reg_write
 				(dev->parent, NXE2000_REG_DC3CTL2, value);
+#ifndef QUICKBOOT
+			r_cur_limit = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC3CTL2);
+			r_cur_limit = (r_cur_limit
+				>> NXE2000_POS_DCxCTL2_DCxLIM) & 0x3;
+
+			r_limshut_en = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC3CTL2);
+			r_limshut_en = (r_limshut_en
+				>> NXE2000_POS_DCxCTL2_DCxLIMSDEN) & 0x1;
+#endif
 			break;
+
 		case 3:
 			pmic_reg_write
 				(dev->parent, NXE2000_REG_DC4CTL2, value);
+#ifndef QUICKBOOT
+			r_cur_limit = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC4CTL2);
+			r_cur_limit = (r_cur_limit
+				>> NXE2000_POS_DCxCTL2_DCxLIM) & 0x3;
+
+			r_limshut_en = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC4CTL2);
+			r_limshut_en = (r_limshut_en
+				>> NXE2000_POS_DCxCTL2_DCxLIMSDEN) & 0x1;
+#endif
 			break;
+
 		case 4:
 			pmic_reg_write
 				(dev->parent, NXE2000_REG_DC5CTL2, value);
+#ifndef QUICKBOOT
+			r_cur_limit = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC5CTL2);
+			r_cur_limit = (r_cur_limit
+				>> NXE2000_POS_DCxCTL2_DCxLIM) & 0x3;
+
+			r_limshut_en = pmic_reg_read
+				(dev->parent, NXE2000_REG_DC5CTL2);
+			r_limshut_en = (r_limshut_en
+				>> NXE2000_POS_DCxCTL2_DCxLIMSDEN) & 0x1;
+#endif
 			break;
 		}
 	}
@@ -454,9 +517,11 @@ static int nxe2000_buck_probe(struct udevice *dev)
 		nxe2000_buck_set_enable(dev, 0);
 
 #ifndef QUICKBOOT
-	printf("DCDC%lu: %4dmV, %s\n", (dev->driver_data+1)
+	printf("DCDC%lu  : %4dmV, %s, dclim:%d, dclimsden:%d\n"
+		, (dev->driver_data+1)
 		, nxe2000_buck_get_value(dev)/1000
-		, nxe2000_buck_get_enable(dev) ? "En" : "Dis");
+		, nxe2000_buck_get_enable(dev) ? "En" : "Dis"
+		, r_cur_limit, r_limshut_en);
 #endif
 
 	return 0;
