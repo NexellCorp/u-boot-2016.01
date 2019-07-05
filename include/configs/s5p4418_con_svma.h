@@ -350,6 +350,20 @@
 	"kerneladdr=0x40008000\0"	\
 	"kernel_file=zImage\0"		\
 	"fdtaddr=0x49000000\0"		\
+	"change_devicetree=run set_camera_input\0" \
+	"set_camera_input=" \
+	"fdt addr 49000000;"	\
+	"if test ${cam_input} -eq 0; then " \
+		"fdt set /soc/clipper1 status okay;" \
+		"fdt set /soc/decimator_1 status okay;" \
+		"fdt set /clipper6 status disabled;" \
+		"fdt set /decimator6 status disabled;" \
+	"elif test ${cam_input} -eq 1; then " \
+		"fdt set /soc/clipper1 status disabled;" \
+		"fdt set /soc/decimator_1 status disabled;" \
+		"fdt set /clipper6 status okay;" \
+		"fdt set /decimator6 status okay;" \
+	"fi;\0" \
 	"load_fdt="			\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
