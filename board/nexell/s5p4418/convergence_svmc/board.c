@@ -188,6 +188,36 @@ static void set_cam_input(u32 cam_input)
 	setenv("cam_input", info);
 }
 
+u32 rear_cam;
+static void check_rear_cam(void)
+{
+	u32 val = 0;
+	unsigned int adcval0, adcval1;
+
+	/* adc ch 5 and 6 data */
+	adcval0 = get_nexell_adc_val(5);
+	if (adcval0 > 3000)
+		val |= 1 << 1;
+	adcval1 = get_nexell_adc_val(6);
+	if (adcval1 > 3000)
+		val |= 1 << 0;
+
+	rear_cam = val;
+}
+
+static void set_rear_cam(u32 rear_cam)
+{
+	char info[512] = {0, };
+	char *env;
+
+	snprintf(info, ARRAY_SIZE(info), "%d", rear_cam);
+	setenv("rear_cam", info);
+
+	env = getenv("bootargs");
+	sprintf(info, "%s nx_rearcam=%d", env, rear_cam);
+	setenv("bootargs", info);
+}
+
 int board_init(void)
 {
 #ifdef CONFIG_REVISION_TAG
@@ -196,6 +226,8 @@ int board_init(void)
 #endif
 	check_cam_input();
 	printf("Camera input: \t%d\n", cam_input);
+	check_rear_cam();
+	printf("rear cam: \t%d\n", rear_cam);
 
 	board_backlight_disable();
 #ifdef	CONFIG_MCU_DOWNLOAD
@@ -220,6 +252,7 @@ int board_late_init(void)
 	set_board_rev(board_rev);
 #endif
 	set_cam_input(cam_input);
+	set_rear_cam(rear_cam);
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
