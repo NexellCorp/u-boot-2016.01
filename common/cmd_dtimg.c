@@ -114,7 +114,8 @@ static int do_dtimg_load_mmc(cmd_tbl_t *cmdtp, int flag, int argc,
 	u32 count;
 	u32 entry_count;
 	u32 magic;
-	u32 dt_offset, dt_size;
+	u32 dt_offset=0, dt_size=0, dt_table_id=0;
+	u32 i;
 
 
 	if (argc != 4)
@@ -137,22 +138,32 @@ static int do_dtimg_load_mmc(cmd_tbl_t *cmdtp, int flag, int argc,
 	/* check dt id and dt_entry_count */
 	if(magic != DT_TABLE_MAGIC) {
 		printf("DT table MAGIC 0x%x mitmatch : %x \n", DT_TABLE_MAGIC, magic);
-		return 0;
+		return CMD_RET_FAILURE;
 	}
-	if(dt_id+1 > entry_count) {
-		printf("Cannot found dt_table_entry[%d] \n", dt_id);
-		return 0;
-	}
-	/* Step 2 : read dt_table_entry(512byte) and offset */
-	count = 1;
-	sprintf(command, "mmc read 0x%x 0x%x 0x%x",
-			load_addr, dt_part_blk+dt_id+1, count);
-	run_command(command, 0);
 
-	e = map_sysmem(load_addr, sizeof(*e));
-	dt_offset = fdt32_to_cpu(e->dt_offset);
-	dt_size = fdt32_to_cpu(e->dt_size);
-	unmap_sysmem(e);
+	/* Step 2 : find id from entry and read offset and size */
+	count = 1;
+	for(i = 0; i < entry_count; i++) {
+		sprintf(command, "mmc read 0x%x 0x%x 0x%x",
+				load_addr, dt_part_blk+i+1, count);
+		run_command(command, 0);
+
+		e = map_sysmem(load_addr, sizeof(*e));
+		dt_table_id = fdt32_to_cpu(e->id);
+		if(dt_table_id == dt_id) {
+			printf("find dt id %d in dtb.img \n", dt_id);
+			dt_offset = fdt32_to_cpu(e->dt_offset);
+			dt_size = fdt32_to_cpu(e->dt_size);
+			unmap_sysmem(e);
+			break;
+		}
+		unmap_sysmem(e);
+	}
+
+	if(dt_offset == 0 || dt_size==0) {
+		printf("Can't find dt id %d in dtb.img \n", dt_id);
+		return CMD_RET_FAILURE;
+	}
 
 	/* Step 3 : load dtb to address  */
 	count = dt_size / 512;
