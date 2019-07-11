@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "487317d6_0ba79fa2",
+        "filename": "board/nexell/s5p4418/convergence_daudio/board.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-07-11T04:31:06Z",
+      "side": 1,
+      "message": "What is this?",
+      "range": {
+        "startLine": 191,
+        "startChar": 0,
+        "endLine": 191,
+        "endChar": 1
+      },
+      "revId": "c97c9c1d07b6cdd321a117ce5c925d489ccc75b5",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
