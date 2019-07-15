@@ -75,8 +75,8 @@ static int do_aboot_load_mmc(cmd_tbl_t *cmdtp, int flag, int argc,
 	page_size = hdr->page_size;
 	mmc_blksz = 512;
 
-	/* hdr size : 2048 byte=4 block */
-	kernel_offset = bootimg_blk + 4;
+	/* hdr size : 1 page */
+	kernel_offset = bootimg_blk + (ALIGN(sizeof(struct andr_img_hdr), page_size) >> 9);
 	ramdisk_offset =  kernel_offset + (ALIGN(kernel_size, page_size) >> 9);
 
 	unmap_sysmem(hdr);
@@ -89,16 +89,16 @@ static int do_aboot_load_mmc(cmd_tbl_t *cmdtp, int flag, int argc,
 	run_command(command, 0);
 
 	/* Step 3 : load rammdisk to address  */
+	if(ramdisk_size != 0) {
+		count = ALIGN(ramdisk_size, mmc_blksz) >> 9;
 
-	count = ALIGN(ramdisk_size, mmc_blksz) >> 9;
+		sprintf(command, "mmc read 0x%x 0x%x 0x%x",
+				ramdisk_addr, ramdisk_offset, count);
+		run_command(command, 0);
 
-	sprintf(command, "mmc read 0x%x 0x%x 0x%x",
-			ramdisk_addr, ramdisk_offset, count);
-	run_command(command, 0);
-
-	sprintf(command, "%x", ramdisk_size);
-	setenv("ramdisk_size", command);
-
+		sprintf(command, "%x", ramdisk_size);
+		setenv("ramdisk_size", command);
+	}
 
 	return CMD_RET_SUCCESS;
 }
