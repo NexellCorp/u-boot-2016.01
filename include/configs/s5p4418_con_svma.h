@@ -347,11 +347,12 @@
 /* partition number infomation */
 /* 1,2 - bootloader_a, bootloader_b */
 /* 3,5 - boot_a, boot_b */
-/* 6,7 - system_a, system_b */
-/* 8,9 - vendor_a, vendor_b */
-/* 10(A)   - misc */
-/* 11(B)   - data */
-#define CONTROL_PARTITION A //"misc"
+/* 6,7 - dtbo_a, dtbo_b */
+/* 8,9 - system_a, system_b */
+/* 10(A),11(B) - vendor_a, vendor_b */
+/* 12(C)   - misc */
+/* 13(D)   - data */
+#define CONTROL_PARTITION C //"misc"
 
 #if defined(CONFIG_CMD_AB_SELECT)
 #define SET_AB_SELECT \
@@ -367,9 +368,9 @@
        "setenv android_boot_ab run bootcmd_${slot_name};" \
        "if test ${slot_name} = a ; " \
        "then " \
-               "setenv root_dev_blk_system_ab /dev/mmcblk0p6 ;" \
+               "setenv root_dev_blk_system_ab /dev/mmcblk0p8 ;" \
        "else " \
-               "setenv root_dev_blk_system_ab /dev/mmcblk0p7 ;" \
+               "setenv root_dev_blk_system_ab /dev/mmcblk0p9 ;" \
        "fi;" \
        "setenv bootargs_ab1 root=${root_dev_blk_system_ab};" \
        "setenv bootargs_ab2 ${android_boot_option};"
