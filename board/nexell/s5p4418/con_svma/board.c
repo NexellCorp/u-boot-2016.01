@@ -211,7 +211,7 @@ static void check_rear_cam(void)
 
 static void set_rear_cam(u32 rear_cam)
 {
-	char info[512] = {0, };
+	char info[2048] = {0, };
 	char *env;
 
 	snprintf(info, ARRAY_SIZE(info), "%d", rear_cam);
