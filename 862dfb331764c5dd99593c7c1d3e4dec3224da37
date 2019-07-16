@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3c6f8ce6_684e1128",
+        "filename": "include/configs/s5p4418_con_svma.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-07-16T06:21:57Z",
+      "side": 1,
+      "message": "Please change this comment applying partmap change set",
+      "range": {
+        "startLine": 348,
+        "startChar": 0,
+        "endLine": 353,
+        "endChar": 20
+      },
+      "revId": "862dfb331764c5dd99593c7c1d3e4dec3224da37",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
