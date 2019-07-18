@@ -151,7 +151,9 @@ static int do_dtimg_load_mmc(cmd_tbl_t *cmdtp, int flag, int argc,
 		e = map_sysmem(load_addr, sizeof(*e));
 		dt_table_id = fdt32_to_cpu(e->id);
 		if(dt_table_id == dt_id) {
+#ifndef QUICKBOOT
 			printf("find dt id %d in dtb.img \n", dt_id);
+#endif
 			dt_offset = fdt32_to_cpu(e->dt_offset);
 			dt_size = fdt32_to_cpu(e->dt_size);
 			unmap_sysmem(e);
