@@ -399,7 +399,7 @@
         "set_bootargs_ab2=setenv bootargs \"${bootargs} ${bootargs_ab2}\" \0" \
 	"change_devicetree=run set_camera_input\0" \
 	"set_camera_input=" \
-	"fdt addr 41688000;fdt resize;"	\
+	"fdt addr "__stringify(CONFIG_KERNEL_DTB_ADDR)";fdt resize;"	\
 	"if test ${cam_input} -eq 0; then " \
 		"fdt set /soc/clipper2 status okay;" \
 		"fdt set /soc/decimator2 status okay;" \
