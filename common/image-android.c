@@ -63,12 +63,16 @@ int android_image_get_kernel(const struct andr_img_hdr *hdr, int verify,
 	if (strlen(andr_tmp_str))
 		printf("Android's image name: %s\n", andr_tmp_str);
 
+#ifndef QUICKBOOT
 	printf("Kernel load addr 0x%08x size %u KiB\n",
 	       kernel_addr, DIV_ROUND_UP(hdr->kernel_size, 1024));
+#endif
 
 	int len = 0;
 	if (*hdr->cmdline) {
+#ifndef QUICKBOOT
 		printf("Kernel command line: %s\n", hdr->cmdline);
+#endif
 		len += strlen(hdr->cmdline);
 	}
 
