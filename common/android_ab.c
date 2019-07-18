@@ -85,7 +85,9 @@ static int ab_control_create_from_disk(struct block_dev_desc *dev_desc,
 	abc_blocks = DIV_ROUND_UP(sizeof(struct andr_bl_control),
 				  part_info->blksz);
 
+#ifndef QUICKBOOT
         printf("[debug][suker][%s] part_info->size = 0x%lx\n", __func__, part_info->size);
+#endif
 	if (abc_offset + abc_blocks > part_info->size) {
 		printf("ANDROID: boot control partition too small. Need at");
 		printf(" least %lu blocks but have %lu blocks.\n",
@@ -104,7 +106,9 @@ static int ab_control_create_from_disk(struct block_dev_desc *dev_desc,
 		free(*abc);
 		return -EIO;
 	}
+#ifndef QUICKBOOT
 	printf("ANDROID: Loaded ABC, %lu blocks\n", abc_blocks);
+#endif
 	return 0;
 }
 
@@ -176,12 +180,14 @@ int ab_select_slot(struct block_dev_desc *dev_desc, disk_partition_t *part_info)
 	char slot_suffix[4];
 
 	ret = ab_control_create_from_disk(dev_desc, part_info, &abc);
+#ifndef QUICKBOOT
         printf("[%s] ---- Slot Select INFO DDD ---\n", __func__);
         printf("[%s] abc->slot_suffix  = %s\n",   __func__, abc->slot_suffix );
         printf("[%s] abc->magic        = 0x%x\n", __func__, abc->magic       );
         printf("[%s] abc->nb_slot      = %d\n",   __func__, abc->nb_slot     );
         printf("[%s] abc->crc32_le     = 0x%x\n", __func__, abc->crc32_le    );
         printf("[%s] ---------------\n", __func__, ret);
+#endif
 
 	if (!abc || ret < 0) {
 		/*
@@ -242,12 +248,14 @@ int ab_select_slot(struct block_dev_desc *dev_desc, disk_partition_t *part_info)
 				  abc->slot_info[i].verity_corrupted);
 			continue;
 		}
+#ifndef QUICKBOOT
 		printf("ANDROID: bootable slot %d pri: %d, tries: %d, ",
 			  i, abc->slot_info[i].priority,
 			  abc->slot_info[i].tries_remaining);
 		printf("corrupt: %d, successful: %d\n",
 			  abc->slot_info[i].verity_corrupted,
 			  abc->slot_info[i].successful_boot);
+#endif
 
 		if (slot < 0 ||
 		    ab_compare_slots(&abc->slot_info[i],

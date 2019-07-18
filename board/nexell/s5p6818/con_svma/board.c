@@ -198,11 +198,15 @@ static void set_cam_input(u32 cam_input)
 int board_init(void)
 {
 #ifdef CONFIG_REVISION_TAG
+#ifndef QUICKBOOT
 	check_hw_revision();
-	printf("HW Revision:\t%d\n", board_rev);
+	printf(" HW Revision: %d\n", board_rev);
+#endif
 #endif
 	check_cam_input();
+#ifndef QUICKBOOT
 	printf("Camera input: \t%d\n", cam_input);
+#endif
 
 	board_backlight_disable();
 #ifdef CONFIG_MCU_DOWNLOAD
@@ -224,7 +228,11 @@ int board_init(void)
 int board_late_init(void)
 {
 #ifdef CONFIG_REVISION_TAG
+#ifdef QUICKBOOT
+	set_board_rev(1);
+#else
 	set_board_rev(board_rev);
+#endif
 #endif
 	set_cam_input(cam_input);
 #ifdef CONFIG_SILENT_CONSOLE
@@ -358,6 +366,52 @@ void dram_init_banksize(void)
 	gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE;
 	gd->bd->bi_dram[0].size  = CONFIG_SYS_SDRAM_SIZE;
 }
+
+#ifdef QUICKBOOT
+#include <mmc.h>
+
+int board_set_mmc_pre(struct mmc *mmc)
+{
+	mmc->version = 1074069504;
+	mmc->high_capacity = 1;
+	mmc->bus_width = 8;//4;
+	mmc->clock = 50000000;
+	mmc->card_caps = 0x2b;//0x7;
+	mmc->ocr = 0xc0ff8080;
+	mmc->dsr = 0xffffffff;
+	mmc->dsr_imp = 0x0;
+	mmc->scr[0] = 0x0;
+	mmc->scr[1] = 0x0;
+	mmc->csd[0] = 0xd0270132;
+	mmc->csd[1] = 0x0f5903ff;
+	mmc->csd[2] = 0xf6dbffef;
+	mmc->csd[3] = 0x8e40400d;
+	mmc->cid[0] = 0x15010038;
+	mmc->cid[1] = 0x474e4433;
+	mmc->cid[2] = 0x52015754;//0x5201aaf9;
+	mmc->cid[3] = 0xecc85457;//0x5051245b;
+	mmc->rca = 0x1;
+	mmc->part_support = 7;
+	mmc->part_num = 0;
+	mmc->tran_speed = 52000000;
+	mmc->read_bl_len = 512;
+	mmc->write_bl_len = 512;
+	mmc->erase_grp_size = 1024;
+	mmc->hc_wp_grp_size = 16384;
+	mmc->capacity = 7818182656;
+	mmc->capacity_user = 7818182656;
+	mmc->capacity_rpmb = 524288;
+	mmc->capacity_gp[0] = 0;
+	mmc->capacity_gp[1] = 0;
+	mmc->capacity_gp[2] = 0;
+	mmc->capacity_gp[3] = 0;
+	mmc->enh_user_start = 0;//8;
+	mmc->enh_user_size = 0;//8;
+	mmc->ddr_mode = 1;//0;
+
+	return 1;
+}
+#endif
 
 #ifdef CONFIG_DM_PMIC_NXE2000
 void power_init_board(void)

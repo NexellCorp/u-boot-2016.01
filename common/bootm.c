@@ -283,10 +283,12 @@ static void print_decomp_msg(int comp_type, int type, bool is_xip)
 {
 	const char *name = genimg_get_type_name(type);
 
+#ifndef QUICKBOOT
 	if (comp_type == IH_COMP_NONE)
 		printf("   %s %s ... ", is_xip ? "XIP" : "Loading", name);
 	else
 		printf("   Uncompressing %s ... ", name);
+#endif
 }
 
 /**
@@ -406,9 +408,9 @@ int bootm_decomp_image(int comp, ulong load, ulong image_start, int type,
 	if (ret)
 		return handle_decomp_error(comp, image_len, unc_len, ret);
 	*load_end = load + image_len;
-
+#ifndef QUICKBOOT
 	puts("OK\n");
-
+#endif
 	return 0;
 }
 
@@ -867,7 +869,9 @@ static const void *boot_get_kernel(cmd_tbl_t *cmdtp, int flag, int argc,
 #endif
 #ifdef CONFIG_ANDROID_BOOT_IMAGE
 	case IMAGE_FORMAT_ANDROID:
+#ifndef QUICKBOOT
 		printf("## Booting Android Image at 0x%08lx ...\n", img_addr);
+#endif
 		if (android_image_get_kernel(buf, images->verify,
 					     os_data, os_len))
 			return NULL;
