@@ -85,7 +85,9 @@
 /*-----------------------------------------------------------------------
  *	U-Boot default cmd
  */
+#ifndef QUICKBOOT
 #define CONFIG_CMD_MEMTEST
+#endif
 
 /*-----------------------------------------------------------------------
  *	U-Boot Environments
@@ -308,10 +310,16 @@
 #define CONTROL_PARTITION C //"misc"
 
 #if defined(CONFIG_CMD_AB_SELECT)
+#ifdef QUICKBOOT
+#define SUCESS_AB_SELECT ""
+#else
+#define SUCESS_AB_SELECT \
+	"echo ab_select get slot_name success;"
+#endif
 #define SET_AB_SELECT \
        "if ab_select slot_name mmc 0:${misc_partition_num}; " \
        "then " \
-               "echo ab_select get slot_name success;" \
+               SUCESS_AB_SELECT	\
        "else " \
                "echo ab_select get slot_name failed, set slot \"a\";" \
                "setenv slot_name a;" \
@@ -439,4 +447,8 @@
 	        CONFIG_EXTRA_ENV_CMD_BOOT_ARGS_RAMDISK		\
                 "run boot_cmd_ramfsboot \0"
 
+#ifdef QUICKBOOT
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
+#define CONFIG_BOOST_MMC
+#endif
 #endif /* __CONFIG_H__ */

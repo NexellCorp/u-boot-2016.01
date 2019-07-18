@@ -33,7 +33,9 @@ static int do_ab_select(cmd_tbl_t *cmdtp, int flag, int argc,
 	slot[0] = ANDROID_BOOT_SLOT_NAME(ret);
 	slot[1] = '\0';
 	setenv(argv[1], slot);
+#ifndef QUICKBOOT
 	printf("ANDROID: Booting slot: %s\n", slot);
+#endif
 	return CMD_RET_SUCCESS;
 }
 

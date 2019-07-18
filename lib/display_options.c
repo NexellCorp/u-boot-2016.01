@@ -31,7 +31,11 @@ int display_options (void)
 #endif
 #endif
 */
+#ifdef QUICKBOOT
+    printf ("U-Boot ");
+#else
     printf ("\nU-Boot");
+#endif
 
 	return 0;
 }

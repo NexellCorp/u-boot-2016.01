@@ -45,8 +45,9 @@ void nx_rgb_display(int module,
 	int count = top->plane_num;
 	int i = 0;
 
+#ifndef QUICKBOOT
 	printf("RGB: dp.%d\n", module);
-
+#endif
 	dp_control_init(module);
 	dp_plane_init(module);
 
