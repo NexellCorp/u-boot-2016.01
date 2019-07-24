@@ -107,12 +107,12 @@
 /* undef to save memory	   */
 #define CONFIG_SYS_LONGHELP
 /* Console I/O Buffer Size  */
-#define CONFIG_SYS_CBSIZE			1024
+#define CONFIG_SYS_CBSIZE			4096
 /* Print Buffer Size */
 #define CONFIG_SYS_PBSIZE			(CONFIG_SYS_CBSIZE + \
 						 sizeof(CONFIG_SYS_PROMPT)+16)
 /* max number of command args   */
-#define CONFIG_SYS_MAXARGS			16
+#define CONFIG_SYS_MAXARGS			32
 /* Boot Argument Buffer Size    */
 #define CONFIG_SYS_BARGSIZE			CONFIG_SYS_CBSIZE
 
@@ -423,11 +423,12 @@
                        "run set_bootargs_ab1;" \
                        "run set_bootargs_ab2;" \
                        "\0"                    \
-        "bootcmd=run bootcmd_set_ab;run android_boot_ab\0"
+        "bootcmd=run bootcmd_set_ab;run bootcmd_set_rearcam; run android_boot_ab\0"
 
 #define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_EXTRA_ENV_SETTINGS				\
 	"fdt_high=0xffffffffffffffff\0"				\
+	"bootcmd_set_rearcam=setenv bootargs \"${bootargs} nx_rearcam=${rear_cam}\" \0" \
 	CONFIG_EXTRA_ENV_CMD_BOOT_ARGS				\
 	"boot_cmd_mmcboot="					\
 		CONFIG_EXTRA_ENV_KERNEL_LOAD			\
