@@ -215,15 +215,10 @@ static void check_rear_cam(void)
 
 static void set_rear_cam(u32 rear_cam)
 {
-	char info[2048] = {0, };
-	char *env;
+	char info[64] = {0, };
 
 	snprintf(info, ARRAY_SIZE(info), "%d", rear_cam);
 	setenv("rear_cam", info);
-
-	env = getenv("bootargs");
-	sprintf(info, "%s nx_rearcam=%d", env, rear_cam);
-	setenv("bootargs", info);
 }
 
 int board_init(void)
