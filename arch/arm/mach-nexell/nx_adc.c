@@ -30,8 +30,9 @@ int get_nexell_adc_val(int channel)
 		if ((i > 1) && (adcval > ADC_THRESHOLD))
 			return adcval;
 
-		/* 5 cycles are needed per conversion */
-		udelay(4);
+		/* need delay per conversion */
+		udelay(10);
+
 	}
 	return adcval;
 }
