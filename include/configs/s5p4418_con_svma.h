@@ -111,12 +111,12 @@
 /* undef to save memory	   */
 #define CONFIG_SYS_LONGHELP
 /* Console I/O Buffer Size  */
-#define CONFIG_SYS_CBSIZE			1024
+#define CONFIG_SYS_CBSIZE			4096
 /* Print Buffer Size */
 #define CONFIG_SYS_PBSIZE			(CONFIG_SYS_CBSIZE + \
 						 sizeof(CONFIG_SYS_PROMPT)+16)
 /* max number of command args   */
-#define CONFIG_SYS_MAXARGS			16
+#define CONFIG_SYS_MAXARGS			32
 /* Boot Argument Buffer Size    */
 #define CONFIG_SYS_BARGSIZE			CONFIG_SYS_CBSIZE
 
@@ -380,6 +380,7 @@
 
 #define CONFIG_EXTRA_ENV_SETTINGS	\
 	"fdt_high=0xffffffff\0"		\
+	"bootcmd_set_rearcam=setenv bootargs \"${bootargs} nx_rearcam=${rear_cam}\" \0" \
 	"initrd_high=0xffffffff\0"	\
 	"kerneladdr=0x40008000\0"	\
 	"kernel_file=zImage\0"		\
@@ -394,11 +395,13 @@
 	"set_camera_input=" \
 	"fdt addr "__stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
 	"if test ${cam_input} -eq 0; then " \
+		"setenv bootargs ${bootargs} ${nxquickrear_args_0}; "\
 		"fdt set /soc/clipper1 status okay;" \
 		"fdt set /soc/decimator_1 status okay;" \
 		"fdt set /clipper6 status disabled;" \
 		"fdt set /decimator6 status disabled;" \
 	"elif test ${cam_input} -eq 1; then " \
+		"setenv bootargs ${bootargs} ${nxquickrear_args_1}; "\
 		"fdt set /soc/clipper1 status disabled;" \
 		"fdt set /soc/decimator_1 status disabled;" \
 		"fdt set /clipper6 status okay;" \
@@ -408,7 +411,7 @@
                        "run set_bootargs_ab1;" \
                        "run set_bootargs_ab2;" \
                        "\0"                    \
-        "bootcmd=run bootcmd_set_ab;run android_boot_ab\0" \
+        "bootcmd=run bootcmd_set_ab;run bootcmd_set_rearcam; run android_boot_ab\0" \
         "load_fdt="			\
 		"if test -z \"$fdtfile\"; then "                        \
 		"loop=$board_rev; "					\
