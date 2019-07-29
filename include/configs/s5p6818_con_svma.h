@@ -414,11 +414,13 @@
 	"set_camera_input=" \
 	"fdt addr "__stringify(CONFIG_KERNEL_DTB_ADDR)";fdt resize;"	\
 	"if test ${cam_input} -eq 0; then " \
+		"setenv bootargs ${bootargs} ${nxquickrear_args_0}; "\
 		"fdt set /soc/clipper2 status okay;" \
 		"fdt set /soc/decimator2 status okay;" \
 		"fdt set /soc/clipper9 status disabled;" \
 		"fdt set /soc/decimator9 status disabled;" \
 	"elif test ${cam_input} -eq 1; then " \
+		"setenv bootargs ${bootargs} ${nxquickrear_args_1}; "\
 		"fdt set /soc/clipper2 status disabled;" \
 		"fdt set /soc/decimator2 status disabled;" \
 		"fdt set /soc/clipper9 status okay;" \
