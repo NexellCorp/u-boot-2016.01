@@ -22,6 +22,10 @@ static int do_fastboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 	if (argc < 2)
 		return CMD_RET_USAGE;
 
+#if defined(CONFIG_ARCH_S5P6818) && !defined(CONFIG_SYS_DCACHE_OFF)
+	dcache_disable();
+#endif
+
 	usb_controller = argv[1];
 	controller_index = simple_strtoul(usb_controller, NULL, 0);
 
