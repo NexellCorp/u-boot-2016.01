@@ -25,6 +25,7 @@ void default_serial_puts(const char *s);
 extern struct serial_device serial_smc_device;
 extern struct serial_device serial_scc_device;
 extern struct serial_device *default_serial_console(void);
+extern struct serial_device *default_serial_mcu_console(void);
 
 #if	defined(CONFIG_405GP) || \
 	defined(CONFIG_405EP) || defined(CONFIG_405EZ) || \
@@ -200,9 +201,11 @@ void ns16550_serial_initialize(void);
 void oc_serial_initialize(void);
 void p3mx_serial_initialize(void);
 void pl01x_serial_initialize(void);
+void pl01x_serial_mcu_initialize(void);
 void pxa_serial_initialize(void);
 void s3c24xx_serial_initialize(void);
 void s5p_serial_initialize(void);
+void s5p_serial_mcu_initialize(void);
 void sa1100_serial_initialize(void);
 void sandbox_serial_initialize(void);
 void sconsole_serial_initialize(void);
