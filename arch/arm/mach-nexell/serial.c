@@ -46,20 +46,7 @@ static inline int s5p_uart_divslot(void)
 DECLARE_GLOBAL_DATA_PTR;
 
 #define CONSOLE_PORT CONFIG_S5P_SERIAL_INDEX
-#if (0 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART0
-#elif (1 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART1
-#elif (2 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART2
-#elif (3 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART3
-#elif (4 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART4
-#elif (5 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART5
-#endif
-static unsigned char *const port = CONFIG_S5P_SERIAL_PORT;
+static volatile unsigned char *const ports[] = CONFIG_S5P_SERIAL_PORT;
 static unsigned int   const clock_in = CONFIG_S5P_SERIAL_CLOCK;
 
 #define RX_FIFO_COUNT_MASK	0xff
@@ -123,7 +110,7 @@ void serial_device_init(void)
 
 static inline struct s5p_uart *s5p_get_base_uart(int dev_index)
 {
-	return (struct s5p_uart *)port;
+	return (struct s5p_uart *)ports[dev_index];
 }
 
 /*
@@ -299,3 +286,154 @@ void s5p_serial_initialize(void)
 {
 	serial_register(&s5p_serial_device);
 }
+
+#if defined(CONFIG_MCU_DOWNLOAD)
+#define MCU_PORT CONFIG_S5P_SERIAL_MCU_INDEX	// uart 4
+
+static void __serial_mcu_device_init(void)
+{
+	char dev[10];
+
+	serial_set_pad_function(MCU_PORT);
+
+	sprintf(dev, "nx-uart.%d", CONFIG_S5P_SERIAL_MCU_INDEX);
+
+	struct clk *clk = clk_get((const char *)dev);
+
+	/* set clock   */
+	clk_disable(clk);
+	clk_set_rate(clk, CONFIG_UART_CLKGEN_CLOCK_HZ);
+	clk_enable(clk);
+}
+
+void serial_mcu_device_init(void)
+	__attribute__((weak, alias("__serial_mcu_device_init")));
+
+static void serial_mcu_setbrg_dev(const int dev_index)
+{
+	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+	u32 uclk = clock_in;
+	u32 baudrate = CONFIG_BAUDRATE_MCU;
+	u32 val;
+
+	val = uclk / baudrate;
+
+	writel(val / 16 - 1, &uart->ubrdiv);
+
+	if (s5p_uart_divslot())
+		writew(udivslot[val % 16], &uart->rest.slot);
+	else
+		writeb(val % 16, &uart->rest.value);
+}
+
+/*
+ * Initialise the serial port with the given baudrate. The settings
+ * are always 8 data bits, no parity, 1 stop bit, no start bits.
+ */
+static int serial_mcu_init_dev(const int dev_index)
+{
+	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+
+	serial_mcu_device_init();
+
+	/* enable FIFOs, auto clear Rx FIFO */
+	writel(0x3, &uart->ufcon);
+	writel(0, &uart->umcon);
+	/* 8N1, even parity*/
+	writel(0x2b, &uart->ulcon);
+	/* No interrupts, no DMA, pure polling */
+	writel(0x245, &uart->ucon);
+
+	serial_mcu_setbrg_dev(dev_index);
+
+	return 0;
+}
+
+/*
+ * Read a single byte from the serial port. Returns 1 on success, 0
+ * otherwise. When the function is succesfull, the character read is
+ * written into its argument c.
+ */
+static int serial_mcu_getc_dev(const int dev_index)
+{
+	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+
+	/* wait for character to arrive */
+	while (!(readl(&uart->ufstat) & (RX_FIFO_COUNT_MASK |
+					 RX_FIFO_FULL_MASK))) {
+		if (serial_err_check(dev_index, 0))
+			return 0;
+	}
+
+	return (int)(readb(&uart->urxh) & 0xff);
+}
+
+/*
+ * Output a single byte to the serial port.
+ */
+static void serial_mcu_putc_dev(const char c, const int dev_index)
+{
+	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+
+	/* wait for room in the tx FIFO */
+	while ((readl(&uart->ufstat) & TX_FIFO_FULL_MASK)) {
+		if (serial_err_check(dev_index, 1))
+			return;
+	}
+
+	writeb(c, &uart->utxh);
+
+	/* If \n, also do \r */
+	if (c == '\n')
+		serial_putc('\r');
+}
+
+/*
+ * Test whether a character is in the RX buffer
+ */
+static int serial_mcu_tstc_dev(const int dev_index)
+{
+	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+	return (int)(readl(&uart->utrstat) & 0x1);
+}
+
+static void serial_mcu_puts_dev(const char *s, const int dev_index)
+{
+	while (*s)
+		serial_mcu_putc_dev(*s++, dev_index);
+}
+
+static int s5p_serial_mcu_init(void)
+{ return serial_mcu_init_dev(MCU_PORT); }
+static void s5p_serial_mcu_setbrg(void)
+{ serial_mcu_setbrg_dev(MCU_PORT); }
+static int s5p_serial_mcu_getc(void)
+{ return serial_mcu_getc_dev(MCU_PORT); }
+static int s5p_serial_mcu_tstc(void)
+{ return serial_mcu_tstc_dev(MCU_PORT); }
+static void s5p_serial_mcu_putc(const char c)
+{ serial_mcu_putc_dev(c, MCU_PORT); }
+static void s5p_serial_mcu_puts(const char *s)
+{ serial_mcu_puts_dev(s, MCU_PORT); }
+
+static struct serial_device s5p_serial_mcu_device = {
+	.name	= "serial_mcu_s5p",
+	.start	= s5p_serial_mcu_init,
+	.stop	= NULL,
+	.setbrg	= s5p_serial_mcu_setbrg,
+	.getc	= s5p_serial_mcu_getc,
+	.tstc	= s5p_serial_mcu_tstc,
+	.putc	= s5p_serial_mcu_putc,
+	.puts	= s5p_serial_mcu_puts,
+};
+
+__weak struct serial_device *default_serial_mcu_console(void)
+{
+	return &s5p_serial_mcu_device;
+}
+
+void s5p_serial_mcu_initialize(void)
+{
+	serial_register(&s5p_serial_mcu_device);
+}
+#endif
