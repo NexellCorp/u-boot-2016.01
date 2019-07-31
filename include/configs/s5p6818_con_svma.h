@@ -143,10 +143,18 @@
 /*-----------------------------------------------------------------------
  * serial console configuration
  */
+#define CONFIG_MCU_DOWNLOAD		1 /* set serial (download to mcu) */
+#define CONFIG_S5P_SERIAL_MCU_INDEX	4
+#define CONFIG_BAUDRATE_MCU		57600
+
 #define CONFIG_S5P_SERIAL
 #define CONFIG_S5P_SERIAL_INDEX     0
 #define CONFIG_S5P_SERIAL_CLOCK     50000000
-#define CONFIG_S5P_SERIAL_PORT      (void *)PHY_BASEADDR_UART0
+#define CONFIG_S5P_SERIAL_PORT		{(void *)PHY_BASEADDR_UART0, \
+					(void *)PHY_BASEADDR_UART1, \
+					(void *)PHY_BASEADDR_UART2, \
+					(void *)PHY_BASEADDR_UART3, \
+					(void *)PHY_BASEADDR_UART4}
 
 #define CONFIG_BAUDRATE				115200
 #define CONFIG_SYS_BAUDRATE_TABLE \
