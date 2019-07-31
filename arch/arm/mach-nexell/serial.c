@@ -46,20 +46,7 @@ static inline int s5p_uart_divslot(void)
 DECLARE_GLOBAL_DATA_PTR;
 
 #define CONSOLE_PORT CONFIG_S5P_SERIAL_INDEX
-#if (0 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART0
-#elif (1 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART1
-#elif (2 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART2
-#elif (3 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART3
-#elif (4 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART4
-#elif (5 == CONSOLE_PORT)
-#define CONFIG_S5P_SERIAL_PORT          (void *)PHY_BASEADDR_UART5
-#endif
-static unsigned char *const port = CONFIG_S5P_SERIAL_PORT;
+static volatile unsigned char *const ports[] = CONFIG_S5P_SERIAL_PORT;
 static unsigned int   const clock_in = CONFIG_S5P_SERIAL_CLOCK;
 
 #define RX_FIFO_COUNT_MASK	0xff
@@ -103,13 +90,13 @@ static void serial_set_pad_function(int index)
 	}
 }
 
-static void __serial_device_init(void)
+static void __serial_device_init(int port)
 {
 	char dev[10];
 
-	serial_set_pad_function(CONSOLE_PORT);
+	serial_set_pad_function(port);
 
-	sprintf(dev, "nx-uart.%d", CONFIG_S5P_SERIAL_INDEX);
+	sprintf(dev, "nx-uart.%d", port);
 
 	struct clk *clk = clk_get((const char *)dev);
 
@@ -118,12 +105,12 @@ static void __serial_device_init(void)
 	clk_set_rate(clk, CONFIG_UART_CLKGEN_CLOCK_HZ);
 	clk_enable(clk);
 }
-void serial_device_init(void)
+void serial_device_init(int port)
 	__attribute__((weak, alias("__serial_device_init")));
 
 static inline struct s5p_uart *s5p_get_base_uart(int dev_index)
 {
-	return (struct s5p_uart *)port;
+	return (struct s5p_uart *)ports[dev_index];
 }
 
 /*
@@ -152,11 +139,11 @@ static const int udivslot[] = {
 	0xffdf,
 };
 
-static void serial_setbrg_dev(const int dev_index)
+static void serial_setbrg_dev(const int dev_index, u32 baud)
 {
 	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	u32 uclk = clock_in;
-	u32 baudrate = gd->baudrate;
+	u32 baudrate = baud;
 	u32 val;
 
 	val = uclk / baudrate;
@@ -177,7 +164,7 @@ static int serial_init_dev(const int dev_index)
 {
 	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 
-	serial_device_init();
+	serial_device_init(dev_index);
 
 	/* enable FIFOs, auto clear Rx FIFO */
 	writel(0x3, &uart->ufcon);
@@ -187,7 +174,7 @@ static int serial_init_dev(const int dev_index)
 	/* No interrupts, no DMA, pure polling */
 	writel(0x245, &uart->ucon);
 
-	serial_setbrg_dev(dev_index);
+	serial_setbrg_dev(dev_index, gd->baudrate);
 
 	return 0;
 }
@@ -269,7 +256,7 @@ static void serial_puts_dev(const char *s, const int dev_index)
 static int s5p_serial_init(void)
 { return serial_init_dev(CONSOLE_PORT); }
 static void s5p_serial_setbrg(void)
-{ serial_setbrg_dev(CONSOLE_PORT); }
+{ serial_setbrg_dev(CONSOLE_PORT, gd->baudrate); }
 static int s5p_serial_getc(void)
 { return serial_getc_dev(CONSOLE_PORT); }
 static int s5p_serial_tstc(void)
@@ -299,3 +286,63 @@ void s5p_serial_initialize(void)
 {
 	serial_register(&s5p_serial_device);
 }
+
+#if defined(CONFIG_MCU_DOWNLOAD)
+#define MCU_PORT CONFIG_S5P_SERIAL_MCU_INDEX
+/*
+ * Initialise the serial port with the given baudrate. The settings
+ * are always 8 data bits, no parity, 1 stop bit, no start bits.
+ */
+static int serial_mcu_init_dev(const int dev_index)
+{
+	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+
+	serial_device_init(dev_index);
+
+	/* enable FIFOs, auto clear Rx FIFO */
+	writel(0x3, &uart->ufcon);
+	writel(0, &uart->umcon);
+	/* 8N1, even parity*/
+	writel(0x2b, &uart->ulcon);
+	/* No interrupts, no DMA, pure polling */
+	writel(0x245, &uart->ucon);
+
+	serial_setbrg_dev(dev_index, CONFIG_BAUDRATE_MCU);
+
+	return 0;
+}
+
+static int s5p_serial_mcu_init(void)
+{ return serial_mcu_init_dev(MCU_PORT); }
+static void s5p_serial_mcu_setbrg(void)
+{ serial_setbrg_dev(MCU_PORT, CONFIG_BAUDRATE_MCU); }
+static int s5p_serial_mcu_getc(void)
+{ return serial_getc_dev(MCU_PORT); }
+static int s5p_serial_mcu_tstc(void)
+{ return serial_tstc_dev(MCU_PORT); }
+static void s5p_serial_mcu_putc(const char c)
+{ serial_putc_dev(c, MCU_PORT); }
+static void s5p_serial_mcu_puts(const char *s)
+{ serial_puts_dev(s, MCU_PORT); }
+
+static struct serial_device s5p_serial_mcu_device = {
+	.name	= "serial_mcu_s5p",
+	.start	= s5p_serial_mcu_init,
+	.stop	= NULL,
+	.setbrg	= s5p_serial_mcu_setbrg,
+	.getc	= s5p_serial_mcu_getc,
+	.tstc	= s5p_serial_mcu_tstc,
+	.putc	= s5p_serial_mcu_putc,
+	.puts	= s5p_serial_mcu_puts,
+};
+
+__weak struct serial_device *default_serial_mcu_console(void)
+{
+	return &s5p_serial_mcu_device;
+}
+
+void s5p_serial_mcu_initialize(void)
+{
+	serial_register(&s5p_serial_mcu_device);
+}
+#endif

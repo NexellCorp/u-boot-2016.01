@@ -145,12 +145,11 @@ serial_initfunc(ns16550_serial_initialize);
 serial_initfunc(oc_serial_initialize);
 serial_initfunc(p3mx_serial_initialize);
 serial_initfunc(pl01x_serial_initialize);
-#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 serial_initfunc(pl01x_serial_mcu_initialize);
-#endif
 serial_initfunc(pxa_serial_initialize);
 serial_initfunc(s3c24xx_serial_initialize);
 serial_initfunc(s5p_serial_initialize);
+serial_initfunc(s5p_serial_mcu_initialize);
 serial_initfunc(sa1100_serial_initialize);
 serial_initfunc(sandbox_serial_initialize);
 serial_initfunc(sconsole_serial_initialize);
@@ -239,12 +238,11 @@ void serial_initialize(void)
 	oc_serial_initialize();
 	p3mx_serial_initialize();
 	pl01x_serial_initialize();
-#if defined (CONFIG_SERIAL_MCU) || defined(CONFIG_MCU_DOWNLOAD)
 	pl01x_serial_mcu_initialize();
-#endif
 	pxa_serial_initialize();
 	s3c24xx_serial_initialize();
 	s5p_serial_initialize();
+	s5p_serial_mcu_initialize();
 	sa1100_serial_initialize();
 	sandbox_serial_initialize();
 	sconsole_serial_initialize();
