@@ -223,12 +223,14 @@ int board_init(void)
 {
 #ifdef CONFIG_REVISION_TAG
 	check_hw_revision();
-	printf("HW Revision:\t%d\n", board_rev);
 #endif
 	check_cam_input();
-	printf("Camera input: \t%d\n", cam_input);
 	check_rear_cam();
+#ifndef QUICKBOOT
+	printf("HW Revision:\t%d\n", board_rev);
+	printf("Camera input: \t%d\n", cam_input);
 	printf("rear cam: \t%d\n", rear_cam);
+#endif
 
 	board_backlight_disable();
 #ifdef	CONFIG_MCU_DOWNLOAD
