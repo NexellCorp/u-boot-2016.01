@@ -355,10 +355,16 @@
 #define CONTROL_PARTITION C //"misc"
 
 #if defined(CONFIG_CMD_AB_SELECT)
+#ifdef QUICKBOOT
+#define SUCESS_AB_SELECT ""
+#else
+#define SUCESS_AB_SELECT \
+		   "echo ab_select get slot_name success;"
+#endif
 #define SET_AB_SELECT \
        "if ab_select slot_name mmc 0:${misc_partition_num}; " \
        "then " \
-               "echo ab_select get slot_name success;" \
+               SUCESS_AB_SELECT	\
        "else " \
                "echo ab_select get slot_name failed, set slot \"a\";" \
                "setenv slot_name a;" \
@@ -394,18 +400,22 @@
 	"change_devicetree=run set_camera_input\0" \
 	"set_camera_input=" \
 	"fdt addr "__stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
-	"if test ${cam_input} -eq 0; then " \
-		"setenv bootargs ${bootargs} ${nxquickrear_args_0}; "\
+	"if test ${rear_cam} -eq 2; then " \
+		"fdt set /soc/clipper0 status okay;" \
+		"fdt set /soc/decimator_0 status okay;" \
+	"elif test ${rear_cam} -eq 1; then " \
 		"fdt set /soc/clipper1 status okay;" \
 		"fdt set /soc/decimator_1 status okay;" \
-		"fdt set /clipper6 status disabled;" \
-		"fdt set /decimator6 status disabled;" \
-	"elif test ${cam_input} -eq 1; then " \
-		"setenv bootargs ${bootargs} ${nxquickrear_args_1}; "\
-		"fdt set /soc/clipper1 status disabled;" \
-		"fdt set /soc/decimator_1 status disabled;" \
-		"fdt set /clipper6 status okay;" \
-		"fdt set /decimator6 status okay;" \
+	"else " \
+		"if test ${cam_input} -eq 0; then " \
+			"setenv bootargs ${bootargs} ${nxquickrear_args_0}; "\
+			"fdt set /soc/clipper1 status okay;" \
+			"fdt set /soc/decimator_1 status okay;" \
+		"elif test ${cam_input} -eq 1; then " \
+			"setenv bootargs ${bootargs} ${nxquickrear_args_1}; "\
+			"fdt set /soc/clipper6 status okay;" \
+			"fdt set /soc/decimator6 status okay;" \
+		"fi; " \
 	"fi;\0" \
         "bootcmd_set_ab=run set_ab_select;" \
                        "run set_bootargs_ab1;" \
