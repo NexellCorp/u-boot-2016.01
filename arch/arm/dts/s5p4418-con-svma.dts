@@ -186,7 +186,7 @@
 		nexell,sample_dly = <0x00>;
 		nexell,sample_shift = <0x02>;
 		frequency = <50000000>;
-		status ="okay";
+		status ="disable";
 	};
 
 	ehci:usbhost@c0030000 {
