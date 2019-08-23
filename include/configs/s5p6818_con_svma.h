@@ -77,9 +77,7 @@
 /* board_init_f->init_sequence, call print_cpuinfo */
 #define CONFIG_DISPLAY_CPUINFO
 /* board_init_f, CONFIG_SYS_ICACHE_OFF */
-#ifndef QUICKBOOT
-#define	CONFIG_SYS_DCACHE_OFF
-#endif
+/* #define	CONFIG_SYS_DCACHE_OFF */
 
 #define CONFIG_CMD_CACHE
 
@@ -421,18 +419,23 @@
 	"change_devicetree=run set_camera_input\0" \
 	"set_camera_input=" \
 	"fdt addr "__stringify(CONFIG_KERNEL_DTB_ADDR)";fdt resize;"	\
-	"if test ${cam_input} -eq 0; then " \
-		"setenv bootargs ${bootargs} ${nxquickrear_args_0}; "\
+	"if test ${rear_cam} -eq 2; then " \
+		"fdt set /soc/clipper0 status okay;" \
+		"fdt set /soc/decimator0 status okay;" \
+		"fdt set /soc/mipi_csi status okay;" \
+	"elif test ${rear_cam} -eq 1; then " \
 		"fdt set /soc/clipper2 status okay;" \
 		"fdt set /soc/decimator2 status okay;" \
-		"fdt set /soc/clipper9 status disabled;" \
-		"fdt set /soc/decimator9 status disabled;" \
-	"elif test ${cam_input} -eq 1; then " \
-		"setenv bootargs ${bootargs} ${nxquickrear_args_1}; "\
-		"fdt set /soc/clipper2 status disabled;" \
-		"fdt set /soc/decimator2 status disabled;" \
-		"fdt set /soc/clipper9 status okay;" \
-		"fdt set /soc/decimator9 status okay;" \
+	"else " \
+		"if test ${cam_input} -eq 0; then " \
+			"setenv bootargs ${bootargs} ${nxquickrear_args_0}; "\
+			"fdt set /soc/clipper2 status okay;" \
+			"fdt set /soc/decimator2 status okay;" \
+		"elif test ${cam_input} -eq 1; then " \
+			"setenv bootargs ${bootargs} ${nxquickrear_args_1}; "\
+			"fdt set /soc/clipper9 status okay;" \
+			"fdt set /soc/decimator9 status okay;" \
+		"fi;" \
 	"fi;\0" \
         "bootcmd_set_ab=run set_ab_select;" \
                        "run set_bootargs_ab1;" \
