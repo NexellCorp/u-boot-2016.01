@@ -12,12 +12,25 @@
 #include <errno.h>
 #include <image.h>
 #include <fdt_support.h>
+#include <asm/io.h>
+#include <asm/arch/nexell.h>
 
 #if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_CLI_FRAMEWORK)
 
 DECLARE_GLOBAL_DATA_PTR;
 
 static bootm_headers_t linux_images;
+
+int is_usb_bootmode(void)
+{
+	register u32 boot_mode = readl(PHY_BASEADDR_CLKPWR + SYSRSTCONFIG);
+
+	if ((boot_mode & BOOTMODE_MASK) == BOOTMODE_USB) {
+		return true;
+	}
+
+	return false;
+}
 
 static void boot_go_set_os(cmd_tbl_t *cmdtp, int flag, int argc,
 			 char * const argv[], bootm_headers_t *images)

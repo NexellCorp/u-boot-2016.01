@@ -463,6 +463,7 @@
 #ifdef QUICKBOOT
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
 #define CONFIG_BOOST_MMC
+#define CONFIG_MMC_INIT_CANCEL
 #endif
 
 #endif /* __CONFIG_H__ */

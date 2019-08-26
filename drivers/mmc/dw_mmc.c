@@ -15,17 +15,7 @@
 #include <dwmmc.h>
 #include <asm-generic/errno.h>
 
-#ifdef CONFIG_MACH_S5P6818
-#undef QUICKBOOT
-#endif
-
-#if defined (CONFIG_TARGET_S5P4418_DAUDIO_REF) || defined (CONFIG_TARGET_S5P4418_NAVI_REF)
-#undef QUICKBOOT
-#endif
-
-#ifndef MMC_INIT_CANCEL
-#undef QUICKBOOT
-#endif
+extern int is_usb_bootmode(void);
 
 #define PAGE_SIZE 4096
 
@@ -288,7 +278,12 @@ static int dwmci_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd,
 		 * CMD8, please keep that in mind.
 		 */
 		debug("%s: Response Timeout.\n", __func__);
-#ifndef QUICKBOOT
+#ifdef CONFIG_MMC_INIT_CANCEL
+		if( is_usb_bootmode() == true ) {
+			printf("%s() is usb bootmode!! \n", __func__);
+			return TIMEOUT;
+		}
+#else
 		return TIMEOUT;
 #endif
 	} else if (mask & DWMCI_INTMSK_RE) {
