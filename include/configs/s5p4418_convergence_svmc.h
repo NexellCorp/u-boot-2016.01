@@ -12,11 +12,6 @@
 #include <asm/arch/nexell.h>
 
 /*-----------------------------------------------------------------------
- * Burning feature
- */
-/* #define CONFIG_SYS_BURNING */
-
-/*-----------------------------------------------------------------------
  *  u-boot-2016.01
  */
 #define CONFIG_SYS_LDSCRIPT "arch/arm/cpu/armv7/s5p4418/u-boot.lds"

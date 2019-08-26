@@ -3,10 +3,6 @@
 #include <asm/io.h>
 #include <asm/arch/nexell.h>
 #include <asm/arch/usbid.h>
-#ifdef CONFIG_SYS_BURNING
-#include <g_dnl.h>
-#include <usb.h>
-#endif
 
 void cal_usbid(u16 *vid, u16 *pid, u32 ecid)
 {
@@ -48,18 +44,3 @@ void get_usbid(u16 *vid, u16 *pid)
 		cal_usbid(vid, pid, id);
 	}
 }
-
-#ifdef CONFIG_SYS_BURNING
-int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
-{
-	u16 vid, pid;
-
-	get_usbid(&vid, &pid);
-	debug("%s %x %x\n", __func__, vid, pid);
-
-	put_unaligned(vid, &dev->idVendor);
-	put_unaligned(pid, &dev->idProduct);
-
-	return 0;
-}
-#endif
