@@ -388,9 +388,8 @@ void dram_init_banksize(void)
 	gd->bd->bi_dram[0].size  = CONFIG_SYS_SDRAM_SIZE;
 }
 
-#ifdef QUICKBOOT
+#ifdef CONFIG_MMC_INIT_CANCEL
 #include <mmc.h>
-
 int board_set_mmc_pre(struct mmc *mmc)
 {
 	mmc->version = 1074069504;

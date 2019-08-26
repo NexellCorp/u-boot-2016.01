@@ -21,17 +21,7 @@
 #include <div64.h>
 #include "mmc_private.h"
 
-#ifdef CONFIG_MACH_S5P6818
-#undef QUICKBOOT
-#endif
-
-#if defined (CONFIG_TARGET_S5P4418_DAUDIO_REF) || defined (CONFIG_TARGET_S5P4418_NAVI_REF)
-#undef QUICKBOOT
-#endif
-
-#ifndef MMC_INIT_CANCEL
-#undef QUICKBOOT
-#endif
+extern int is_usb_bootmode(void);
 
 static struct list_head mmc_devices;
 static int cur_dev_num = -1;
@@ -1687,7 +1677,7 @@ static int mmc_complete_init(struct mmc *mmc)
 	return err;
 }
 
-#ifdef QUICKBOOT
+#ifdef CONFIG_MMC_INIT_CANCEL
 static __attribute__((unused)) void dump_mmc(struct mmc *mmc)
 {
 	printf("mmc info\n");
@@ -1734,7 +1724,7 @@ static __attribute__((unused)) void dump_mmc(struct mmc *mmc)
 }
 #endif
 
-#ifdef QUICKBOOT
+#ifdef CONFIG_MMC_INIT_CANCEL
 int __weak board_set_mmc_pre(struct mmc *mmc)
 {
 	return 0;
@@ -1745,23 +1735,26 @@ int mmc_init(struct mmc *mmc)
 	int err = 0;
 	unsigned start;
 
-#ifdef QUICKBOOT
-	if (mmc->has_init)
-		return 0;
+#ifdef CONFIG_MMC_INIT_CANCEL
+	if( is_usb_bootmode() == false )
+	{
+		if (mmc->has_init)
+			return 0;
 
-	if (board_set_mmc_pre(mmc)) {
-		mmc->has_init = 1;
+		if (board_set_mmc_pre(mmc)) {
+			mmc->has_init = 1;
 
-		mmc->block_dev.lun = 0;
-		mmc->block_dev.type = 0;
-		mmc->block_dev.blksz = mmc->read_bl_len;
-		mmc->block_dev.log2blksz = LOG2(mmc->block_dev.blksz);
-		mmc->block_dev.lba = lldiv(mmc->capacity, mmc->read_bl_len);
-		mmc->block_dev.vendor[0] = 0;
-		mmc->block_dev.product[0] = 0;
-		mmc->block_dev.revision[0] = 0;
+			mmc->block_dev.lun = 0;
+			mmc->block_dev.type = 0;
+			mmc->block_dev.blksz = mmc->read_bl_len;
+			mmc->block_dev.log2blksz = LOG2(mmc->block_dev.blksz);
+			mmc->block_dev.lba = lldiv(mmc->capacity, mmc->read_bl_len);
+			mmc->block_dev.vendor[0] = 0;
+			mmc->block_dev.product[0] = 0;
+			mmc->block_dev.revision[0] = 0;
 
-		init_part(&mmc->block_dev);
+			init_part(&mmc->block_dev);
+		}
 	}
 #endif
 
@@ -1777,7 +1770,7 @@ int mmc_init(struct mmc *mmc)
 		err = mmc_complete_init(mmc);
 	debug("%s: %d, time %lu\n", __func__, err, get_timer(start));
 
-#ifdef QUICKBOOT
+#ifdef CONFIG_MMC_INIT_CANCEL
 	/* dump_mmc(mmc); */
 #endif
 
@@ -1846,7 +1839,7 @@ void mmc_set_preinit(struct mmc *mmc, int preinit)
 	mmc->preinit = preinit;
 }
 
-#ifndef QUICKBOOT
+#ifndef CONFIG_MMC_INIT_CANCEL
 static void do_preinit(void)
 {
 	struct mmc *m;

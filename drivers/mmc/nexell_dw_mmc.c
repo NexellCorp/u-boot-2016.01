@@ -17,18 +17,6 @@
 #include <fdtdec.h>
 #include <libfdt.h>
 
-#ifdef CONFIG_MACH_S5P6818
-#undef QUICKBOOT
-#endif
-
-#if defined (CONFIG_TARGET_S5P4418_DAUDIO_REF) || defined (CONFIG_TARGET_S5P4418_NAVI_REF)
-#undef QUICKBOOT
-#endif
-
-#ifndef MMC_INIT_CANCEL
-#undef QUICKBOOT
-#endif
-
 DECLARE_GLOBAL_DATA_PTR;
 
 #define	DWMCI_NAME "NEXELL DWMMC"
@@ -215,7 +203,6 @@ static void nx_dw_mmc_clksel(struct dwmci_host *host)
 	dwmci_writel(host, DWMCI_CLKSEL, val);
 }
 
-#ifndef QUICKBOOT
 static void nx_dw_mmc_reset(int ch)
 {
 	int rst_id = RESET_ID_SDMMC0 + ch;
@@ -223,7 +210,6 @@ static void nx_dw_mmc_reset(int ch)
 	nx_rstcon_setrst(rst_id, 0);
 	nx_rstcon_setrst(rst_id, 1);
 }
-#endif
 
 static void nx_dw_mmc_clk_delay(struct dwmci_host *host)
 {
@@ -390,7 +376,12 @@ static int nx_dw_mmc_setup(const void *blob)
 
 		nx_dw_mmc_set_pin(host);
 		nx_dw_mmc_set_clk(host, priv->frequency * 4);
-#ifndef QUICKBOOT
+#ifdef CONFIG_MMC_INIT_CANCEL
+		if( is_usb_bootmode() == true ){
+			printf("%s() is usb boot mode !!!\n", __func__);
+			nx_dw_mmc_reset(host->dev_index);
+		}
+#else
 		nx_dw_mmc_reset(host->dev_index);
 #endif
 		nx_dw_mmc_clk_delay(host);
