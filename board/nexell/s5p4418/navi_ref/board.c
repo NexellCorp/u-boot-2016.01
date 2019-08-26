@@ -14,6 +14,7 @@
 
 #include <asm-generic/gpio.h>
 #include <nx_i2c_gpio.h>
+#include <nexell_common.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -217,10 +218,8 @@ int board_late_init(void)
 		setenv("bootcmd", "run recoveryboot");
 	}
 #endif
-#ifdef CONFIG_SYS_BURNING
-	setenv("bootcmd", "fastboot 0");
-	run_command("run bootcmd", 0);
-#endif
+
+	run_fastboot_update();
 
 	return 0;
 }
