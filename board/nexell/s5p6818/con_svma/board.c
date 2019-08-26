@@ -29,6 +29,7 @@
 #ifdef CONFIG_DM_REGULATOR_NXE2000
 #include <power/regulator.h>
 #endif
+#include <nexell_common.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -335,10 +336,7 @@ int board_late_init(void)
 	}
 #endif
 
-#ifdef CONFIG_SYS_BURNING
-	setenv("bootcmd", "fastboot 0");
-	run_command("run bootcmd", 0);
-#endif
+	run_fastboot_update();
 
 	return 0;
 }
