@@ -337,7 +337,10 @@
 	"fi;\0"
 
 #define CONFIG_RECOVERY_BOOT_CMD	\
-	"recoveryboot=not supported\0"
+	"recoveryboot=run set_ab_select;" \
+	"setenv bootargs \"${recovery_bootargs} androidboot.slot_suffix=${slot_suffix}\";" \
+	"run recovery_bootcmd_${slot_name}" \
+	"\0"
 
 /* partition number infomation */
 /* 1,2 - bootloader_a, bootloader_b */
