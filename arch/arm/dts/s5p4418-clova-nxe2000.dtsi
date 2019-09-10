@@ -70,7 +70,7 @@
 /* LDO1~4 Voltage Value(uV) = 0: 0.90 ~ 3.5V, Step = 25mV */
 /* LDO5~6 Voltage Value(uV) = 0: 0.60 ~ 3.5V, Step = 25mV */
 /* LDO7~10 Voltage Value(uV) = 0: 0.90 ~ 3.5V, Step = 25mV */
-/* #define	NXE2000_DEF_LDO1_VOL 3300000 /* OTP = 3.30V */ 
+/* #define	NXE2000_DEF_LDO1_VOL 3300000 /* OTP = 3.30V */
 #define	NXE2000_DEF_LDO1_VOL 2800000 /* OTP = 3.30V */
 #define	NXE2000_DEF_LDO2_VOL 3300000 /* OTP = 1.80V */
 #define	NXE2000_DEF_LDO3_VOL 1800000 /* OTP = 1.80V */
@@ -153,8 +153,8 @@
 #define	NXE2000_DEF_DDC5_CUR_LIMIT 1
 
 /* DCDC LIMSHUT Enable Value = 0: Disable, 1: Enable */
-#define	NXE2000_DEF_DDC1_LIMSHUT_EN 0
-#define	NXE2000_DEF_DDC2_LIMSHUT_EN 0
+#define	NXE2000_DEF_DDC1_LIMSHUT_EN 1
+#define	NXE2000_DEF_DDC2_LIMSHUT_EN 1
 #define	NXE2000_DEF_DDC3_LIMSHUT_EN 1
 #define	NXE2000_DEF_DDC4_LIMSHUT_EN 1
 #define	NXE2000_DEF_DDC5_LIMSHUT_EN 1
