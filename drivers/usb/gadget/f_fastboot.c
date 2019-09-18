@@ -1693,6 +1693,7 @@ static void rx_handler_dl_image(struct usb_ep *ep, struct usb_request *req)
 	unsigned int buffer_size = req->actual;
 	unsigned int pre_dot_num, now_dot_num;
 	unsigned int max;
+	char info[10] = {0, };
 
 	if (req->status != 0) {
 		printf("Bad status: %d\n", req->status);
@@ -1737,6 +1738,8 @@ static void rx_handler_dl_image(struct usb_ep *ep, struct usb_request *req)
 		fastboot_tx_write_str(response);
 
 		printf("\ndownloading of %d bytes finished\n", download_bytes);
+		snprintf(info, ARRAY_SIZE(info), "%d", download_bytes);
+		setenv("fb_downloadbytes", info);
 	} else {
 		max = is_high_speed ? hs_ep_out.wMaxPacketSize :
 				fs_ep_out.wMaxPacketSize;
