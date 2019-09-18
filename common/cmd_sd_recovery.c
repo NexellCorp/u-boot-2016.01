@@ -455,12 +455,14 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 	return ret;
 }
 
+
 static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
 			 char *dev, int fs_type)
 {
 	unsigned long time;
 	int i = 0, len_read = 0, ret = 0, first_fs = 0;
 	loff_t len;
+	char info[10] = {0, };
 
 	for (i = 0; i < DEV_PART_MAX; i++, fp++) {
 		if (!strcmp(fp->device, ""))
@@ -485,6 +487,9 @@ static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
 			puts(")");
 		}
 		puts("\n");
+
+		snprintf(info, ARRAY_SIZE(info), "%d", len);
+		setenv("fb_downloadbytes", info);
 
 		debug("%s.%d : %s : %s : 0x%llx, 0x%llx : %s\n", fp->device,
 		      fp->dev_no, fp->partition_name,
