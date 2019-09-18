@@ -1222,7 +1222,7 @@ static inline struct f_fastboot *func_to_fastboot(struct usb_function *f)
 static struct f_fastboot *fastboot_func;
 static unsigned int fastboot_flash_session_id;
 static unsigned int download_size;
-static unsigned int download_bytes;
+unsigned int download_bytes;
 static bool is_high_speed;
 
 static struct usb_endpoint_descriptor fs_ep_in = {

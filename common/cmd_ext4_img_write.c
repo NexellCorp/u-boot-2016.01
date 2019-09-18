@@ -11,221 +11,54 @@
 #include <mmc.h>
 #include <asm/sections.h>
 #include <part.h>
+#include <image-sparse.h>
+#include <sparse_format.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
+extern unsigned int download_bytes;
+
 #define MMC_BLOCK_SIZE		(512)
-#define SECTOR_BITS		9	/* 512B */
 
-struct ext4_file_header {
-	unsigned int magic;
-	unsigned short major;
-	unsigned short minor;
-	unsigned short file_header_size;
-	unsigned short chunk_header_size;
-	unsigned int block_size;
-	unsigned int total_blocks;
-	unsigned int total_chunks;
-	unsigned int crc32;
-};
-
-struct ext4_chunk_header {
-	unsigned short type;
-	unsigned short reserved;
-	unsigned int chunk_size;
-	unsigned int total_size;
-};
-
-#define EXT4_FILE_HEADER_MAGIC	0xED26FF3A
-#define EXT4_FILE_HEADER_MAJOR	0x0001
-#define EXT4_FILE_HEADER_MINOR	0x0000
-#define EXT4_FILE_BLOCK_SIZE	0x1000
-
-#define EXT4_FILE_HEADER_SIZE	(sizeof(struct ext4_file_header))
-#define EXT4_CHUNK_HEADER_SIZE	(sizeof(struct ext4_chunk_header))
-
-
-#define EXT4_CHUNK_TYPE_RAW		0xCAC1
-#define EXT4_CHUNK_TYPE_FILL		0xCAC2
-#define EXT4_CHUNK_TYPE_NONE		0xCAC3
-
-#define WRITE_SECTOR			65536	/* 32 MB */
-
-typedef int (*WRITE_RAW_CHUNK_CB)(char *data, unsigned int sector,
-				  unsigned int sector_size);
-
-int set_write_raw_chunk_cb(WRITE_RAW_CHUNK_CB cb);
-extern ulong mmc_bwrite(int dev_num, lbaint_t start, lbaint_t blkcnt,
-			const void *src);
-
-int write_raw_chunk(char *data, unsigned int sector,
-			   unsigned int sector_size);
-static WRITE_RAW_CHUNK_CB write_raw_chunk_cb = write_raw_chunk;
-
-int set_write_raw_chunk_cb(WRITE_RAW_CHUNK_CB cb)
+static lbaint_t mmc_sparse_write(struct sparse_storage *info,
+        lbaint_t blk, lbaint_t blkcnt, const void *buffer)
 {
-	write_raw_chunk_cb = cb;
+#define SPARSE_FILL_BUF_SIZE (2 * 1024 * 1024)
 
-	return 0;
+
+	block_dev_desc_t *dev_desc = (block_dev_desc_t *) info->priv;
+    ulong ret = 0;
+    int fill_buf_num_blks, cnt;
+
+    if ((unsigned long)buffer & (CONFIG_SYS_CACHELINE_SIZE - 1)) {
+
+        fill_buf_num_blks = SPARSE_FILL_BUF_SIZE / info->blksz;
+
+        while (blkcnt) {
+
+            if (blkcnt > fill_buf_num_blks)
+                cnt = fill_buf_num_blks;
+            else
+                cnt = blkcnt;
+
+            ret += dev_desc->block_write(dev_desc->dev, blk, cnt, buffer);
+
+            blk += cnt;
+            blkcnt -= cnt;
+            buffer = (void *)((unsigned long)buffer + cnt * info->blksz);
+
+        }
+
+    } else {
+		ret = dev_desc->block_write(dev_desc->dev, blk, blkcnt, buffer);
+    }
+
+    return ret;
 }
-
-int check_compress_ext4(char *img_base, unsigned long long parti_size)
+static lbaint_t mmc_sparse_reserve(struct sparse_storage *info,
+        lbaint_t blk, lbaint_t blkcnt)
 {
-	struct ext4_file_header *file_header;
-
-	file_header = (struct ext4_file_header *)img_base;
-
-	if (file_header->magic != EXT4_FILE_HEADER_MAGIC)
-		return -1;
-
-	if (file_header->major != EXT4_FILE_HEADER_MAJOR) {
-		printf("Invalid Version Info! 0x%2x\n", file_header->major);
-		return -1;
-	}
-
-	if (file_header->file_header_size != EXT4_FILE_HEADER_SIZE) {
-		printf("Invalid File Header Size! 0x%8x\n",
-		       file_header->file_header_size);
-		return -1;
-	}
-
-	if (file_header->chunk_header_size != EXT4_CHUNK_HEADER_SIZE) {
-		printf("Invalid Chunk Header Size! 0x%8x\n",
-		       file_header->chunk_header_size);
-		return -1;
-	}
-
-	if (file_header->block_size != EXT4_FILE_BLOCK_SIZE) {
-		printf("Invalid Block Size! 0x%8x\n", file_header->block_size);
-		return -1;
-	}
-
-	if ((parti_size/file_header->block_size)  < file_header->total_blocks) {
-		printf("Invalid Volume Size!");
-		printf("Image is bigger than partition size!\n");
-		printf("partion size %lld ", parti_size);
-		printf(" image size %lld\n",
-		       (uint64_t)file_header->total_blocks *
-		       file_header->block_size);
-		printf("Hang...\n");
-		while (1)
-			;
-	}
-
-	/* image is compressed ext4 */
-	return 0;
-}
-
-int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
-{
-	char run_cmd[128] = {0, };
-	unsigned char *tmp_align;
-	char *ptr;
-	int write_size;
-	int write_sector_size;
-	int remaining_sector_size;
-	unsigned int write_sector;
-	int ret;
-	bool big = false;
-	unsigned long fastboot_buf_end =
-		(unsigned long)CONFIG_FASTBOOT_BUF_ADDR +
-		(unsigned long)CONFIG_FASTBOOT_BUF_SIZE;
-
-	tmp_align = (unsigned char *)(fastboot_buf_end & 0xffffffff);
-	ptr = data;
-	remaining_sector_size = sector_size;
-	write_sector = sector;
-
-	if (sector_size > WRITE_SECTOR) {
-		big = true;
-		debug("sector size ===> %d\n", sector_size);
-	}
-
-	while (remaining_sector_size > 0) {
-		if (remaining_sector_size >= WRITE_SECTOR) {
-			write_size = WRITE_SECTOR * MMC_BLOCK_SIZE;
-			write_sector_size = WRITE_SECTOR;
-		} else {
-			write_size = remaining_sector_size *
-				MMC_BLOCK_SIZE;
-			write_sector_size = remaining_sector_size;
-		}
-
-		if (big)
-			debug("ptr %p, write_sector %d, write_sector_size %d,\
-			      write_size 0x%x, remaining_sector_size %d\n",
-			      ptr, write_sector, write_sector_size,
-			      write_size, remaining_sector_size);
-
-		memcpy(tmp_align, ptr, write_size);
-		snprintf(run_cmd, sizeof(run_cmd), "mmc write 0x%x 0x%x 0x%x",
-			(int)((ulong)tmp_align),
-			write_sector, write_sector_size);
-		ret = run_command(run_cmd, 0);
-		if (ret != 0) {
-			printf("failed to run_command %s\n", run_cmd);
-			return ret;
-		}
-
-		remaining_sector_size -= write_sector_size;
-		write_sector += write_sector_size;
-		ptr += write_size;
-	}
-
-	return 0;
-}
-
-int write_compressed_ext4(char *img_base, unsigned int sector_base)
-{
-	unsigned int sector_size;
-	int total_chunks;
-	struct ext4_chunk_header *chunk_header;
-	struct ext4_file_header *file_header;
-
-	file_header = (struct ext4_file_header *)img_base;
-	total_chunks = file_header->total_chunks;
-
-	debug("total chunk = %d\n", total_chunks);
-
-	img_base += EXT4_FILE_HEADER_SIZE;
-
-	while (total_chunks) {
-		chunk_header = (struct ext4_chunk_header *)img_base;
-		sector_size =
-			(chunk_header->chunk_size * file_header->block_size)
-			>> SECTOR_BITS;
-
-		switch (chunk_header->type) {
-		case EXT4_CHUNK_TYPE_RAW:
-			debug("raw_chunk\n");
-			write_raw_chunk_cb(img_base + EXT4_CHUNK_HEADER_SIZE,
-					   sector_base, sector_size);
-			sector_base += sector_size;
-			break;
-
-		case EXT4_CHUNK_TYPE_FILL:
-			printf("*** fill_chunk ***\n");
-			sector_base += sector_size;
-			break;
-
-		case EXT4_CHUNK_TYPE_NONE:
-			debug("none chunk\n");
-			sector_base += sector_size;
-			break;
-
-		default:
-			printf("*** unknown chunk type ***\n");
-			sector_base += sector_size;
-			break;
-		}
-		total_chunks--;
-		debug("remain chunks = %d\n", total_chunks);
-
-		img_base += chunk_header->total_size;
-	};
-
-	debug("write done\n");
-	return 0;
+    return blkcnt;
 }
 
 int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
@@ -280,14 +113,32 @@ int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
 	dst_addr = parts[partno-1][0];
 	part_len = parts[partno-1][1];
 	blk = (dst_addr/MMC_BLOCK_SIZE);
-	if (0 == check_compress_ext4((char *)p, part_len)) {
-		printf("0x%llx(%d) ~ 0x%llx(%d):\n", dst_addr,
-		       (unsigned int)blk, mem_len,
-		       (unsigned int)cnt);
 
-		ret = write_compressed_ext4((char *)p, blk);
-		printf("%s\n", ret ? "Fail" : "Done");
+	if (is_sparse_image((void *)p)) {
+		printf("sparse image fusing\n");
+		struct sparse_storage sparse;
+		disk_partition_t info;
+
+		if(num > 4 && partno >= 4)
+			partno += 1;
+
+		if (get_partition_info(desc, partno, &info)) {
+			printf("Bad partition index:%d \n",	partno);
+		}
+        sparse.blksz = info.blksz;
+        sparse.start = info.start;
+        sparse.size = info.size;
+        sparse.write = mmc_sparse_write;
+		sparse.reserve = mmc_sparse_reserve;
+
+		printf("Flashing sparse image at offset " LBAFU "\n",
+               info.start);
+		sparse.priv = desc;
+
+		write_sparse_image(&sparse, argv[1], p,
+				                           download_bytes);
 		return 1;
+
 	}
 	goto do_write;
 

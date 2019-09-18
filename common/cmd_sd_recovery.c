@@ -455,6 +455,8 @@ static int update_sd_img_wirte(struct update_sdcard_part *fp,
 	return ret;
 }
 
+extern unsigned int download_bytes;
+
 static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
 			 char *dev, int fs_type)
 {
@@ -485,6 +487,8 @@ static int sdcard_update(struct update_sdcard_part *fp, unsigned long addr,
 			puts(")");
 		}
 		puts("\n");
+
+		download_bytes = len;
 
 		debug("%s.%d : %s : %s : 0x%llx, 0x%llx : %s\n", fp->device,
 		      fp->dev_no, fp->partition_name,
