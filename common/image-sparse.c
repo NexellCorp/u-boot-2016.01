@@ -71,7 +71,6 @@ void write_sparse_image(
 	int fill_buf_num_blks;
 	int i;
 	int j;
-
 	fill_buf_num_blks = CONFIG_FASTBOOT_FLASH_FILLBUF_SIZE / info->blksz;
 
 	/* Read and skip over sparse image header */
@@ -135,7 +134,7 @@ void write_sparse_image(
 		}
 
 		chunk_data_sz = (uint64_t)sparse_header->blk_sz * (uint64_t)chunk_header->chunk_sz;
-		blkcnt = chunk_data_sz / info->blksz;
+		blkcnt = div_u64(chunk_data_sz, info->blksz);
 		switch (chunk_header->chunk_type) {
 		case CHUNK_TYPE_RAW:
 			if (chunk_header->total_sz !=
@@ -228,7 +227,7 @@ void write_sparse_image(
 				i += j;
 			}
 			bytes_written += blkcnt * info->blksz;
-			total_blocks += chunk_data_sz / sparse_header->blk_sz;
+			total_blocks += div_u64(chunk_data_sz, sparse_header->blk_sz);
 			free(fill_buf);
 			break;
 
