@@ -18,6 +18,7 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #define MMC_BLOCK_SIZE		(512)
 #define SPARSE_FILL_BUF_SIZE (2 * 1024 * 1024)
+#define WRITE_SECTOR            65536   /* 32 MB */
 
 static lbaint_t mmc_sparse_write(struct sparse_storage *info,
 		lbaint_t blk, lbaint_t blkcnt, const void *buffer)
@@ -56,6 +57,65 @@ static lbaint_t mmc_sparse_reserve(struct sparse_storage *info,
         lbaint_t blk, lbaint_t blkcnt)
 {
 	return blkcnt;
+}
+
+int write_raw_chunk(char *data, unsigned int sector, unsigned int sector_size)
+{
+	char run_cmd[128] = {0, };
+	unsigned char *tmp_align;
+	char *ptr;
+	int write_size;
+	int write_sector_size;
+	int remaining_sector_size;
+	unsigned int write_sector;
+	int ret;
+	bool big = false;
+	unsigned long fastboot_buf_end =
+		(unsigned long)CONFIG_FASTBOOT_BUF_ADDR +
+		(unsigned long)CONFIG_FASTBOOT_BUF_SIZE;
+
+	tmp_align = (unsigned char *)(fastboot_buf_end & 0xffffffff);
+	ptr = data;
+	remaining_sector_size = sector_size;
+	write_sector = sector;
+
+	if (sector_size > WRITE_SECTOR) {
+		big = true;
+		debug("sector size ===> %d\n", sector_size);
+	}
+
+	while (remaining_sector_size > 0) {
+		if (remaining_sector_size >= WRITE_SECTOR) {
+			write_size = WRITE_SECTOR * MMC_BLOCK_SIZE;
+			write_sector_size = WRITE_SECTOR;
+		} else {
+			write_size = remaining_sector_size *
+				MMC_BLOCK_SIZE;
+			write_sector_size = remaining_sector_size;
+		}
+
+		if (big)
+			debug("ptr %p, write_sector %d, write_sector_size %d,\
+				write_size 0x%x, remaining_sector_size %d\n",
+				ptr, write_sector, write_sector_size,
+				write_size, remaining_sector_size);
+
+		memcpy(tmp_align, ptr, write_size);
+		snprintf(run_cmd, sizeof(run_cmd), "mmc write 0x%x 0x%x 0x%x",
+			(int)((ulong)tmp_align),
+			write_sector, write_sector_size);
+		ret = run_command(run_cmd, 0);
+		if (ret != 0) {
+			printf("failed to run_command %s\n", run_cmd);
+			return ret;
+		}
+
+		remaining_sector_size -= write_sector_size;
+		write_sector += write_sector_size;
+		ptr += write_size;
+	}
+
+	return 0;
 }
 
 int do_compressed_ext4_write(cmd_tbl_t *cmdtp, int flag, int argc,
