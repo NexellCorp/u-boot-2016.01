@@ -100,6 +100,11 @@ config TARGET_S5P4418_CONVERGENCE_DAUDIO
 	help
 		Support for s5p4418 convergence_daudio platform.
 
+config TARGET_S5P4418_SVT_REF
+	bool "S5P4418_SVT_REF"
+	help
+		Support for s5p4418 svt_ref platform.
+
 endchoice
 config SYS_VENDOR
 	default "nexell"
