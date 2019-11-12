@@ -1,0 +1,6 @@
+S5P4418 SVT BOARD
+M:  ken kim <kenkim@nexell.co.kr>
+S:  Maintained
+F:  board/s5p4418/svt_ref/
+F:  include/configs/s5p4418_svt_ref.h
+F:  configs/s5p4418_svt_ref_defconfig
