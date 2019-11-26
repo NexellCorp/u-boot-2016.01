@@ -16,6 +16,11 @@ config TARGET_AVN_REF
 	help
 	  Support for S5P6818 avn ref platform.
 
+config TARGET_SVT_REF
+	bool "SVT_REF"
+	help
+	  Support for S5P6818 svt ref platform.
+
 config TARGET_KICK_ST
 	bool "KICK_ST"
 	help
