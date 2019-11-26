@@ -1,0 +1,6 @@
+SVT_REF BOARD
+M:  kjlee81 <kjlee@nexell.co.kr>
+S:  Maintained
+F:  board/s5p6818/svt_ref/
+F:  include/configs/s5p6818_svt_ref.h
+F:  configs/s5p6818_svt_ref_defconfig
