@@ -1,0 +1,77 @@
+/*
+ * (C) Copyright 2016 Nexell
+ *
+ * SPDX-License-Identifier: GPL-2.0+
+ */
+
+/dts-v1/;
+#include "s5p6818.dtsi"
+
+/ {
+	model = "Svt reference board based on Nexell s5p6818";
+	cpu-model = "S5p6818";
+
+	compatible = "nexell,svt-ref", "nexell,svt",
+		   "nexell,s5p6818";
+
+	mmc0:mmc@c0062000 {
+		frequency = <50000000>;
+		nexell,drive_dly = <0x0>;
+		nexell,drive_shift = <0x02>;
+		nexell,sample_dly = <0x00>;
+		nexell,sample_shift = <0x01>;
+		status = "okay";
+	};
+
+	ehci:usbhost@c0030000 {
+		status = "okay";
+	};
+
+	dwc2otg@c0040000 {
+		status = "okay";
+	};
+
+	dp0:dp@c0102800 {
+	        status = "okay";
+	        module = <0>;
+	        lcd-type = "lvds";
+
+		dp-device {
+			format = <0>;	/* 0:VESA, 1:JEIDA */
+		};
+
+		dp-sync {
+			h_active_len = <1024>;
+			h_front_porch = <160>;
+			h_back_porch = <140>;
+			h_sync_width = <20>;
+			v_active_len = <600>;
+			v_front_porch = <12>;
+			v_back_porch = <20>;
+			v_sync_width = <3>;
+		};
+
+		dp-ctrl {
+			clk_src_lv0 = <3>;
+			clk_div_lv0 = <15>;
+			clk_src_lv1 = <7>;
+			clk_div_lv1 = <1>;
+			out_format = <2>;
+		};
+
+		dp-planes {
+			layer_top {
+				screen_width = <1024>;
+				screen_height = <600>;
+				back_color = <0x0>;
+			};
+
+			layer_1 {	/* RGB 1 */
+				width = <1024>;
+				height = <600>;
+				format = <0x06530000>;
+				pixel_byte = <4>;
+			};
+		};
+	};
+};
