@@ -285,7 +285,7 @@
 #endif
 
 /*-----------------------------------------------------------------------
- * Support Android Boot Image
+ * Support recovery boot
 */
 #define CONFIG_ANDROID_BOOT_IMAGE
 #define CONFIG_SUPPORT_RAW_INITRD
@@ -294,156 +294,111 @@
 /*-----------------------------------------------------------------------
  * ENV
  */
-#define CONFIG_ROOT_DEV		0
-#define CONFIG_BOOT_PART	1
+#define CONFIG_ROOT_DEV 0
+#define CONFIG_BOOT_PART 1
 
-#define CONFIG_KERNEL_DTB_ADDR 0x7A000000
-#define CONFIG_BMP_LOAD_ADDR 0xA2000000
+#define CONFIG_KERNEL_DTB_ADDR  0x7A000000
+#define CONFIG_BMP_LOAD_ADDR    0xA1000000
 
 /* need to relocate env address */
 #define CONFIG_SYS_EXTRA_ENV_RELOC
 
-#define CONFIG_EXTRA_ENV_BOOT_LOGO				\
-	"splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0"	\
-	"splashfile=logo.bmp\0"				\
-	"splashsource=mmc_fs\0"				\
-	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0"	\
-	"splashpos=m,m\0"					\
-	"fb_addr=\0"						\
-	"dtb_reserve="						\
-	"if test -n \"$fb_addr\"; then "	\
-	"fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
-	"fdt resize;"						\
-	"fdt mk /reserved-memory display_reserved;"		\
-	"fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>;" \
+#define CONFIG_EXTRA_ENV_BOOT_LOGO \
+	"splashimage=" __stringify(CONFIG_BMP_LOAD_ADDR)"\0" \
+	"splashfile=logo.bmp\0" \
+	"splashsource=mmc_fs\0" \
+	"splashoffset=" __stringify(CONFIG_SPLASH_MMC_OFFSET)"\0" \
+	"fb_addr=\0" \
+	"dtb_reserve=" \
+	"if test -n \"$fb_addr\"; then " \
+	"fdt addr " __stringify(CONFIG_KERNEL_DTB_ADDR)"; " \
+	"fdt resize; " \
+	"fdt mk /reserved-memory display_reserved; " \
+	"fdt set /reserved-memory/display_reserved reg <$fb_addr 0x300000>; " \
 	"fi;\0"
 
-#define CONFIG_RECOVERY_BOOT_CMD	\
-	"recoveryboot=run set_ab_select;" \
-	"setenv bootargs \"${recovery_bootargs} androidboot.slot_suffix=${slot_suffix}\";" \
-	"run recovery_bootcmd_${slot_name}" \
-	"\0"
+#define CONFIG_RECOVERY_BOOT_CMD \
+	"recoveryboot=run ramfsboot\0"
 
-/* partition number infomation */
-/* 1,2 - bootloader_a, bootloader_b */
-/* 3,5 - boot_a, boot_b */
-/* 6,7 - dtbo_a, dtbo_b */
-/* 8,9 - system_a, system_b */
-/* 10(A),11(B) - vendor_a, vendor_b */
-/* 12(C)   - misc */
-/* 13(D)   - data */
-#define CONTROL_PARTITION C /* "misc" */
-
-#if defined(CONFIG_CMD_AB_SELECT)
-#ifdef QUICKBOOT
-#define SUCESS_AB_SELECT ""
+#ifdef CONFIG_BOOTANIM
+#define CONFIG_BOOTCMD "bootargs=console=ttyAMA0,115200n8 " \
+	"root=/dev/mmcblk0p3 rw rootfstype=ext4 " \
+	"init=/usr/bin/bootanimation " \
+	"loglevel=4 rootwait quiet " \
+	"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 " \
+	"coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
 #else
-#define SUCESS_AB_SELECT \
-	"echo ab_select get slot_name success;"
+#define CONFIG_BOOTCMD "bootargs=console=ttyAMA0,115200n8 " \
+	"root=/dev/mmcblk0p3 rw rootfstype=ext4 " \
+	"loglevel=4 rootwait quiet " \
+	"printk.time=1 consoleblank=0 nx_drm.fb_buffers=3 " \
+	"coherent_pool=4M systemd.log_level=info systemd.show_status=false\0"
 #endif
-#define SET_AB_SELECT \
-	"if ab_select slot_name mmc 0:${misc_partition_num}; " \
-	"then " \
-	SUCESS_AB_SELECT	\
-	"else " \
-		"echo ab_select get slot_name failed, set slot \"a\";" \
-		"setenv slot_name a;" \
-	"fi;" \
-	"setenv slot_suffix _${slot_name};" \
-	"setenv android_boot_option androidboot.slot_suffix=${slot_suffix};" \
-	"setenv android_boot_ab run bootcmd_${slot_name};" \
-	"if test ${slot_name} = a ; " \
-	"then " \
-		"setenv root_dev_blk_system_ab /dev/mmcblk0p8 ;" \
-	"else " \
-		"setenv root_dev_blk_system_ab /dev/mmcblk0p9 ;" \
-	"fi;" \
-	"setenv bootargs_ab1 root=${root_dev_blk_system_ab};" \
-	"setenv bootargs_ab2 ${android_boot_option};"
-#else
-#define SET_AB_SELECT ""
-#endif /* CONFIG_CMD_AB_SELECT */
 
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-	"fdt_high=0xffffffff\0"		\
-	"bootcmd_set_rearcam=setenv bootargs \"${bootargs} nx_rearcam=${rear_cam}\" \0" \
-	"initrd_high=0xffffffff\0"	\
-	"kerneladdr=0x71008000\0"	\
-	"kernel_file=zImage\0"		\
-	"fdtaddr=0x7A000000\0"		\
-	"misc_partition_num=" __stringify(CONTROL_PARTITION) "\0"       \
-	"set_ab_select=" \
-		SET_AB_SELECT \
-		"\0" \
-	"set_bootargs_ab1=setenv bootargs \"${bootargs} ${bootargs_ab1}\" \0" \
-	"set_bootargs_ab2=setenv bootargs \"${bootargs} ${bootargs_ab2}\" \0" \
-	"change_devicetree=run set_camera_input\0" \
-	"set_camera_input=" \
-	"fdt addr "__stringify(CONFIG_KERNEL_DTB_ADDR)";"	\
-	"if test ${rear_cam} -eq 2; then " \
-		"fdt set /soc/clipper0 status okay;" \
-		"fdt set /soc/decimator_0 status okay;" \
-		"fdt set /soc/mipi_csi status okay;" \
-	"elif test ${rear_cam} -eq 1; then " \
-		"fdt set /soc/clipper1 status okay;" \
-		"fdt set /soc/decimator_1 status okay;" \
-	"else " \
-		"if test ${cam_input} -eq 0; then " \
-			"setenv bootargs ${bootargs} ${nxquickrear_args_0}; "\
-			"fdt set /soc/clipper1 status okay;" \
-			"fdt set /soc/decimator_1 status okay;" \
-		"elif test ${cam_input} -eq 1; then " \
-			"setenv bootargs ${bootargs} ${nxquickrear_args_1}; "\
-			"fdt set /soc/clipper6 status okay;" \
-			"fdt set /soc/decimator6 status okay;" \
-		"fi; " \
-	"fi;\0" \
-	"bootcmd_set_ab=run set_ab_select;" \
-			"run set_bootargs_ab1;" \
-			"run set_bootargs_ab2;" \
-			"\0"                    \
-	"bootcmd=run bootcmd_set_ab;run bootcmd_set_rearcam; run android_boot_ab\0" \
-	"load_fdt="			\
-		"if test -z \"$fdtfile\"; then "                        \
-		"loop=$board_rev; "					\
-		"number=$board_rev: "					\
-		"success=0; "						\
-		"until test $loop -eq 0 || test $success -ne 0; do "	\
-			"if test $loop -lt 10; then "			\
-				"number=0$loop; "			\
-			"else number=$loop; "				\
-			"fi; "						\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-svt_ref-rev00.dtb && setexpr success 1; " \
-			"setexpr loop $loop - 1; "			\
-			"done; "					\
-		"if test $success -eq 0; then "				\
-			"ext4load mmc $rootdev:$bootpart $fdtaddr s5p4418-svt_ref-rev00.dtb;"	\
-		"fi; "							\
-		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "      \
-		"fi; \0"						\
-	"rootdev=" __stringify(CONFIG_ROOT_DEV) "\0"			\
-	"bootpart=" __stringify(CONFIG_BOOT_PART) "\0"			\
-	"bootargs=console=ttyAMA0,115200n8 root=/dev/mmcblk0p6 rw rootfstype=ext4 loglevel=4 rootwait quiet " \
-		"printk.time=1 consoleblank=0 coherent_pool=4M systemd.log_level=info systemd.show_status=false " \
-		"nx_drm.fb_buffers=3 nx_drm.fb_pan_crtcs=0x1 nx_drm.fb_conns=1 nx_drm.fb_argb=1 \0" \
-	"boot_cmd_mmcboot="   \
-		"check_hw;ext4load mmc ${rootdev}:${bootpart} $kerneladdr $kernel_file;run load_fdt;" \
-		"bootz $kerneladdr - $fdtaddr\0" \
-	"mmcboot=run boot_cmd_mmcboot \0"           \
-	"boot_cmd_ramfsboot=ext4load mmc 0:1 0x71008000 zImage; " \
-			"ext4load mmc 0:1 0x79000000 uInitrd; " \
-			"ext4load mmc 0:1 0x7A000000 s5p4418-svt_ref-rev00.dtb; " \
-			"bootz 0x71008000 0x79000000 0x7A000000\0" \
-	"ramfsboot=setenv bootargs console=ttyAMA3,115200n8 " \
-		"root=/dev/ram0 loglevel=4 printk.time=1 consoleblank=0 nx_drm.fb_buffers=3; " \
-	"run boot_cmd_ramfsboot \0" \
-	CONFIG_RECOVERY_BOOT_CMD \
-	CONFIG_EXTRA_ENV_BOOT_LOGO
-
-#ifdef QUICKBOOT
-#define CONFIG_SYS_CONSOLE_INFO_QUIET
-#define CONFIG_BOOST_MMC
-#define CONFIG_MMC_INIT_CANCEL
-#endif
+#define CONFIG_EXTRA_ENV_SETTINGS                                              \
+	"fdt_high=0xffffffff\0"                                                \
+	"initrd_high=0xffffffff\0"                                             \
+	"kerneladdr=0x71008000\0"                                              \
+	"kernel_file=zImage\0"                                                 \
+	"fdtaddr=0x7A000000\0"                                                 \
+	"load_fdt="                                                            \
+	"if test -z \"$fdtfile\"; then "                                       \
+	"loop=$board_rev; "                                                    \
+	"number=$board_rev: "                                                  \
+	"success=0; "                                                          \
+	"until test $loop -eq 0 || test $success -ne 0; do "                   \
+	"if test $loop -lt 10; then "                                          \
+	"number=0$loop; "                                                      \
+	"else number=$loop; "                                                  \
+	"fi; "                                                                 \
+	"ext4load mmc $rootdev:$bootpart $fdtaddr "                            \
+	"s5p4418-svt_ref-rev${number}.dtb && setexpr success 1; "          \
+	"setexpr loop $loop - 1; "                                             \
+	"done; "                                                               \
+	"if test $success -eq 0; then "                                        \
+	"ext4load mmc $rootdev:$bootpart $fdtaddr "                            \
+	"s5p4418-svt_ref-rev00.dtb;"                                       \
+	"fi; "                                                                 \
+	"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "             \
+	"fi; \0"                                                               \
+	"rootdev=" __stringify(                                                \
+		CONFIG_ROOT_DEV) "\0" \
+			"bootpart=" __stringify(                          \
+				CONFIG_BOOT_PART) "\0"                        \
+					CONFIG_BOOTCMD			   \
+						"boot_cmd_mmcboot="         \
+						"check_hw;ext4load mmc "    \
+						"${rootdev}:${bootpart} "   \
+						"$kerneladdr "              \
+						"$kernel_file;run "         \
+						"load_fdt;"                 \
+						"run dtb_reserve;"          \
+						"bootz $kerneladdr - "      \
+						"$fdtaddr\0"                \
+						"mmcboot=run "              \
+						"boot_cmd_mmcboot \0"       \
+						"boot_cmd_ramfsboot="       \
+						"ext4load mmc 0:1 "         \
+						"0x71008000 zImage; "       \
+						"ext4load mmc 0:1 "         \
+						"0x79000000 uInitrd; "      \
+						"ext4load mmc 0:1 "         \
+						"0x7A000000 "               \
+						"s5p4418-svt_ref-"      \
+						"rev00.dtb; "               \
+						"run dtb_reserve; "         \
+						"bootz 0x71008000 "         \
+						"0x79000000 0x7A000000\0"   \
+						"ramfsboot=setenv "         \
+						"bootargs "                 \
+						"console=ttyAMA0,115200n8 " \
+						"root=/dev/ram0 "           \
+						"loglevel=4 printk.time=1 " \
+						"consoleblank=0 "           \
+						"nx_drm.fb_buffers=3; "     \
+						"run boot_cmd_ramfsboot \0" \
+						"bootcmd=run mmcboot\0"	   \
+						CONFIG_RECOVERY_BOOT_CMD \
+						CONFIG_EXTRA_ENV_BOOT_LOGO
 
 #endif /* __CONFIG_H__ */
