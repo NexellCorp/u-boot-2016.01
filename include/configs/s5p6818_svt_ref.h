@@ -31,8 +31,6 @@
 #define	CONFIG_SYS_SDRAM_SIZE			CONFIG_SYS_MEM_SIZE - \
 	CONFIG_SYS_RESERVE_MEM_SIZE
 
-#define	CONFIG_SYS_MALLOC_LEN			(32*1024*1024)
-
 /* fastboot buffer start, size */
 #define	CONFIG_FASTBOOT_BUF_ADDR		0x51000000
 #define	CONFIG_FASTBOOT_BUF_SIZE		0x27000000
@@ -46,6 +44,19 @@
 
 /* dram 1 bank num */
 #define CONFIG_NR_DRAM_BANKS		1
+
+/* malloc() pool */
+#define CONFIG_MEM_MALLOC_START			(0x44000000)
+/* more than 2M for ubifs: MAX 16M */
+#define CONFIG_MEM_MALLOC_LENGTH		(16*1024*1024)
+
+/* relocate_code and  board_init_r */
+#define CONFIG_SYS_MALLOC_END	(CONFIG_MEM_MALLOC_START + \
+	CONFIG_MEM_MALLOC_LENGTH)
+
+/* board_init_f, more than 2M for ubifs */
+#define CONFIG_SYS_MALLOC_LEN \
+	(CONFIG_MEM_MALLOC_LENGTH - 0x8000)
 
 /* kernel load address */
 #define CONFIG_SYS_LOAD_ADDR		0x48000000
@@ -273,6 +284,23 @@
  */
 #define CONFIG_FIT_BEST_MATCH
 #define CONFIG_OF_LIBFDT
+
+/*-----------------------------------------------------------------------
+ * GMAC
+ */
+#define CONFIG_PHY_REALTEK
+
+#define CONFIG_ETHPRIME			"RTL8211"
+#define CONFIG_PHY_ADDR			3
+
+#define CONFIG_DW_ALTDESCRIPTOR
+
+#define CONFIG_PHY_GIGE
+#define CONFIG_MII
+#define CONFIG_CMD_MII
+
+/* NET */
+#define CONFIG_CMD_GEN_ETHADDR
 
 /*-----------------------------------------------------------------------
  * VIDEO
