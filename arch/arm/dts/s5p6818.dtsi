@@ -51,6 +51,8 @@
 	};
 
 	gmac:ethernet@c0060000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
 		compatible = "nexell,nexell-gmac";
 		reg = <0xc0060000 0x8000>;
 		phy-mode = "rgmii";
