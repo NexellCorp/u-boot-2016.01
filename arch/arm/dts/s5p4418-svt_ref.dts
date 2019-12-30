@@ -14,6 +14,10 @@
 
 	compatible = "nexell,s5p4418";
 
+	aliases {
+		ethernet0 = &gmac;
+	};
+
 	dp0:dp@c0102800 {
 	        status = "okay";
 	        module = <0>;
@@ -226,4 +230,9 @@
 			regulator-boot-on = <1>;
 		};
 	}; /* voltage-regulators */
+};
+
+&gmac {
+	mac-address = [000000000000]; /* Filled in by U-Boot */
+	status = "okay";
 };
