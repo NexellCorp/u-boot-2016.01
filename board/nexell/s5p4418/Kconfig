@@ -21,6 +21,11 @@ config TARGET_S5P4418_NAVI_REF
 	help
 	  Support for s5p4418 navi_ref platform.
 
+config TARGET_S5P4418_VTK_REF
+	bool "S5P4418_VTK_REF"
+	help
+	  Support for s5p4418 vtk_ref platform.
+
 config TARGET_S5P4418_DAUDIO_REF
 	bool "S5P4418_DAUDIO_REF"
 	help
