@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3980421a_c2d029c0",
+        "filename": "arch/arm/dts/s5p4418-vtk-ref.dts",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1015514
+      },
+      "writtenOn": "2020-03-10T02:30:54Z",
+      "side": 1,
+      "message": "Please change the author.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 37
+      },
+      "revId": "56be59eddc62b4328bec4dec1abf9e26392744d8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53809a82_14da6176",
+        "filename": "board/nexell/s5p4418/vtk_ref/MAINTAINERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1015514
+      },
+      "writtenOn": "2020-03-10T02:30:54Z",
+      "side": 1,
+      "message": "Please change the board name.\nPlease change the author.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 2,
+        "endChar": 39
+      },
+      "revId": "56be59eddc62b4328bec4dec1abf9e26392744d8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ab4aec2_d4c71c9e",
+        "filename": "board/nexell/s5p4418/vtk_ref/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1015514
+      },
+      "writtenOn": "2020-03-10T02:30:54Z",
+      "side": 1,
+      "message": "Please change the author.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 38
+      },
+      "revId": "56be59eddc62b4328bec4dec1abf9e26392744d8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa83b6b5_4099d3b2",
+        "filename": "board/nexell/s5p4418/vtk_ref/\\",
+        "patchSetId": 1
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1015514
+      },
+      "writtenOn": "2020-03-10T02:30:54Z",
+      "side": 1,
+      "message": "The file is a duplicate.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 339,
+        "endChar": 6
+      },
+      "revId": "56be59eddc62b4328bec4dec1abf9e26392744d8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e3853a08_83677195",
+        "filename": "board/nexell/s5p4418/vtk_ref/board.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1015514
+      },
+      "writtenOn": "2020-03-10T02:30:54Z",
+      "side": 1,
+      "message": "Please change the author.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 39
+      },
+      "revId": "56be59eddc62b4328bec4dec1abf9e26392744d8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b28bca72_4b96a7f4",
+        "filename": "board/nexell/s5p4418/vtk_ref/spl_board.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1015514
+      },
+      "writtenOn": "2020-03-10T02:30:54Z",
+      "side": 1,
+      "message": "Please change the author.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 39
+      },
+      "revId": "56be59eddc62b4328bec4dec1abf9e26392744d8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f3f9aa3_016b3f79",
+        "filename": "include/configs/s5p4418_vtk_ref.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1015514
+      },
+      "writtenOn": "2020-03-10T02:30:54Z",
+      "side": 1,
+      "message": "Please change the author.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 39
+      },
+      "revId": "56be59eddc62b4328bec4dec1abf9e26392744d8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
