@@ -222,6 +222,29 @@ static void set_rear_cam(u32 rear_cam)
 	setenv("rear_cam", info);
 }
 
+u32 isSdCard_sub_board;
+
+u32 get_SdCard_sub_board_status(void)
+{
+	return isSdCard_sub_board;
+}
+
+static void check_SdCard_sub_board_status(void)
+{
+	u32 val = 0;
+
+	val = nx_gpio_get_input_value(gpio_d, 8);
+	isSdCard_sub_board = val;
+}
+
+static void set_SdCard_sub_board_status(u32 sub_board)
+{
+	char info[64] = {0, };
+
+	snprintf(info, ARRAY_SIZE(info), "%d", sub_board);
+	setenv("sub_board", info);
+}
+
 int board_init(void)
 {
 #ifdef CONFIG_REVISION_TAG
@@ -238,6 +261,7 @@ int board_init(void)
 #ifndef QUICKBOOT
 	printf("rear cam: \t%d\n", rear_cam);
 #endif
+	check_SdCard_sub_board_status();
 
 	board_backlight_disable();
 #ifdef CONFIG_MCU_DOWNLOAD
@@ -263,6 +287,7 @@ int board_late_init(void)
 #endif
 	set_cam_input(cam_input);
 	set_rear_cam(rear_cam);
+	set_SdCard_sub_board_status(isSdCard_sub_board);
 #ifdef CONFIG_SILENT_CONSOLE
 	gd->flags &= ~GD_FLG_SILENT;
 #endif
