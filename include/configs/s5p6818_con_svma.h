@@ -412,15 +412,9 @@
 #define CONFIG_AUTORECOVERY_CMD		\
 	"autorecovery_cmd=none\0"
 
-#define CONFIG_EXTRA_OTA_AB_UPDATE \
-        "misc_partition_num=" __stringify(CONTROL_PARTITION) "\0"       \
-        "set_ab_select=" \
-                SET_AB_SELECT \
-                "\0" \
-        "set_bootargs_ab1=setenv bootargs \"${bootargs} ${bootargs_ab1}\" \0" \
-        "set_bootargs_ab2=setenv bootargs \"${bootargs} ${bootargs_ab2}\" \0" \
-	"change_devicetree=run set_camera_input\0" \
-	"set_camera_input=" \
+#define CONFIG_CHANGE_DEVICETREE_UPDATE \
+	"change_devicetree=run set_devicetree\0" \
+	"set_devicetree=" \
 	"fdt addr "__stringify(CONFIG_KERNEL_DTB_ADDR)";fdt resize;"	\
 	"if test ${rear_cam} -eq 2; then " \
 		"fdt set /soc/clipper0 status okay;" \
@@ -439,7 +433,22 @@
 			"fdt set /soc/clipper9 status okay;" \
 			"fdt set /soc/decimator9 status okay;" \
 		"fi;" \
-	"fi;\0" \
+	"fi;" \
+	"if test ${sub_board} -eq 0; then " \
+		"fdt set /soc/dw_mmc_btwifi@c0068000 status okay;" \
+		"fdt set /nx_bt status okay;" \
+		"fdt set /nx_wlan status okay;" \
+	"else " \
+		"fdt set /soc/dw_mmc@c0068000 status okay;" \
+	"fi;\0"
+
+#define CONFIG_EXTRA_OTA_AB_UPDATE \
+        "misc_partition_num=" __stringify(CONTROL_PARTITION) "\0"       \
+        "set_ab_select=" \
+                SET_AB_SELECT \
+                "\0" \
+        "set_bootargs_ab1=setenv bootargs \"${bootargs} ${bootargs_ab1}\" \0" \
+        "set_bootargs_ab2=setenv bootargs \"${bootargs} ${bootargs_ab2}\" \0" \
         "bootcmd_set_ab=run set_ab_select;" \
                        "run set_bootargs_ab1;" \
                        "run set_bootargs_ab2;" \
@@ -458,6 +467,7 @@
 	CONFIG_RECOVERY_BOOT_CMD				\
 	CONFIG_AUTORECOVERY_CMD					\
 	"mmcboot=run boot_cmd_mmcboot\0"			\
+	CONFIG_CHANGE_DEVICETREE_UPDATE				\
 	CONFIG_EXTRA_OTA_AB_UPDATE				\
 	CONFIG_EXTRA_ENV_BOOT_LOGO				\
         "boot_cmd_ramfsboot="					\
