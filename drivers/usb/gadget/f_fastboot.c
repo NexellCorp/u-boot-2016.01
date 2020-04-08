@@ -181,7 +181,7 @@ extern ulong mmc_bwrite(int dev_num, lbaint_t start, lbaint_t blkcnt,
 
 static int mmc_make_parts(int dev, uint64_t (*parts)[2], int count)
 {
-	char cmd[1024];
+	char cmd[2048];
 	int i = 0, l = 0, p = 0;
 
 	l = sprintf(cmd, "fdisk %d %d:", dev, count);
@@ -1067,7 +1067,7 @@ static int fb_setenv(const char *str, int str_len)
 	const char *p = str;
 	int len = str_len;
 	char cmd[128];
-	char arg[1024];
+	char arg[2048];
 	int err = -1;
 
 	debug("---fb_setenv---\n");
