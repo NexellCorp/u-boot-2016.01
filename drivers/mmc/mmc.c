@@ -1459,7 +1459,11 @@ static int mmc_startup(struct mmc *mmc)
 
 		if (mmc->card_caps & MMC_MODE_HS) {
 			if (mmc->card_caps & MMC_MODE_HS_52MHz)
+#ifdef CONFIG_BOOST_MMC_CLOCK
+				mmc->tran_speed = 100000000;
+#else
 				mmc->tran_speed = 52000000;
+#endif
 			else
 				mmc->tran_speed = 26000000;
 		}
